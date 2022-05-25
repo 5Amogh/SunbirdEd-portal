@@ -9,7 +9,7 @@ import { TelemetryModule } from '@sunbird/telemetry';
 import { NgInviewModule } from 'angular-inport';
 import { SharedFeatureModule } from '@sunbird/shared-feature';
 import { DatasetsComponent } from './components/program-datasets/program-datasets.component';
-
+import { DashletModule } from '@project-sunbird/sb-dashlet-v9';
 
 @NgModule({
   declarations: [
@@ -25,7 +25,8 @@ import { DatasetsComponent } from './components/program-datasets/program-dataset
     FormsModule,
     ReactiveFormsModule,
     programDashboardRoutingModule,
-    NgInviewModule
+    NgInviewModule,
+    DashletModule
   ],
   providers: [
     ResourceService,

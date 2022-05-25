@@ -2,13 +2,15 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ToasterService, IUserData, IUserProfile, LayoutService, ResourceService, ConfigService, OnDemandReportService } from '@sunbird/shared';
 import { TelemetryService } from '@sunbird/telemetry';
 import { Subject, Subscription } from 'rxjs';
-import { KendraService, UserService, FormService } from '@sunbird/core';
+import { KendraService, UserService, FormService, BaseReportService } from '@sunbird/core';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as _ from 'lodash-es';
 import { Location } from '@angular/common';
-
+import { map, catchError} from 'rxjs/operators';
+import { Observable, of} from 'rxjs';
+import { UsageService } from '../../../dashboard/services';
 @Component({
   selector: 'app-datasets',
   templateUrl: './program-datasets.component.html',
@@ -72,6 +74,10 @@ export class DatasetsComponent implements OnInit {
   filter:any = [];
   newData:boolean = false;
   goToPrevLocation:boolean = true;
+  chartData:any;
+  chartConfig:any;
+  bigConfig:any;
+  tabIndex:number;
   constructor(
     activatedRoute: ActivatedRoute,
     public layoutService: LayoutService,
@@ -84,7 +90,8 @@ export class DatasetsComponent implements OnInit {
     public toasterService: ToasterService,
     public formService: FormService,
     public router: Router,
-    public location: Location
+    public location: Location,
+    private usageService: UsageService
   ) {
     this.config = config;
     this.activatedRoute = activatedRoute;
@@ -177,9 +184,269 @@ export class DatasetsComponent implements OnInit {
     this.initLayout();
     this.getProgramsList();
     this.getFormDetails();
+    this.chartData = {
+      values: [
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "unknown",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "unknown",
+            "Total Unique Users": "4.0"
+        },
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "ANANTAPUR",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "MPPS HANUMANNAHALLI",
+            "Total Unique Users": "5.0"
+        },
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "ANANTAPUR",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "Staging Custodian Organization",
+            "Total Unique Users": "21.1"
+        },
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "CHITTOOR",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "unknown",
+            "Total Unique Users": "4.0"
+        },
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "CHITTOOR",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "Staging Custodian Organization",
+            "Total Unique Users": "8.0"
+        },
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "BELAGAVI CHIKKODI",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "preprod-sso",
+            "Total Unique Users": "1.0"
+        },
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "EAST GODAVARI",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "Staging Custodian Organization",
+            "Total Unique Users": "2.0"
+        },
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "GUNTUR",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "unknown",
+            "Total Unique Users": "2.0"
+        },
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "ANANTAPUR",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "unknown",
+            "Total Unique Users": "13.0"
+        },
+        {
+            "Program name": "3.8 Test AP program",
+            "solutionId": "605084a02df993615443f06a",
+            "Observation name": "multiple domain and multiple criteria 2",
+            "District name": "ANANTAPUR",
+            "programId": "605083ba09b7bd61555580fb",
+            "Date": "2020-12-01",
+            "parent_channel": "SHIKSHALOKAM",
+            "Organisation": "MPPS VENGAMNAIDU COL",
+            "Total Unique Users": "1.0"
+        }
+    ]
+       
+    }
+   
+
+this.chartConfig =  {
+      "colors": [
+          {
+              "borderColor": "rgb(255, 69, 88)",
+              "borderWidth": 2,
+              "backgroundColor": "rgba(255, 69, 88, 0.3)"
+          },
+          {
+              "borderColor": "rgb(255, 161, 29)",
+              "borderWidth": 2,
+              "backgroundColor": "rgba(255, 161, 29, 0.3)"
+          },
+          {
+              "borderColor": "rgb(0, 199, 134)",
+              "borderWidth": 2,
+              "backgroundColor": "rgba(0, 199, 134, 0.3)"
+          },
+          {
+              "borderColor": "rgb(242, 203, 28)",
+              "borderWidth": 2,
+              "backgroundColor": "rgba(242, 203, 28, 0.3)"
+          },
+          {
+              "borderColor": "rgb(55, 70, 73)",
+              "borderWidth": 2,
+              "backgroundColor": "rgba(55, 70, 73, 0.3)"
+          }
+      ],
+      "options": {
+        "maintainAspectRation":false,
+          "title": {
+              "text": "Status of users district wise",
+              "display": true,
+              "fontSize": 16
+          },
+          "legend": {
+              "display": true
+          },
+          "scales": {
+              "xAxes": [
+                  {
+                      "stacked": true,
+                      "scaleLabel": {
+                          "display": true,
+                          "labelString": "District"
+                      }
+                  }
+              ],
+              "yAxes": [
+                  {
+                      // "stacked": true,
+                      "scaleLabel": {
+                          "display": true,
+                          "labelString": "No. of users",
+                      },
+                      "ticks":{
+                        "beginAtZero":true,
+                        "stepSize":30,
+                        "min":0
+                      }
+                  }
+              ]
+          },
+          "tooltips": {
+              "mode": "x-axis",
+              "intersect": false,
+              "bodySpacing": 5,
+              "titleSpacing": 5
+          },
+          "responsive": true,
+          "showLastUpdatedOn": true
+      },
+      "labelExpr":"District name",
+      "datasets": [{
+        "dataExpr": "Total Unique Users",
+            "label": "Total Unique Users"
+      }
+      ]
+
+  };
+
+this.bigConfig =   {
+        "footer": " ",
+        "header": "Unique users who submitted form",
+        "dataExpr": "Total Unique Users",
+        "operation":"SUM"
+    }
+// this.chartConfig = {
+//   colors: [
+//     {
+//         "borderColor": "rgb(255, 69, 88)",
+//         "borderWidth": 2,
+//         "backgroundColor": "rgba(255, 69, 88, 0.3)"
+//     },
+//     {
+//         "borderColor": "rgb(255, 161, 29)",
+//         "borderWidth": 2,
+//         "backgroundColor": "rgba(255, 161, 29, 0.3)"
+//     },
+//     {
+//         "borderColor": "rgb(0, 199, 134)",
+//         "borderWidth": 2,
+//         "backgroundColor": "rgba(0, 199, 134, 0.3)"
+//     },
+//     {
+//         "borderColor": "rgb(242, 203, 28)",
+//         "borderWidth": 2,
+//         "backgroundColor": "rgba(242, 203, 28, 0.3)"
+//     },
+//     {
+//         "borderColor": "rgb(55, 70, 73)",
+//         "borderWidth": 2,
+//         "backgroundColor": "rgba(55, 70, 73, 0.3)"
+//     }
+// ],
+// labelExpr:"District name",
+//   datasets:[{
+//             "dataExpr": "Total Unique Users",
+//             "label": "Total Unique Users"
+//             }
+//           ],
+
+// options:{
+//   "title": {
+//       "text": "Device Metrics",
+//       "display": true,
+//       "fontSize": 20
+//   }
+// },
+// type:'bar'
+// }
+  // this.chartConfig = {
+  //   labels: _.get(config ,'labelsExpr'),
+  //   datasets: [{ data: _.get(config ,'datasets'),label:_.get(config ,'datasets[0].label') }],
+  //   options: _.get(config ,'options'),
+  //   colors: [
+  //     { backgroundColor: _.get(config ,'colors[0].backgroundColor') },
+  //   ]
+  // };
   }
 
+  selectedTabChange(event){
+    console.log('tab change event', event);
+    this.tabIndex = event.index;
 
+  }
   public programSelection($event) {
     this.reportForm.reset();
     const program = this.programs.filter(data => {
@@ -218,15 +485,61 @@ export class DatasetsComponent implements OnInit {
         this.getReportTypes(this.programSelected,solution[0].type);
       }
       this.getDistritAndOrganisationList();
+      this.testing($event.value);
+    
+      // const req = {
+      //   url: `${this.config.urlConFig.URLS.REPORT.READ}/${$event}`
+      // };
+      // let reportResponse = this.fetchReportById($event)
+      // console.log(reportResponse,'report response');
+      // let res = this.fetchDataSource(`/report/fetch/${$event}/ml-test5.json`)
+      // console.log(res, 'sol response')
+      
 
     }
   }
+
+  testing(id){
+    console.log('entering testing fun');
+     this.usageService.getData(`/reports/fetch/605084a02df993615443f06a/ml-test5.json`).subscribe(data => {
+      console.log(data, 'usage service response');
+    });
+  }
+  // public fetchDataSource(filePath: string, id?: string | number): Observable<any> {
+  //   return this.usageService.getData(filePath).pipe(
+  //     map(configData => {
+  //       console.log(configData,'config data')
+  //       return {
+  //         loaded: true,
+  //         result: _.get(configData, 'result'),
+  //         ...(id && { id })
+  //       };
+  //     })
+  //     , catchError(error => of({ loaded: false }))
+
+  //   );
+  // }
+  // public fetchReportById(id): Observable<IReportsApiResponse> {
+  //   const req = {
+  //     url: `${this.config.urlConFig.URLS.REPORT.READ}/${id}`
+  //   };
+    
+  //   return this.baseReportService.get(req).pipe(
+  //     map(apiResponse => _.get(apiResponse, 'result'))
+  //   );
+  // }
+
   public getReportTypes(programId,solutionType){
     this.reportTypes = [];
     let selectedProgram = this.programs.filter(program => program._id==programId);
     if(selectedProgram && selectedProgram[0]){
+      console.log(selectedProgram, 'Program selected');
      let role = selectedProgram[0]['role'];
+     console.log(role, 'role');
      let types = this.formData[solutionType];
+     console.log(this.formData, 'form data');
+     console.log(solutionType, 'Solution type');
+     console.log(types,'types');
      if(types && types.length > 0){
        types.forEach(element => {
            let roleMatch = role.some(e =>  element.roles.includes(e));

@@ -32,18 +32,23 @@
   
 </div>
 <div class="sbt-inside-page-container">
-  <mat-tab-group class="sb-mat__tab sb-mat__tab--tabinacc">
+  <mat-tab-group class="sb-mat__tab sb-mat__tab--tabinacc" (selectedTabChange)="selectedTabChange($event)">
     <mat-tab appTelemetryInteract>
          <ng-template mat-tab-label>
             <span class="font-weight-bold">{{resourceService?.frmelmnts?.lbl?.programDatasets}}</span>
          </ng-template>
         <ng-container *ngTemplateOutlet="programDataset"></ng-container>
-      </mat-tab>    
+      </mat-tab>
+      <mat-tab appTelemetryInteract>
+        <ng-template mat-tab-label>
+           <span class="font-weight-bold">Graphs</span>
+        </ng-template>
+       <ng-container *ngTemplateOutlet="graphs"></ng-container>
+     </mat-tab>      
     </mat-tab-group>
 </div>
 
-
-<ng-template #programDataset>
+<ng-template #globalFilters>
   <form class="sb-form" [formGroup]="reportForm">
     <div>
       <div class="d-flex flex-w-wrap flex-ai-center ml-32 col-gap">
@@ -94,14 +99,24 @@
     
          
         </div>
-        <div class="ml-auto mt-12">
-          <button type="button" class="sb-field sb-btn sb-btn-normal sb-btn-primary reset-filter" (click)="resetFilter()">{{resourceService?.frmelmnts?.btn?.resetFilters}}</button>
+        <div class="d-flex flex-dc ml-auto mt-12">
+          <button type="button" class="sb-field sb-btn sb-btn-normal sb-btn-primary reset-filter flex-as-flex-end" (click)="resetFilter()">{{resourceService?.frmelmnts?.btn?.resetFilters}}</button>
+          <mat-form-field *ngIf="tabIndex == 1" appearance="fill" class="sb-mat__dropdown custom_mat_dd">
+            <mat-select role="radio" class="selection" valueField="organisationId" formControlName="organisationName"
+            placeholder="Export as"  (selectionChange)="organisationSelection($event)">
+              <mat-option *ngFor="let organisation of organisations" class="mat-dropdown__options" role="option" [value]="organisation.organisationId">
+                {{organisation.orgName}}
+              </mat-option>
+            </mat-select>
+            </mat-form-field>       
         </div>
       </div>
     </div>
   </form>
   <div *ngIf="newData" class="newData">*{{resourceService?.frmelmnts?.lbl?.resourceSelect}}</div>
-
+</ng-template>
+<ng-template #programDataset>
+  <ng-container *ngTemplateOutlet="globalFilters"></ng-container>
   <div class="sbt-inside-page-container relative position mt-32">
     <div>
       <div>
@@ -144,7 +159,17 @@
   
  
 </ng-template>
-
+<ng-template #graphs>
+  <ng-container *ngTemplateOutlet="globalFilters"></ng-container>
+  <div class="sbt-inside-page-container relative position mt-32 bigNumberCard">
+    <div class="sb-last-update-status last-update"><span>Last updated on&nbsp;: </span> &nbsp; 14-February-2022 </div>
+    <sb-dashlet [type]="'bigNumber'" [data]="chartData" [config]="bigConfig" class="chart-container mt-8" #lib></sb-dashlet>
+  </div>
+  <div class="sbt-inside-page-container relative position mt-32">
+    <div class="sb-last-update-status last-update"><span>Last updated on&nbsp;: </span> &nbsp; 14-February-2022 </div>
+    <sb-dashlet [type]="'bar'" [data]="chartData" [config]="chartConfig" class="chart-container mt-8" #lib></sb-dashlet>
+  </div>
+</ng-template>
 <app-modal-wrapper [config]="{disableClose: false, size: 'small'}" (dismiss)="closeModal()" #modal *ngIf="popup">
   <ng-template sbModalContent>
     <div class="sb-modal">

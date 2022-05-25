@@ -1737,6 +1737,10 @@ const API_LIST = {
       checksNeeded: ['ROLE_CHECK'],
       ROLE_CHECK: [ROLE.ALL, ROLE.PUBLIC]
     },
+    '/reports/fetch/:slug/:filename':{
+      checksNeeded:['ROLE_CHECK'],
+      ROLE_CHECK:[ROLE.ALL, ROLE.PUBLIC]
+    },
     '/assessment/observations/mlsurvey/v1/entities': {
       checksNeeded: ['ROLE_CHECK'],
       ROLE_CHECK: [ROLE.ALL, ROLE.PUBLIC]
@@ -2031,7 +2035,8 @@ const API_LIST = {
     '/uci/admin/v1/conversationLogic/update/:id',
     '/uci/admin/v1/conversationLogic/delete/:id',
     '/uci/admin/v1/forms/upload',
-    '/kendra/user-extension/mlcore/v1/solutions/:id'
+    '/kendra/user-extension/mlcore/v1/solutions/:id',
+    '/reports/fetch/:slug/:filename'
   ]
 };
 module.exports = API_LIST;

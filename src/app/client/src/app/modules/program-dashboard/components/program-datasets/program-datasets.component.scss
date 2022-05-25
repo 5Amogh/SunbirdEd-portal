@@ -28,6 +28,7 @@
 .reset-filter{
   color: var(--primary);
   background-color: var(--brand-header-tail-text);
+  width: fit-content;
 }
 
 .newData{
@@ -64,7 +65,13 @@
 .infoIcon{
   width: 1.125rem;
 }
-
+.last-update {
+  font-size: 0.8125rem !important;
+  color: #333 !important;
+  font-weight: 700;
+  border-left: 0.0625rem solid #ccc;
+  margin-left: 0.1rem !important;
+}
 ::ng-deep {
 
   .custom_mat_dd .mat-select-arrow-wrapper {
@@ -85,4 +92,24 @@
   .mat-option-text{
     display: flex !important;
   }
+
+  .bigNumberCard .card{
+    background-color: var(--gray-hs) !important;
+    box-shadow: none !important;
+  }
+
+  .bigNumberCard .card .header{
+    font-size: 1.125rem !important;
+  }
+
+  .bigNumberCard .card  .description{
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+  }
+
+  .bigNumberCard .card .content{
+    padding-top: 1.5rem !important;
+    padding-left: 0rem !important;
+  }
+
 }
