@@ -11,11 +11,15 @@ import { Location } from '@angular/common';
 import { map, catchError} from 'rxjs/operators';
 import { Observable, of} from 'rxjs';
 import { UsageService } from '../../../dashboard/services';
+
+
+const PRE_DEFINED_PARAMETERS = ['$slug'];
 @Component({
   selector: 'app-datasets',
   templateUrl: './program-datasets.component.html',
   styleUrls: ['./program-datasets.component.scss']
 })
+
 
 export class DatasetsComponent implements OnInit {
 
@@ -78,6 +82,7 @@ export class DatasetsComponent implements OnInit {
   chartConfig:any;
   bigConfig:any;
   tabIndex:number;
+  datasource:any;
   constructor(
     activatedRoute: ActivatedRoute,
     public layoutService: LayoutService,
@@ -111,7 +116,7 @@ export class DatasetsComponent implements OnInit {
   public userId: string;
   public selectedReport;
   public selectedSolution: string;
-
+  
   getProgramsList() {
     const paramOptions = {
       url:
@@ -299,7 +304,6 @@ export class DatasetsComponent implements OnInit {
     ]
        
     }
-   
 
 this.chartConfig =  {
       "colors": [
@@ -388,62 +392,26 @@ this.bigConfig =   {
         "dataExpr": "Total Unique Users",
         "operation":"SUM"
     }
-// this.chartConfig = {
-//   colors: [
-//     {
-//         "borderColor": "rgb(255, 69, 88)",
-//         "borderWidth": 2,
-//         "backgroundColor": "rgba(255, 69, 88, 0.3)"
-//     },
-//     {
-//         "borderColor": "rgb(255, 161, 29)",
-//         "borderWidth": 2,
-//         "backgroundColor": "rgba(255, 161, 29, 0.3)"
-//     },
-//     {
-//         "borderColor": "rgb(0, 199, 134)",
-//         "borderWidth": 2,
-//         "backgroundColor": "rgba(0, 199, 134, 0.3)"
-//     },
-//     {
-//         "borderColor": "rgb(242, 203, 28)",
-//         "borderWidth": 2,
-//         "backgroundColor": "rgba(242, 203, 28, 0.3)"
-//     },
-//     {
-//         "borderColor": "rgb(55, 70, 73)",
-//         "borderWidth": 2,
-//         "backgroundColor": "rgba(55, 70, 73, 0.3)"
-//     }
-// ],
-// labelExpr:"District name",
-//   datasets:[{
-//             "dataExpr": "Total Unique Users",
-//             "label": "Total Unique Users"
-//             }
-//           ],
 
-// options:{
-//   "title": {
-//       "text": "Device Metrics",
-//       "display": true,
-//       "fontSize": 20
-//   }
-// },
-// type:'bar'
-// }
-  // this.chartConfig = {
-  //   labels: _.get(config ,'labelsExpr'),
-  //   datasets: [{ data: _.get(config ,'datasets'),label:_.get(config ,'datasets[0].label') }],
-  //   options: _.get(config ,'options'),
-  //   colors: [
-  //     { backgroundColor: _.get(config ,'colors[0].backgroundColor') },
-  //   ]
-  // };
+  }
+  
+  public resolveParameterizedPath(path: string, explicitValue?: string): string {
+    return _.reduce(PRE_DEFINED_PARAMETERS, (result: string, parameter: string) => {
+      if (_.includes(result, parameter)) {
+        result = _.replace(result, parameter, explicitValue);
+      }
+      return result;
+    }, path);
   }
 
+  public getUpdatedParameterizedPath(dataSources) {
+    const explicitValue = _.get(this.reportForm,'controls.solution.value')
+    return _.map(dataSources, (dataSource) => ({
+      id: dataSource.id,
+      path: this.resolveParameterizedPath(dataSource.path, explicitValue)
+    }));
+  }
   selectedTabChange(event){
-    console.log('tab change event', event);
     this.tabIndex = event.index;
 
   }
@@ -485,50 +453,50 @@ this.bigConfig =   {
         this.getReportTypes(this.programSelected,solution[0].type);
       }
       this.getDistritAndOrganisationList();
-      this.testing($event.value);
-    
-      // const req = {
-      //   url: `${this.config.urlConFig.URLS.REPORT.READ}/${$event}`
-      // };
-      // let reportResponse = this.fetchReportById($event)
-      // console.log(reportResponse,'report response');
-      // let res = this.fetchDataSource(`/report/fetch/${$event}/ml-test5.json`)
-      // console.log(res, 'sol response')
-      
+      this.datasource = [
+        {
+          "id": "ml-test5",
+          "path": "/reports/fetch/$slug/ml-test5.json"
+        },
+        {
+            "id": "ml_no_of_users_in_progress_api",
+            "path": "/reports/fetch/$slug/ml_no_of_users_in_progress_api.json"
+        },
+        {
+            "id": "ml_no_of_users_completed_the_project_api",
+            "path": "/reports/fetch/$slug/ml_no_of_users_completed_the_project_api.json"
+        },
+        {
+            "id": "ml_no_of_users_district_wise_api",
+            "path": "/reports/fetch/$slug/ml_no_of_users_district_wise_api.json"
+        },
+    ]
+  
+    let dataSource = this.getUpdatedParameterizedPath(this.datasource);
+    console.log('dataSource', dataSource);
+    console.log('this.dataSource', this.datasource);
+    let multipleCalls = this.downloadMultipleDataSources(dataSource)
+    console.log('multiple calls', multipleCalls)
 
     }
   }
-
-  testing(id){
-    console.log('entering testing fun');
-     this.usageService.getData(`/reports/fetch/605084a02df993615443f06a/ml-test5.json`).subscribe(data => {
-      console.log(data, 'usage service response');
-    });
+  public fetchDataSource(filePath: string, id?: string | number) {
+    this.usageService.getData(filePath).subscribe(data => {
+      console.log('data from fetchDataSource', data)
+    })
   }
-  // public fetchDataSource(filePath: string, id?: string | number): Observable<any> {
-  //   return this.usageService.getData(filePath).pipe(
-  //     map(configData => {
-  //       console.log(configData,'config data')
-  //       return {
-  //         loaded: true,
-  //         result: _.get(configData, 'result'),
-  //         ...(id && { id })
-  //       };
-  //     })
-  //     , catchError(error => of({ loaded: false }))
 
-  //   );
-  // }
-  // public fetchReportById(id): Observable<IReportsApiResponse> {
-  //   const req = {
-  //     url: `${this.config.urlConFig.URLS.REPORT.READ}/${id}`
-  //   };
-    
-  //   return this.baseReportService.get(req).pipe(
-  //     map(apiResponse => _.get(apiResponse, 'result'))
-  //   );
-  // }
+  public downloadMultipleDataSources(dataSources) {
+    if (!dataSources.length) {
+      // for India heat map scenario.
+      return of([]);
+    }
+    const apiCalls = _.map(dataSources, (source) => {
+      return this.fetchDataSource(_.get(source, 'path'), _.get(source, 'id'));
+    });
 
+    console.log('apiCalls',apiCalls)
+  }
   public getReportTypes(programId,solutionType){
     this.reportTypes = [];
     let selectedProgram = this.programs.filter(program => program._id==programId);
@@ -735,6 +703,7 @@ this.bigConfig =   {
     this.formService.getFormConfig(formServiceInputParams).subscribe((formData) => {
       if (formData) {
           this.formData = formData;
+          console.log('form data function',formData)
       }
     }, error => {
       this.toasterService.error(this.resourceService.messages.emsg.m0005);

@@ -74,6 +74,25 @@
 }
 ::ng-deep {
 
+  .bigNumberCard .card{
+    background-color: var(--gray-hs) !important;
+    box-shadow: none !important;
+  }
+
+  .bigNumberCard .card .header{
+    font-size: 1.125rem !important;
+  }
+
+  .bigNumberCard .card  .description{
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+  }
+
+  .bigNumberCard .card .content{
+    padding-top: 1.5rem !important;
+    padding-left: 0rem !important;
+  }
+  
   .custom_mat_dd .mat-select-arrow-wrapper {
     vertical-align: bottom !important;
   }
@@ -93,23 +112,6 @@
     display: flex !important;
   }
 
-  .bigNumberCard .card{
-    background-color: var(--gray-hs) !important;
-    box-shadow: none !important;
-  }
 
-  .bigNumberCard .card .header{
-    font-size: 1.125rem !important;
-  }
-
-  .bigNumberCard .card  .description{
-    font-size: 2.5rem !important;
-    font-weight: 700 !important;
-  }
-
-  .bigNumberCard .card .content{
-    padding-top: 1.5rem !important;
-    padding-left: 0rem !important;
-  }
 
 }
