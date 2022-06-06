@@ -72,6 +72,7 @@
   border-left: 0.0625rem solid #ccc;
   margin-left: 0.1rem !important;
 }
+
 ::ng-deep {
 
   .bigNumberCard .card{
@@ -91,6 +92,10 @@
   .bigNumberCard .card .content{
     padding-top: 1.5rem !important;
     padding-left: 0rem !important;
+  }
+
+  .customDataTable table{
+    width: 100% !important;
   }
   
   .custom_mat_dd .mat-select-arrow-wrapper {
