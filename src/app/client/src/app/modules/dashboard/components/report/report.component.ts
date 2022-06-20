@@ -167,6 +167,7 @@ export class ReportComponent implements OnInit {
               retry(1),
               map((apiResponse) => {
                 const [data, reportSummary] = apiResponse;
+                console.log('Data from multiple download', data)
                 const result: any = Object.assign({});
                 const chart = (charts && this.reportService.prepareChartData(charts, data, updatedDataSource,
                   _.get(reportConfig, 'reportLevelDataSourceId'))) || [];

@@ -10,6 +10,7 @@ import { NgInviewModule } from 'angular-inport';
 import { SharedFeatureModule } from '@sunbird/shared-feature';
 import { DatasetsComponent } from './components/program-datasets/program-datasets.component';
 import { DashletModule } from '@project-sunbird/sb-dashlet-v9';
+import { DashboardModule } from '../dashboard';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { DashletModule } from '@project-sunbird/sb-dashlet-v9';
     ReactiveFormsModule,
     programDashboardRoutingModule,
     NgInviewModule,
-    DashletModule
+    DashletModule,
+    DashboardModule
   ],
   providers: [
     ResourceService,

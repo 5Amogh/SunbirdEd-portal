@@ -1,17 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ToasterService, IUserData, IUserProfile, LayoutService, ResourceService, ConfigService, OnDemandReportService } from '@sunbird/shared';
 import { TelemetryService } from '@sunbird/telemetry';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, throwError } from 'rxjs';
 import { KendraService, UserService, FormService, BaseReportService } from '@sunbird/core';
-import { takeUntil } from 'rxjs/operators';
+import { mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as _ from 'lodash-es';
 import { Location } from '@angular/common';
 import { map, catchError} from 'rxjs/operators';
-import { Observable, of} from 'rxjs';
+import { Observable, of} from 'rxjs'; 
 import { UsageService } from '../../../dashboard/services';
-
+import { ReportService } from '../../../dashboard/services';
 
 const PRE_DEFINED_PARAMETERS = ['$slug'];
 @Component({
@@ -33,6 +33,7 @@ export class DatasetsComponent implements OnInit {
   public message = this.resourceService?.frmelmnts?.msg?.noDataDisplayed;
   instance: string;
 
+  @ViewChild('reportElement') reportElement;
   @ViewChild('modal', { static: false }) modal;
   popup = false;
   awaitPopUp = false;
@@ -86,6 +87,7 @@ export class DatasetsComponent implements OnInit {
   downloadUrl:string;
   columnsConfiguration:any;
   dtOptions:any;
+  exportOptions = ['Pdf', 'Img'];
   constructor(
     activatedRoute: ActivatedRoute,
     public layoutService: LayoutService,
@@ -101,6 +103,7 @@ export class DatasetsComponent implements OnInit {
     public location: Location,
     private usageService: UsageService,
     public baseReportService: BaseReportService,
+    public reportService:ReportService
   ) {
     this.config = config;
     this.activatedRoute = activatedRoute;
@@ -379,6 +382,40 @@ export class DatasetsComponent implements OnInit {
           "responsive": true,
           "showLastUpdatedOn": true
       },
+      "filters": [
+        {
+            "reference": "Program name",
+            "controlType": "multi-select",
+            "displayName": "Select Program",
+            "placeholder":"Select program",
+            "label": "Program",
+            "searchable": true
+        },
+        {
+            "reference": "District name",
+            "controlType": "multi-select",
+            "displayName": "Select District",
+            "placeholder":"Select district",
+            "label": "District",
+            "searchable": true
+        },
+        {
+            "reference": "Organisation",
+            "controlType": "multi-select",
+            "displayName": "Select Organisation",
+            "placeholder":"Select organisation",
+            "label": "Organisation",
+            "searchable": true
+        },
+        {
+            "reference": "Project name",
+            "controlType": "multi-select",
+            "displayName": "Select Project",
+            "placeholder":"Select resource",
+            "label": "Resource",
+            "searchable": true
+        }
+    ],
       "labelExpr":"District name",
       "datasets": [{
         "dataExpr": "Total Unique Users",
@@ -882,7 +919,8 @@ export class DatasetsComponent implements OnInit {
      console.log(solutionType, 'Solution type');
      console.log(types,'types');
      console.log('report id', types[0].reportid);
-     this.fetchReportById(types[0].reportid);
+     this.fetchConfig('f43ea76f-15c9-43f1-a559-78889290a92a');
+    //  this.fetchReportById('f43ea76f-15c9-43f1-a559-78889290a92a');
      if(types && types.length > 0){
        types.forEach(element => {
            let roleMatch = role.some(e =>  element.roles.includes(e));
@@ -893,18 +931,29 @@ export class DatasetsComponent implements OnInit {
      } 
     }
    }
-  fetchReportById(id){
-    console.log('entered the fetch report function')
-    const req = {
-      url: `${this.config.urlConFig.URLS.REPORT.READ}/${id}`
-    };
-    this.baseReportService.get(req).subscribe(data => {
-      console.log('report data', data)
-    })
-    // return this.baseReportService.get(req).pipe(
-    //   map(apiResponse => _.get(apiResponse, 'result'))
-    // );
+
+   fetchConfig(reportId){
+     return this.reportService.fetchReportById(reportId).subscribe(
+        (report => {
+        console.log('Report through fetch config', report)
+        
+      })
+    );
   }
+  // fetchReportById(id){
+  //   console.log('entered the fetch report function')
+  //   const req = {
+  //     url: `${this.config.urlConFig.URLS.REPORT.READ}/${id}`
+  //   };
+  //   console.log('report request', req)
+  //   this.baseReportService.get(req).subscribe(data => {
+  //     console.log('report data', data)
+  //   })
+    
+    // return this.baseReportService.get(req).pipe(
+    //   mergeMap(apiResponse => _.get(apiResponse, 'result'))
+    // );
+  // }
   public closeModal(): void {
     this.popup = false;
   }

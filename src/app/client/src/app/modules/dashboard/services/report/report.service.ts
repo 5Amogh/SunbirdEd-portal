@@ -15,7 +15,9 @@ import { UUID } from 'angular2-uuid';
 const PRE_DEFINED_PARAMETERS = ['$slug', '$board', '$state', '$channel'];
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ReportService  {
 
   private _superAdminSlug: string;
@@ -78,6 +80,7 @@ export class ReportService  {
     if (hash) {
       req.url = `${this.configService.urlConFig.URLS.REPORT.READ}/${id}/${hash}`;
     }
+    console.log('report request', req)
     return this.baseReportService.get(req).pipe(
       map(apiResponse => _.get(apiResponse, 'result'))
     );

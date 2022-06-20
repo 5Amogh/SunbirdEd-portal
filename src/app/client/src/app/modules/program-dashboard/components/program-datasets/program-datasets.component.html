@@ -167,13 +167,13 @@
 </ng-template>
 <ng-template #graphs>
   <ng-container *ngTemplateOutlet="globalFilters"></ng-container>
-  <div class="sbt-inside-page-container relative position mt-32 bigNumberCard">
+  <div class="sbt-inside-page-container relative position mt-32 bigNumberCard" #reportElement>
     <div class="sb-last-update-status last-update"><span>Last updated on&nbsp;: </span> &nbsp; 14-February-2022 </div>
     <sb-dashlet [type]="'bigNumber'" [data]="chartData" [config]="bigConfig" class="chart-container mt-8" #lib></sb-dashlet>
   </div>
   <div class="sbt-inside-page-container relative position mt-32">
     <div class="sb-last-update-status last-update"><span>Last updated on&nbsp;: </span> &nbsp; 14-February-2022 </div>
-    <sb-dashlet [type]="'bar'" [data]="chartData" [config]="chartConfig" class="chart-container mt-8" #lib></sb-dashlet>
+    <sb-dashlet [type]="'bar'" [data]="chartData" [config]="chartConfig" class="chart-container mt-32 customGraph" #lib></sb-dashlet>
   </div>
 </ng-template>
 <ng-template #table>

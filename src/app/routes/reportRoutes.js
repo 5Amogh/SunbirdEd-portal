@@ -30,7 +30,7 @@ module.exports = function (app) {
     )
     app.all([`${BASE_REPORT_URL}/list`, `${BASE_REPORT_URL}/get/:reportId`],
         proxyUtils.verifyToken(),
-        reportHelper.validateRoles(['REPORT_VIEWER', 'REPORT_ADMIN']),
+        reportHelper.validateRoles(['REPORT_VIEWER', 'REPORT_ADMIN', 'PROGRAM_MANAGER']),
         proxy(REPORT_SERVICE_URL, {
             limit: reqDataLimitOfContentUpload,
             proxyReqOptDecorator: proxyUtils.decorateRequestHeaders(REPORT_SERVICE_URL),
