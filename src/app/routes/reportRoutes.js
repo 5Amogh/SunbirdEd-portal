@@ -141,7 +141,7 @@ module.exports = function (app) {
 
     app.get(`/reports/fetch/:slug/:filename`,
         proxyUtils.verifyToken(),
-        reportHelper.validateRoles(['REPORT_VIEWER', 'REPORT_ADMIN']),
+        reportHelper.validateRoles(['REPORT_VIEWER', 'REPORT_ADMIN', 'PROGRAM_MANAGER', 'PROGRAM_DESIGNER']),
         reportHelper.azureBlobStream());
 
     app.get('/reports/:slug/:filename',

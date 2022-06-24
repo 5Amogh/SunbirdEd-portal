@@ -65,12 +65,17 @@
 .infoIcon{
   width: 1.125rem;
 }
-.last-update {
-  font-size: 0.8125rem !important;
-  color: #333 !important;
-  font-weight: 700;
-  border-left: 0.0625rem solid #ccc;
-  margin-left: 0.1rem !important;
+.sb-graph-section{
+
+  box-shadow: 0 calculateRem(2px) calculateRem(7px) 0 rgba(var(--rc-rgba-black), 0.16);
+  background: var(--sb-graph-section-bg);
+  border: 0.0625rem solid var(--rc-dddddd);
+
+}
+
+.sb-last-update-status {
+  font-size: calculateRem(12px);
+  font-weight: bold;
 }
 
 ::ng-deep {
@@ -87,25 +92,38 @@
   
 
   .bigNumberCard{
-    .card{
-      background-color: var(--gray-hs) !important;
-      box-shadow: none !important;
+      border-bottom: calculateRem(1px) solid var(--rc-dddddd) !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr 1fr !important;
+      column-gap: calculateRem(24px) !important;
+      
+      .card {
+        flex: 1 !important;
+        border-right: solid calculateRem(1px)  var(--rc-d4d8da) !important;
+        background-color: var(--gray-hs) !important;
+        box-shadow: none !important;
 
-      .header{
-        font-size: 1.125rem !important;
-      }
-
-      .description{
-        font-size: 2.5rem !important;
-        font-weight: 700 !important;
-      }
-
-      .content{
-        padding-top: 1.5rem !important;
-        padding-left: 0rem !important;
-      }
+        .header {
+          font-size: 1.125rem !important;
+          font-weight: unset !important;
+        }
     
-    }
+        .description {
+          color: var(--gray) !important;
+          font-size: 2.5rem !important;
+          font-weight: 700 !important;
+        }
+    
+        .meta{
+          color: var(--gray-200);
+          font-size: calculateRem(18px) !important;
+        }
+    
+        &:nth-child(3n + 3) {
+          border-right: 0px solid var(--rc-d4d8da) !important;
+        }
+      }
+   
   
   } 
   .customDataTable table{

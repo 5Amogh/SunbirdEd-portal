@@ -1743,7 +1743,7 @@ const API_LIST = {
     },
     '/reports/fetch/:slug/:filename':{
       checksNeeded:['ROLE_CHECK'],
-      ROLE_CHECK:[ROLE.ALL, ROLE.PUBLIC]
+      ROLE_CHECK: [ROLE.ORG_ADMIN, ROLE.CONTENT_CREATOR, ROLE.COURSE_MENTOR,ROLE.PROGRAM_DESIGNER,ROLE.PROGRAM_MANAGER]
     },
     '/assessment/observations/mlsurvey/v1/entities': {
       checksNeeded: ['ROLE_CHECK'],
