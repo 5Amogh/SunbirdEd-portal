@@ -90,6 +90,12 @@
     }
   }
   
+  .chart-title {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem !important;
+    padding-top: 0.5rem;
+  }
 
   .bigNumberCard{
       border-bottom: calculateRem(1px) solid var(--rc-dddddd) !important;
@@ -102,16 +108,21 @@
         border-right: solid calculateRem(1px)  var(--rc-d4d8da) !important;
         background-color: var(--gray-hs) !important;
         box-shadow: none !important;
+        margin-top: 1.5rem !important;
 
         .header {
           font-size: 1.125rem !important;
           font-weight: unset !important;
         }
-    
+        
+        .content{
+          padding: 0% !important;
+        }
         .description {
           color: var(--gray) !important;
           font-size: 2.5rem !important;
           font-weight: 700 !important;
+          margin-top: 0% !important;
         }
     
         .meta{

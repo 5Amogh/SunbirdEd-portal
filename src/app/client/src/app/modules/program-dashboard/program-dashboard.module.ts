@@ -10,13 +10,15 @@ import { NgInviewModule } from 'angular-inport';
 import { SharedFeatureModule } from '@sunbird/shared-feature';
 import { DatasetsComponent } from './components/program-datasets/program-datasets.component';
 import { DashletModule } from '@project-sunbird/sb-dashlet-v9';
-import { DashboardModule } from '../dashboard';
+import { DashboardModule} from '../dashboard';
 import { BigDataPipe } from './pipes/big-data.pipe';
+import { ChartTypePipe } from './pipes/chart-type.pipe';
 
 @NgModule({
   declarations: [
   DatasetsComponent,
-  BigDataPipe
+  BigDataPipe,
+  ChartTypePipe
 ],
   imports: [
     CommonModule,

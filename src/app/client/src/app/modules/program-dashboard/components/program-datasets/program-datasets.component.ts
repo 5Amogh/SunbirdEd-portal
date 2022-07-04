@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { INoResultMessage,ToasterService, IUserData, IUserProfile, LayoutService, ResourceService, ConfigService, OnDemandReportService } from '@sunbird/shared';
 import { TelemetryService } from '@sunbird/telemetry';
 import { Subject, Subscription, throwError } from 'rxjs';
@@ -15,8 +15,9 @@ import { ReportService } from '../../../dashboard/services';
 import moment from 'moment';
 import html2canvas from 'html2canvas';
 import * as jspdf from 'jspdf';
+import { MatDialog } from '@angular/material/dialog';
 
-const PRE_DEFINED_PARAMETERS = ['$slug'];
+const PRE_DEFINED_PARAMETERS = ['$slug','hawk-eye'];
 @Component({
   selector: 'app-datasets',
   templateUrl: './program-datasets.component.html',
@@ -28,7 +29,7 @@ export class DatasetsComponent implements OnInit {
 
   public activatedRoute: ActivatedRoute;
   public showConfirmationModal = false;
-  public dashboardReport$:Observable<any[]>;
+  public dashboardReport$;
   public noResultMessage: INoResultMessage;
   public noResult: boolean;
   showPopUpModal:boolean;
@@ -78,11 +79,13 @@ export class DatasetsComponent implements OnInit {
   passwordForm = new FormGroup({
     password: new FormControl('', [Validators.minLength(8), Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$')])
   });
-
+  @ViewChild('filterPopUpMat') filterPopUpMat: TemplateRef<any>;
+  $filteredData;
+  dialogRef: any;
   programSelected: any;
   solutionSelected: any;
   districts:any;
-  organisations:any;
+  organisations:any = [];
   filter:any = [];
   newData:boolean = false;
   goToPrevLocation:boolean = true;
@@ -91,6 +94,7 @@ export class DatasetsComponent implements OnInit {
   lastUpdatedOn:any;
   exportOptions = ['Pdf', 'Img'];
   hideElements:boolean = false;
+  availableChartTypeOptions = ['Bar', 'Line'];
   bigChartData:any;
   chartData:any;
   chartConfig:any;
@@ -115,7 +119,8 @@ export class DatasetsComponent implements OnInit {
     public location: Location,
     private usageService: UsageService,
     public baseReportService: BaseReportService,
-    public reportService:ReportService
+    public reportService:ReportService,
+    public dialog: MatDialog
   ) {
     this.config = config;
     this.activatedRoute = activatedRoute;
@@ -176,7 +181,11 @@ export class DatasetsComponent implements OnInit {
     this.kendraService.get(paramOptions).subscribe(data => {
       if (data && data.result) {
        this.districts = data.result.districts;
-       this.organisations = data.result.organisations;
+        data.result.organisations.map(org =>{
+         if(org?.orgName !== null){
+           this.organisations.push(org)
+         }
+       });
       }
     }, error => {
       this.toasterService.error(_.get(this.resourceService, 'messages.fmsg.m0004'));
@@ -208,589 +217,7 @@ export class DatasetsComponent implements OnInit {
     this.initLayout();
     this.getProgramsList();
     this.getFormDetails();
-    this.chartData = {
-      values: [
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "unknown",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "unknown",
-            "Total Unique Users": "4.0"
-        },
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "ANANTAPUR",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "MPPS HANUMANNAHALLI",
-            "Total Unique Users": "5.0"
-        },
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "ANANTAPUR",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "Staging Custodian Organization",
-            "Total Unique Users": "21.1"
-        },
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "CHITTOOR",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "unknown",
-            "Total Unique Users": "4.0"
-        },
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "CHITTOOR",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "Staging Custodian Organization",
-            "Total Unique Users": "8.0"
-        },
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "BELAGAVI CHIKKODI",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "preprod-sso",
-            "Total Unique Users": "1.0"
-        },
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "EAST GODAVARI",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "Staging Custodian Organization",
-            "Total Unique Users": "2.0"
-        },
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "GUNTUR",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "unknown",
-            "Total Unique Users": "2.0"
-        },
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "ANANTAPUR",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "unknown",
-            "Total Unique Users": "13.0"
-        },
-        {
-            "Program name": "3.8 Test AP program",
-            "solutionId": "605084a02df993615443f06a",
-            "Observation name": "multiple domain and multiple criteria 2",
-            "District name": "ANANTAPUR",
-            "programId": "605083ba09b7bd61555580fb",
-            "Date": "2020-12-01",
-            "parent_channel": "SHIKSHALOKAM",
-            "Organisation": "MPPS VENGAMNAIDU COL",
-            "Total Unique Users": "1.0"
-        }
-    ]    
-    };
-    this.chartConfig =  {
-      "colors": [
-          {
-              "borderColor": "rgb(255, 69, 88)",
-              "borderWidth": 2,
-              "backgroundColor": "rgba(255, 69, 88, 0.3)"
-          },
-          {
-              "borderColor": "rgb(255, 161, 29)",
-              "borderWidth": 2,
-              "backgroundColor": "rgba(255, 161, 29, 0.3)"
-          },
-          {
-              "borderColor": "rgb(0, 199, 134)",
-              "borderWidth": 2,
-              "backgroundColor": "rgba(0, 199, 134, 0.3)"
-          },
-          {
-              "borderColor": "rgb(242, 203, 28)",
-              "borderWidth": 2,
-              "backgroundColor": "rgba(242, 203, 28, 0.3)"
-          },
-          {
-              "borderColor": "rgb(55, 70, 73)",
-              "borderWidth": 2,
-              "backgroundColor": "rgba(55, 70, 73, 0.3)"
-          }
-      ],
-      "options": {
-        "maintainAspectRation":false,
-          "title": {
-              "text": "Status of users district wise",
-              "display": true,
-              "fontSize": 16
-          },
-          "legend": {
-              "display": true
-          },
-          "scales": {
-              "xAxes": [
-                  {
-                      "stacked": true,
-                      "scaleLabel": {
-                          "display": true,
-                          "labelString": "District"
-                      }
-                  }
-              ],
-              "yAxes": [
-                  {
-                      // "stacked": true,
-                      "scaleLabel": {
-                          "display": true,
-                          "labelString": "No. of users",
-                      },
-                      "ticks":{
-                        "beginAtZero":true,
-                        "stepSize":30,
-                        "min":0
-                      }
-                  }
-              ]
-          },
-          "tooltips": {
-              "mode": "x-axis",
-              "intersect": false,
-              "bodySpacing": 5,
-              "titleSpacing": 5
-          },
-          "responsive": true,
-          "showLastUpdatedOn": true
-      },
-      "filters": [
-        {
-            "reference": "Program name",
-            "controlType": "multi-select",
-            "displayName": "Select Program",
-            "placeholder":"Select program",
-            "label": "Program",
-            "searchable": true
-        },
-        {
-            "reference": "District name",
-            "controlType": "multi-select",
-            "displayName": "Select District",
-            "placeholder":"Select district",
-            "label": "District",
-            "searchable": true
-        },
-        {
-            "reference": "Organisation",
-            "controlType": "multi-select",
-            "displayName": "Select Organisation",
-            "placeholder":"Select organisation",
-            "label": "Organisation",
-            "searchable": true
-        },
-        {
-            "reference": "Project name",
-            "controlType": "multi-select",
-            "displayName": "Select Project",
-            "placeholder":"Select resource",
-            "label": "Resource",
-            "searchable": true
-        }
-    ],
-      "labelExpr":"District name",
-      "datasets": [{
-        "dataExpr": "Total Unique Users",
-            "label": "Total Unique Users"
-      }
-      ]
 
-  };
-
-   
-
-    this.bigConfig =   {
-      "footer": " ",
-      "header": "Unique users who submitted form",
-      "dataExpr": "Total Unique Users",
-      "operation":"SUM"
-  }
-  this.dtOptions = {
-    values :[
-      {
-          "District": "Lucknow",
-          "Total Plays": "17982",
-          "Total Devices": "3019",
-          "Content Plays from new devices": "4398",
-          "New Devices": "468",
-          "Content Plays from old devices": "13584",
-          "Old Devices": "2551",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "01-05-2021",
-          "dateFormat1": "01/05/2021"
-      },
-      {
-          "District": "Allahabad",
-          "Total Plays": "7368",
-          "Total Devices": "1229",
-          "Content Plays from new devices": "1406",
-          "New Devices": "175",
-          "Content Plays from old devices": "5962",
-          "Old Devices": "1054",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "02-05-2021",
-          "dateFormat1": "02/05/2021"
-      },
-      {
-          "District": "Aligarh",
-          "Total Plays": "6085",
-          "Total Devices": "881",
-          "Content Plays from new devices": "907",
-          "New Devices": "115",
-          "Content Plays from old devices": "5178",
-          "Old Devices": "766",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "03-05-2021",
-          "dateFormat1": "03/05/2021"
-      },
-      {
-          "District": "Azamgarh",
-          "Total Plays": "5294",
-          "Total Devices": "807",
-          "Content Plays from new devices": "1082",
-          "New Devices": "144",
-          "Content Plays from old devices": "4212",
-          "Old Devices": "663",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "04-05-2021",
-          "dateFormat1": "04/05/2021"
-      },
-      {
-          "District": "Jaunpur",
-          "Total Plays": "4973",
-          "Total Devices": "835",
-          "Content Plays from new devices": "913",
-          "New Devices": "130",
-          "Content Plays from old devices": "4060",
-          "Old Devices": "705",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "05-05-2021",
-          "dateFormat1": "05/05/2021"
-      },
-      {
-          "District": "Bijnor",
-          "Total Plays": "4158",
-          "Total Devices": "679",
-          "Content Plays from new devices": "453",
-          "New Devices": "69",
-          "Content Plays from old devices": "3705",
-          "Old Devices": "610",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "06-05-2021",
-          "dateFormat1": "06/05/2021"
-      },
-      {
-          "District": "Kanpur Nagar",
-          "Total Plays": "3976",
-          "Total Devices": "671",
-          "Content Plays from new devices": "831",
-          "New Devices": "122",
-          "Content Plays from old devices": "3145",
-          "Old Devices": "549",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "07-05-2021",
-          "dateFormat1": "07/05/2021"
-      },
-      {
-          "District": "Ghaziabad",
-          "Total Plays": "3949",
-          "Total Devices": "481",
-          "Content Plays from new devices": "746",
-          "New Devices": "106",
-          "Content Plays from old devices": "3203",
-          "Old Devices": "375",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "08-05-2021",
-          "dateFormat1": "08/05/2021"
-      },
-      {
-          "District": "Ghazipur",
-          "Total Plays": "3870",
-          "Total Devices": "664",
-          "Content Plays from new devices": "495",
-          "New Devices": "67",
-          "Content Plays from old devices": "3375",
-          "Old Devices": "597",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "09-05-2021",
-          "dateFormat1": "09/05/2021"
-      },
-      {
-          "District": "Lakhimpur",
-          "Total Plays": "3843",
-          "Total Devices": "723",
-          "Content Plays from new devices": "470",
-          "New Devices": "72",
-          "Content Plays from old devices": "3373",
-          "Old Devices": "651",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "10-04-2021",
-          "dateFormat1": "10/04/2021"
-      },
-      {
-          "District": "Agra",
-          "Total Plays": "3822",
-          "Total Devices": "455",
-          "Content Plays from new devices": "1208",
-          "New Devices": "104",
-          "Content Plays from old devices": "2614",
-          "Old Devices": "351",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "11-05-2021",
-          "dateFormat1": "11/05/2021"
-      },
-      {
-          "District": "Farrukhabad",
-          "Total Plays": "3674",
-          "Total Devices": "596",
-          "Content Plays from new devices": "666",
-          "New Devices": "134",
-          "Content Plays from old devices": "3008",
-          "Old Devices": "462",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "12-05-2021",
-          "dateFormat1": "12/05/2021"
-      },
-      {
-          "District": "Bulandshehr",
-          "Total Plays": "3324",
-          "Total Devices": "569",
-          "Content Plays from new devices": "513",
-          "New Devices": "54",
-          "Content Plays from old devices": "2811",
-          "Old Devices": "515",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "13-03-2021",
-          "dateFormat1": "13/03/2021"
-      },
-      {
-          "District": "Mathura",
-          "Total Plays": "3302",
-          "Total Devices": "445",
-          "Content Plays from new devices": "744",
-          "New Devices": "75",
-          "Content Plays from old devices": "2558",
-          "Old Devices": "370",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "14-05-2021",
-          "dateFormat1": "14/05/2021"
-      },
-      {
-          "District": "Varanasi",
-          "Total Plays": "3163",
-          "Total Devices": "556",
-          "Content Plays from new devices": "587",
-          "New Devices": "99",
-          "Content Plays from old devices": "2576",
-          "Old Devices": "457",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "15-05-2021",
-          "dateFormat1": "15/05/2021"
-      },
-      {
-          "District": "Ballia",
-          "Total Plays": "3158",
-          "Total Devices": "516",
-          "Content Plays from new devices": "597",
-          "New Devices": "98",
-          "Content Plays from old devices": "2561",
-          "Old Devices": "418",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "16-05-2021",
-          "dateFormat1": "16/05/2021"
-      },
-      {
-          "District": "Fatehpur",
-          "Total Plays": "3105",
-          "Total Devices": "534",
-          "Content Plays from new devices": "510",
-          "New Devices": "85",
-          "Content Plays from old devices": "2595",
-          "Old Devices": "449",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "17-05-2021",
-          "dateFormat1": "17/05/2021"
-      },
-      {
-          "District": "Unnao",
-          "Total Plays": "3094",
-          "Total Devices": "485",
-          "Content Plays from new devices": "977",
-          "New Devices": "131",
-          "Content Plays from old devices": "2117",
-          "Old Devices": "354",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "18-05-2021",
-          "dateFormat1": "18/05/2021"
-      },
-      {
-          "District": "Gautam Buddh Nagar",
-          "Total Plays": "2998",
-          "Total Devices": "278",
-          "Content Plays from new devices": "775",
-          "New Devices": "49",
-          "Content Plays from old devices": "2223",
-          "Old Devices": "229",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "19-05-2021",
-          "dateFormat1": "19/05/2021"
-      },
-      {
-          "District": "Ambedkar Nagar",
-          "Total Plays": "2855",
-          "Total Devices": "402",
-          "Content Plays from new devices": "1108",
-          "New Devices": "119",
-          "Content Plays from old devices": "1747",
-          "Old Devices": "283",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "app",
-          "dateFormat": "20-05-2021",
-          "dateFormat1": "20/05/2021"
-      },
-      {
-          "District": "Saharanpur",
-          "Total Plays": "2746",
-          "Total Devices": "433",
-          "Content Plays from new devices": "595",
-          "New Devices": "56",
-          "Content Plays from old devices": "2151",
-          "Old Devices": "377",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "app",
-          "dateFormat": "21-05-2021",
-          "dateFormat1": "21/05/2021"
-      },
-      {
-          "District": "Bareilly",
-          "Total Plays": "2626",
-          "Total Devices": "527",
-          "Content Plays from new devices": "558",
-          "New Devices": "82",
-          "Content Plays from old devices": "2068",
-          "Old Devices": "445",
-          "Goal of content plays": "2519",
-          "Goal of Devices": "405",
-          "type": "portal",
-          "dateFormat": "22-05-2021",
-          "dateFormat1": "22/05/2021"
-      }
-    ]}
-        // this.dtOptions = {
-        //   info: false,
-        //   columns: [{
-        //     title: 'Districts',
-        //     data: 'District'
-        //   },
-        //   {
-        //     title: 'Total Devices',
-        //     data: 'Total Devices'
-        //   }, {
-        //     title: 'New Devices',
-        //     data: 'New Devices'
-        //   }, {
-        //     title: 'Goal of Devices',
-        //     data: 'Goal of Devices'
-        //   },
-        //   {
-        //     title: 'Content Plays Goal',
-        //     data: 'Goal of content plays'
-        //   }]
-        // };
-        this.columnsConfiguration = {
-          order: [1, 'desc'],
-          searchable: false,
-          bFilter: true,
-          columnConfig: [
-            { title: "District", data: "District", autoWidth:true },
-            { title: "Total Devices", data: "Total Devices", autoWidth:true},
-            { title: 'Total Plays Portal', data: 'Total Plays', autoWidth:true},
-            { title: 'Total Plays App', data: 'Total Plays', autoWidth:true },
-            { title: 'Total Count', data: 'Total Plays', autoWidth:true },
-            { title: 'Date', data: 'dateFormat', autoWidth:true }
-          ],
-          autoWidth:true
-        }
   }
   
   public resolveParameterizedPath(path: string, explicitValue?: string): string {
@@ -876,7 +303,7 @@ export class DatasetsComponent implements OnInit {
      }
      console.log(types,'types');
      console.log('report id', reportId);
-     this.dashboardReport$ =  this.renderReport(reportId).pipe(
+    this.dashboardReport$ = this.renderReport(reportId).pipe(
       catchError(err => {
         console.error('Error while rendering report', err);
         this.noResultMessage = {
@@ -928,6 +355,7 @@ export class DatasetsComponent implements OnInit {
             result['charts'] = chart;
             console.log('charts',chart)
             result['tables'] = (tables && this.reportService.prepareTableData(tables, data, _.get(reportConfig, 'downloadUrl'))) || [];
+            console.log('tables',tables);
             result['reportMetaData'] = reportConfig;
             result['lastUpdatedOn'] = this.reportService.getFormattedDate(this.reportService.getLatestLastModifiedOnDate(data));
             this.lastUpdatedOn = moment(_.get(result, 'lastUpdatedOn')).format('DD-MMMM-YYYY');
@@ -1009,6 +437,12 @@ export class DatasetsComponent implements OnInit {
   private toggleHtmlVisibilty(flag: boolean): void {
     this.hideElements = flag;
   }
+
+  public changeChartType(change,chart) {
+    chart.chartConfig.chartType = _.lowerCase(_.get(change, 'value'));
+    console.log('type changed for the chart', chart.chartConfig.chartType );
+  }
+
   public closeModal(): void {
     this.popup = false;
   }
@@ -1245,5 +679,36 @@ export class DatasetsComponent implements OnInit {
     row.title = row.datasetConfig.title;
     return row;
   }
+  chartFilterSelection($event,chartData){
+    let data = [];
+    chartData.map(expr => {
+      if(expr['District name'] === _.get($event,'value') || (expr['District name'] === _.get($event,'value'))){
+          data.push(expr)
+      }
+    })
 
+    console.log('Temp Data from filter', data)
+
+    this.$filteredData = _.compact(data);
+    console.log('Data from filter', this.$filteredData )
+
+  }
+  filterModalPopup(operator) {
+    if (operator == false) {
+      this.closeDialog();
+    } else {
+      this.openDialog();
+    }
+
+  }
+  openDialog() {
+    if (this.filterPopUpMat) {
+      this.dialogRef = this.dialog.open(this.filterPopUpMat);
+    }
+  }
+  closeDialog() {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    }
+  }
 }
