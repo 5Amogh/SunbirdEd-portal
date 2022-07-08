@@ -216,15 +216,14 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   filterData() {
     if (this.selectedFilters) {
-
       const filterData = [];
       const filteredChartData = [];
       this.chartData.forEach(chart => {
 
         const id = chart.id;
-        delete chart.id;
-        delete chart.data.selectedFilters;
-        delete chart.data.id;
+        delete chart?.id;
+        delete chart?.data?.selectedFilters;
+        delete chart?.data?.id;
 
         const result: Array<{}> = _.filter(chart.data, data => {
             return _.every(this.selectedFilters, (filterValues, key) => {

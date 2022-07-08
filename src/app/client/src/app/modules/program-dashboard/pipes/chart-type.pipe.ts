@@ -19,9 +19,9 @@ export class ChartTypePipe implements PipeTransform {
         colors:_.get(chartData,'colors'),
         datasets :_.get(chartData, 'datasets'),
         options:_.get(chartData,'options'),
-        labelExpr: _.get(chartData,'labelsExpr'),
+        labelExpr: _.get(chartData,'labelsExpr') || _.get(chartData,'labelExpr') ,
         filters:_.get(chartData,'filters'),
-        type:_.get(chartData,'chartType')
+        type:_.get(chartData,'chartType') || _.get(chartData,'type')
       }
       console.log('Chart type',chartType)
       console.log('Chart config',config)

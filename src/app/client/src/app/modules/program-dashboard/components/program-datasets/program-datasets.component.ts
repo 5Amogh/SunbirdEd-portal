@@ -10,12 +10,10 @@ import * as _ from 'lodash-es';
 import { Location } from '@angular/common';
 import { map, catchError} from 'rxjs/operators';
 import { Observable, of} from 'rxjs'; 
-import { UsageService } from '../../../dashboard/services';
 import { ReportService } from '../../../dashboard/services';
 import moment from 'moment';
 import html2canvas from 'html2canvas';
 import * as jspdf from 'jspdf';
-import { MatDialog } from '@angular/material/dialog';
 
 const PRE_DEFINED_PARAMETERS = ['$slug','hawk-eye'];
 @Component({
@@ -79,9 +77,6 @@ export class DatasetsComponent implements OnInit {
   passwordForm = new FormGroup({
     password: new FormControl('', [Validators.minLength(8), Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$')])
   });
-  @ViewChild('filterPopUpMat') filterPopUpMat: TemplateRef<any>;
-  $filteredData;
-  dialogRef: any;
   programSelected: any;
   solutionSelected: any;
   districts:any;
@@ -94,7 +89,8 @@ export class DatasetsComponent implements OnInit {
   lastUpdatedOn:any;
   exportOptions = ['Pdf', 'Img'];
   hideElements:boolean = false;
-  availableChartTypeOptions = ['Bar', 'Line'];
+  globalDistrict:any;
+  globalOrg:any;
   bigChartData:any;
   chartData:any;
   chartConfig:any;
@@ -117,10 +113,8 @@ export class DatasetsComponent implements OnInit {
     public formService: FormService,
     public router: Router,
     public location: Location,
-    private usageService: UsageService,
     public baseReportService: BaseReportService,
-    public reportService:ReportService,
-    public dialog: MatDialog
+    public reportService:ReportService
   ) {
     this.config = config;
     this.activatedRoute = activatedRoute;
@@ -283,6 +277,7 @@ export class DatasetsComponent implements OnInit {
 
     }
   }
+
   public getReportTypes(programId,solutionType){
     this.reportTypes = [];
     let selectedProgram = this.programs.filter(program => program._id==programId);
@@ -438,11 +433,6 @@ export class DatasetsComponent implements OnInit {
     this.hideElements = flag;
   }
 
-  public changeChartType(change,chart) {
-    chart.chartConfig.chartType = _.lowerCase(_.get(change, 'value'));
-    console.log('type changed for the chart', chart.chartConfig.chartType );
-  }
-
   public closeModal(): void {
     this.popup = false;
   }
@@ -505,10 +495,12 @@ export class DatasetsComponent implements OnInit {
   }
 
   districtSelection($event){
+    this.globalDistrict = `${$event.source.triggerValue}`;
     this.reportForm.controls.districtName.setValue($event.value);
   }
 
   organisationSelection($event){
+    this.globalOrg = `${$event.source.triggerValue}`;
     this.reportForm.controls.organisationName.setValue($event.value);
   }
 
@@ -679,36 +671,5 @@ export class DatasetsComponent implements OnInit {
     row.title = row.datasetConfig.title;
     return row;
   }
-  chartFilterSelection($event,chartData){
-    let data = [];
-    chartData.map(expr => {
-      if(expr['District name'] === _.get($event,'value') || (expr['District name'] === _.get($event,'value'))){
-          data.push(expr)
-      }
-    })
-
-    console.log('Temp Data from filter', data)
-
-    this.$filteredData = _.compact(data);
-    console.log('Data from filter', this.$filteredData )
-
-  }
-  filterModalPopup(operator) {
-    if (operator == false) {
-      this.closeDialog();
-    } else {
-      this.openDialog();
-    }
-
-  }
-  openDialog() {
-    if (this.filterPopUpMat) {
-      this.dialogRef = this.dialog.open(this.filterPopUpMat);
-    }
-  }
-  closeDialog() {
-    if (this.dialogRef) {
-      this.dialogRef.close();
-    }
-  }
+ 
 }

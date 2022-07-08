@@ -587,6 +587,7 @@ export class ReportComponent implements OnInit {
     return chartInfo;
   }
   public filterChanged(data: any): void {
+    console.log('Filter Data',data)
     if (this.chartsReportData && this.chartsReportData.charts) {
       this.chartsReportData.charts.map(element => {
         data.chartData.forEach(chart => {

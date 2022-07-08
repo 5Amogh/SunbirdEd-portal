@@ -1,0 +1,97 @@
+<ng-container *ngIf="chart?.chartConfig?.id == 'Big_Number'">
+  <div *ngIf="lastUpdatedOn !== 'Invalid date'" class="sb-last-update-status mb-8">
+   <span>{{resourceService?.frmelmnts?.lbl?.lastUpdatedOn}}&nbsp;: </span> &nbsp; {{lastUpdatedOn}}
+  </div> 
+   <div class="d-flex flex-dr bigNumberCard py-24">
+     <ng-container *ngFor="let bigNum of chart?.chartConfig?.bigNumbers;">
+       <sb-dashlet [type]="'bigNumber'" [data]="chart?.chartData | bigData:bigNum" [config]="bigNum | bigData" class="mt-8" #lib></sb-dashlet>
+     </ng-container>
+   </div>
+</ng-container>
+<ng-container *ngIf="chart?.chartConfig?.id !== 'Big_Number' && chart?.chartData && chart?.chartConfig">
+  <div class="d-flex flex-dr">
+    <label class="pad5 col-6 chart-title"> {{ chart?.chartConfig?.options?.title?.text }} </label>
+    <div class="ml-auto flex-as-flex-end" *ngIf="chart?.chartConfig?.chartType === 'bar' || chart?.chartConfig?.chartType === 'line'" [ngClass]="{'hide': hideElements}">
+      <label class="mr-16">
+        <mat-form-field appearance="fill" class="sb-mat__dropdown">
+          <mat-label>Select ChartType</mat-label>
+          <mat-select role="radio" aria-label="Select Chart type"  class="selection"
+            (selectionChange)="changeChartType($event)">
+            <mat-option class="mat-dropdown__options" role="option" *ngFor="let option of availableChartTypeOptions" [value]="option"
+            attr.aria-label="{{option}}">{{option}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </label>
+      <button class="sb-btn sb-btn-normal sb-btn-primary" (click)="filterModalPopup(true)" [ngClass]="{'hide': hideElements}">
+  {{ resourceService?.frmelmnts?.lbl?.filters }}
+  </button>
+    </div>
+   </div>
+    <div *ngIf="lastUpdatedOn !== 'Invalid date'" class="sb-last-update-status mb-8">
+      <span>{{resourceService?.frmelmnts?.lbl?.lastUpdatedOn}}&nbsp;: </span> &nbsp; {{lastUpdatedOn}}
+     </div> 
+    <div [ngSwitch]="type" class="mt-16">
+        <sb-dashlet *ngSwitchCase="'bar'" [type]="type" [data]="updatedData | chartType :type" [config]="chartConfig | chartType :type" class="chart-container mt-32 customGraph" #lib>
+          <ng-template sbTemplateRef="filter" let-context>
+            <ng-template #filterPopUpMat>
+              <ng-container *ngTemplateOutlet="chartFilter"></ng-container>
+            </ng-template>
+          </ng-template>
+        </sb-dashlet>
+        <sb-dashlet *ngSwitchCase="'line'" [type]="type" [data]="updatedData | chartType :type" [config]="chartConfig | chartType :type" class="chart-container mt-32 customGraph" #lib>
+          <ng-template sbTemplateRef="filter" let-context>
+            <ng-template #filterPopUpMat>
+              <ng-container *ngTemplateOutlet="chartFilter"></ng-container>
+            </ng-template>
+          </ng-template>
+        </sb-dashlet>
+        <sb-dashlet *ngSwitchDefault [type]="type" [data]="updatedData | chartType :type" [config]="chartConfig | chartType :type" class="chart-container mt-32 customGraph" #lib>
+          <ng-template sbTemplateRef="filter" let-context>
+            <ng-template #filterPopUpMat>
+              <ng-container *ngTemplateOutlet="chartFilter"></ng-container>
+            </ng-template>
+          </ng-template>
+        </sb-dashlet>
+        <ng-template #chartFilter>
+          <div class="sb-modal sb-modal-addsummary">
+            <div class="transition ui dimmer page modals active visible">
+              <div class="ui modal transition active visible normal">
+              <!--Header-->
+              <div mat-dialog-title class="mb-0">
+                <button aria-label="close dialog" (click)="closeDialog()" mat-dialog-close class="mat-close-btn">
+                  <span>&times;</span>
+                </button>
+              </div>
+              <!--/Header-->
+              <!--content-->
+              <mat-dialog-content align="left">
+                <div class="sb-modal-header">
+                  {{ resourceService?.frmelmnts?.lbl?.selectFilters }} 
+                </div>
+                <div class="sb-filter mb-10px">
+                  <div class="sb-filter__container">
+                  <div class="sb-filter__content" >
+                    <div class="sb-filter__content" >
+                      <app-filter [filterType]="filterType" [resetFilters]="resetFilters" [hideElements]="hideElements" [filters]="chart.chartConfig.filters" (filterChanged)="filterChanged($event)" [chartData]="chartConfig.id | filterChart :chartData:currentFilters">
+                      </app-filter>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              </mat-dialog-content>
+               <!--/content-->
+              <!--Actions-->
+              <mat-dialog-actions align="center" class="mb-0">
+                  <div class="sb-modal-actions p-0">
+                    <button (click)="resetForm()" class="sb-btn sb-btn-normal sb-btn-outline-primary" tabindex="0">
+                      {{resourceService?.frmelmnts?.btn?.reset}} {{resourceService?.frmelmnts?.lbl?.filters  }}
+                    </button>
+                  </div>
+              </mat-dialog-actions>
+              <!--/Actions-->
+            </div>
+          </div>
+        </div>
+        </ng-template>
+  </div>
+</ng-container>

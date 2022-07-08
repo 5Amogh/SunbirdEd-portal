@@ -13,12 +13,21 @@ import { DashletModule } from '@project-sunbird/sb-dashlet-v9';
 import { DashboardModule} from '../dashboard';
 import { BigDataPipe } from './pipes/big-data.pipe';
 import { ChartTypePipe } from './pipes/chart-type.pipe';
+import { SbChartComponent } from './shared/sb-chart/sb-chart.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FilterChartPipe } from './pipes/filter-chart.pipe';
 
 @NgModule({
   declarations: [
   DatasetsComponent,
   BigDataPipe,
-  ChartTypePipe
+  ChartTypePipe,
+  SbChartComponent,
+  FilterChartPipe
 ],
   imports: [
     CommonModule,
@@ -30,6 +39,11 @@ import { ChartTypePipe } from './pipes/chart-type.pipe';
     FormsModule,
     ReactiveFormsModule,
     programDashboardRoutingModule,
+    MatCheckboxModule,
+    MatTabsModule,
+    MatSlideToggleModule,
+    MatExpansionModule,
+    MatAutocompleteModule,
     NgInviewModule,
     DashletModule,
     DashboardModule

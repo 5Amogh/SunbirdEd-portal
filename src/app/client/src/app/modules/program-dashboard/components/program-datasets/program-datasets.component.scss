@@ -80,6 +80,23 @@
 
 ::ng-deep {
 
+  .customTable{
+    sb-dashlets-filters{
+      display: none !important;
+    }
+
+    .dataTables_length{
+      display: flex !important;
+      width: 100% !important;
+      justify-content: flex-end !important;
+    }
+    .chart-title{
+      font-weight: 700;
+    }
+    table{
+      width: 100% !important;
+    }
+  }
   .customGraph{
     .sb-filter-g__item{
       border-radius: 1.5rem !important;
@@ -97,49 +114,6 @@
     padding-top: 0.5rem;
   }
 
-  .bigNumberCard{
-      border-bottom: calculateRem(1px) solid var(--rc-dddddd) !important;
-      display: grid !important;
-      grid-template-columns: 1fr 1fr 1fr !important;
-      column-gap: calculateRem(24px) !important;
-      
-      .card {
-        flex: 1 !important;
-        border-right: solid calculateRem(1px)  var(--rc-d4d8da) !important;
-        background-color: var(--gray-hs) !important;
-        box-shadow: none !important;
-        margin-top: 1.5rem !important;
-
-        .header {
-          font-size: 1.125rem !important;
-          font-weight: unset !important;
-        }
-        
-        .content{
-          padding: 0% !important;
-        }
-        .description {
-          color: var(--gray) !important;
-          font-size: 2.5rem !important;
-          font-weight: 700 !important;
-          margin-top: 0% !important;
-        }
-    
-        .meta{
-          color: var(--gray-200);
-          font-size: calculateRem(18px) !important;
-        }
-    
-        &:nth-child(3n + 3) {
-          border-right: 0px solid var(--rc-d4d8da) !important;
-        }
-      }
-   
-  
-  } 
-  .customDataTable table{
-    width: 100% !important;
-  }
   
   .custom_mat_dd .mat-select-arrow-wrapper {
     vertical-align: bottom !important;
