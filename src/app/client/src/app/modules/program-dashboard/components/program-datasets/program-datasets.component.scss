@@ -79,6 +79,10 @@
 }
 
 ::ng-deep {
+  
+  .cdk-overlay-container{
+    z-index: 1 !important;
+}
 
   .customTable{
     sb-dashlets-filters{
