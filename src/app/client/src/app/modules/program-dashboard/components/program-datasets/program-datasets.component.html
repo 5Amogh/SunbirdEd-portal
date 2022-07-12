@@ -192,7 +192,7 @@
     <div class="sb-graph-section p-24 my-24"
         *ngFor="let table of currentTable?.tables; let i = index; let l = last;">
         <ng-container *ngIf="table?.data && table?.config">
-          <div class="mt-16 customTable">
+          <div class="customTable">
             <sb-dashlet [type]="'table'" [data]="table?.data | bigData" [config]="table?.config" #lib>
               <ng-template sbTemplateRef="header" let-config>
                 <div class="chart-title">
@@ -204,7 +204,7 @@
           </div>
         </ng-container>
       </div>
-      <div class="ui warning message" *ngIf="currentTable?.tables.length === 0 || !currentTable?.tables">
+      <div class="ui warning message mt-16" *ngIf="currentTable?.tables.length === 0 || !currentTable?.tables">
         {{resourceService?.frmelmnts?.lbl?.tableNotAvailable}}
       </div>
   </div>

@@ -6,7 +6,7 @@ import _ from 'lodash';
 })
 export class BigDataPipe implements PipeTransform {
 
-  transform(bigData: any, bigConfig:object): unknown {
+  transform(bigData: any, bigConfig?:object): unknown {
     if(_.isArray(bigData)){
       if(bigConfig){
         let data = [];

@@ -19,7 +19,7 @@ const PRE_DEFINED_PARAMETERS = ['$slug','hawk-eye'];
 @Component({
   selector: 'app-datasets',
   templateUrl: './program-datasets.component.html',
-  styleUrls: ['./program-datasets.component.scss']
+  styleUrls: ['./program-datasets.component.scss'],
 })
 
 
@@ -290,7 +290,8 @@ export class DatasetsComponent implements OnInit {
      console.log(solutionType, 'Solution type');
      let reportId;
      if(solutionType == "improvementProject"){
-      reportId = "c4d25422-2bf4-4c21-815b-401ef9de028c";
+      // reportId = "c4d25422-2bf4-4c21-815b-401ef9de028c";
+      reportId = "88790d2b-c100-41ba-b349-bb3375025de5"
      }else if(solutionType == "observation"){
        reportId = "aee96467-8f85-4e2b-9d35-e7a0beb0b836";
      }else {
@@ -320,7 +321,7 @@ export class DatasetsComponent implements OnInit {
      } 
     }
    }
-   private fetchConfig(reportId): Observable<any> {
+    fetchConfig(reportId): Observable<any> {
     return this.reportService.fetchReportById(reportId).pipe(
       mergeMap(apiResponse => {
         const report = _.get(apiResponse, 'reports');
@@ -328,16 +329,14 @@ export class DatasetsComponent implements OnInit {
       })
     );
   }
-  private renderReport(reportId): Observable<any> {
+    renderReport(reportId): Observable<any> {
       return this.fetchConfig(reportId).pipe(switchMap(
         (report => {
         console.log('Report through fetch config', report);
         const reportConfig = this.reportConfig = _.get(report, 'reportconfig');
-        this.setDownloadUrl(_.get(reportConfig, 'downloadUrl'));
         const dataSource = _.get(reportConfig, 'dataSource') || [];
         console.log('Datasources', dataSource)
         let updatedDataSource = _.isArray(dataSource) ? dataSource : [{ id: 'default', path: dataSource }];
-        const explicitValue = _.get(this.reportForm,'controls.solution.value')
         updatedDataSource = this.getUpdatedParameterizedPath(updatedDataSource);
         console.log('Updated datasources', updatedDataSource)
         const charts = _.get(reportConfig, 'charts'), tables = _.get(reportConfig, 'table')
@@ -362,12 +361,7 @@ export class DatasetsComponent implements OnInit {
     ))
   }
 
-  private setDownloadUrl(url) {
-    this.downloadUrl = this.reportService.resolveParameterizedPath(url,_.get(this.reportForm,'controls.solution.value'));
-    console.log('download url ', this.downloadUrl)
-  }
-
-  private downloadReport(reportType) {
+  downloadReport(reportType) {
     this.reportExportInProgress = true;
     this.toggleHtmlVisibilty(true);
     setTimeout(() => {
@@ -495,12 +489,12 @@ export class DatasetsComponent implements OnInit {
   }
 
   districtSelection($event){
-    this.globalDistrict = `${$event.source.triggerValue}`;
+    this.globalDistrict = $event.value
     this.reportForm.controls.districtName.setValue($event.value);
   }
 
   organisationSelection($event){
-    this.globalOrg = `${$event.source.triggerValue}`;
+    this.globalOrg = $event.value
     this.reportForm.controls.organisationName.setValue($event.value);
   }
 

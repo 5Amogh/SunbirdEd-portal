@@ -1,8 +1,10 @@
+import { BigDataPipe } from '../../pipes/bigData/big-data.pipe';
 import { async, ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { DatasetsComponent } from './program-datasets.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { KendraService, UserService, FormService } from '@sunbird/core';
 import { ResourceService, SharedModule, ConfigService, OnDemandReportService, IUserProfile } from '@sunbird/shared';
+import { DashboardModule, ReportService } from '../../../dashboard';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SuiModule } from 'ng2-semantic-ui-v9';
@@ -37,6 +39,10 @@ describe('DatasetsComponent', () => {
         detailsReports: 'Details Reports',
         confirmReportRequest: 'Are you sure you want to request this report?'
       }
+    },
+    messages:{
+      m0087:"Please wait",
+      m0088:"We are fetching details."
     }
   };
   configureTestSuite();
@@ -51,7 +57,7 @@ describe('DatasetsComponent', () => {
         SuiModule,
         FormsModule,
         ReactiveFormsModule,
-        BrowserAnimationsModule, NoopAnimationsModule
+        BrowserAnimationsModule, NoopAnimationsModule,DashboardModule
       ],
       providers: [
         {
@@ -70,10 +76,11 @@ describe('DatasetsComponent', () => {
         KendraService,
         ConfigService,
         OnDemandReportService,
-        { provide: APP_BASE_HREF, useValue: '/' }
+        { provide: APP_BASE_HREF, useValue: '/' },
+        ReportService
       ],
       schemas: [NO_ERRORS_SCHEMA],
-      declarations: [DatasetsComponent]
+      declarations: [DatasetsComponent,BigDataPipe]
     })
       .compileComponents();
   }));
@@ -84,6 +91,7 @@ describe('DatasetsComponent', () => {
     component = fixture.componentInstance;
     component.layoutConfiguration = {};
     component.formData = mockData.FormData;
+    component.noResultMessage = {'messageText':'Something went wrong, try later'}
     fixture.detectChanges();
 
   });
@@ -220,15 +228,18 @@ describe('DatasetsComponent', () => {
 
     component.onDemandReportData = [];
     const onDemandReportService = TestBed.inject(OnDemandReportService);
+    const reportService = TestBed.inject(ReportService);
     spyOn(onDemandReportService, 'getReportList').and.returnValue(observableOf({ result: mockData.reportListResponse.result }));
     component.loadReports();
     tick(1000);
+    spyOn(reportService,'fetchReportById').and.returnValue(observableOf({ result: mockData.reportConfig }));
     spyOn(component,'loadReports').and.callThrough();
     component.reportForm.get('solution').setValue(['5f34ec17585244939f89f90d']);
     component.solutions = mockData.solutions.result;
     component.selectSolution({
       value: '5f34ec17585244939f89f90d'
     });
+    tick(1000);
     expect(component.loadReports).toHaveBeenCalled();
     expect(spy).toHaveBeenCalled();
     expect(component.reportTypes).toEqual([
@@ -270,16 +281,16 @@ describe('DatasetsComponent', () => {
     // component.loadReports();
     tick(1000);
     spyOn(component,'loadReports').and.callThrough();
-   
+    const reportService = TestBed.inject(ReportService);
+    spyOn(reportService,'fetchReportById').and.returnValue(observableOf({ result: mockData.reportConfig }));
     component.reportForm.get('solution').setValue(['5fbb75537380505718640436']);
     component.solutions = mockData.solutions.result;
     component.selectSolution({
       value: '5fbb75537380505718640436'
-    });
-
+    }); 
+    tick(1000);
     expect(component.loadReports).toHaveBeenCalled();
     expect(spy).toHaveBeenCalled();
-
     expect(component.reportTypes).toEqual([
       {
         'name': 'Task Detail Report',
@@ -310,7 +321,8 @@ describe('DatasetsComponent', () => {
     component.onDemandReportData = [];
     const onDemandReportService = TestBed.inject(OnDemandReportService);
     spyOn(onDemandReportService, 'getReportList').and.returnValue(observableOf({ result: mockData.reportListResponse.result }));
-
+    const reportService = TestBed.inject(ReportService);
+    spyOn(reportService,'fetchReportById').and.returnValue(observableOf({ result: mockData.reportConfig }));
     component.loadReports();
     component.solutions = mockData.solutions.result;  
     component.selectSolution({
@@ -473,4 +485,26 @@ describe('DatasetsComponent', () => {
     component.confirm();
     expect(component.showPopUpModal).toEqual(false);
   });
+
+  it('should export the report as pdf', fakeAsync(() => {
+    spyOn<any>(component, 'downloadReportAsPdf');
+    component.downloadReport({
+      value: 'pdf'
+    });
+    tick(1500);
+    expect(component['downloadReportAsPdf']).toHaveBeenCalled();
+    expect(component['downloadReportAsPdf']).toHaveBeenCalledTimes(1);
+    expect(component.hideElements).toBeTruthy();
+  }));
+
+  it('should export the report as image', fakeAsync(() => {
+    spyOn<any>(component, 'downloadReportAsImage');
+    component.downloadReport({
+      value: 'img'
+    });
+    tick(1500);
+    expect(component['downloadReportAsImage']).toHaveBeenCalled();
+    expect(component['downloadReportAsImage']).toHaveBeenCalledTimes(1);
+    expect(component.hideElements).toBeTruthy();
+  }));
 });
