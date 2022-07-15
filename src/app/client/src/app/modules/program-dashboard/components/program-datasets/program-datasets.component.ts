@@ -1,24 +1,35 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ToasterService, IUserData, IUserProfile, LayoutService, ResourceService, ConfigService, OnDemandReportService } from '@sunbird/shared';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { INoResultMessage,ToasterService, IUserData, IUserProfile, LayoutService, ResourceService, ConfigService, OnDemandReportService } from '@sunbird/shared';
 import { TelemetryService } from '@sunbird/telemetry';
-import { Subject, Subscription } from 'rxjs';
-import { KendraService, UserService, FormService } from '@sunbird/core';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Subscription, throwError } from 'rxjs';
+import { KendraService, UserService, FormService, BaseReportService } from '@sunbird/core';
+import { first, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as _ from 'lodash-es';
 import { Location } from '@angular/common';
+import { map, catchError} from 'rxjs/operators';
+import { Observable, of} from 'rxjs'; 
+import { ReportService } from '../../../dashboard/services';
+import moment from 'moment';
+import html2canvas from 'html2canvas';
+import * as jspdf from 'jspdf';
 
+const PRE_DEFINED_PARAMETERS = ['$slug','hawk-eye'];
 @Component({
   selector: 'app-datasets',
   templateUrl: './program-datasets.component.html',
-  styleUrls: ['./program-datasets.component.scss']
+  styleUrls: ['./program-datasets.component.scss'],
 })
+
 
 export class DatasetsComponent implements OnInit {
 
   public activatedRoute: ActivatedRoute;
   public showConfirmationModal = false;
+  public dashboardReport$;
+  public noResultMessage: INoResultMessage;
+  public noResult: boolean;
   showPopUpModal:boolean;
   config;
   reportTypes = [];
@@ -27,6 +38,8 @@ export class DatasetsComponent implements OnInit {
   public message = this.resourceService?.frmelmnts?.msg?.noDataDisplayed;
   instance: string;
 
+  @ViewChild('reportElement') reportElement;
+  public reportExportInProgress = false;
   @ViewChild('modal', { static: false }) modal;
   popup = false;
   awaitPopUp = false;
@@ -58,20 +71,33 @@ export class DatasetsComponent implements OnInit {
     solution: new FormControl('', [Validators.required]),
     reportType: new FormControl('', [Validators.required]),
     districtName:new FormControl(),
-    organisationName:new FormControl()
+    organisationName:new FormControl(),
+    startDate:new FormControl(),
+    endDate:new FormControl()
   });
 
   passwordForm = new FormGroup({
     password: new FormControl('', [Validators.minLength(8), Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$')])
   });
-
   programSelected: any;
   solutionSelected: any;
   districts:any;
-  organisations:any;
+  organisations:any = [];
   filter:any = [];
   newData:boolean = false;
   goToPrevLocation:boolean = true;
+  reportConfig:any;
+  chartsReportData:any;
+  lastUpdatedOn:any;
+  exportOptions = ['Pdf', 'Img'];
+  hideElements:boolean = false;
+  globalDistrict:any;
+  globalOrg:any;
+  tabIndex:number;
+  minEndDate:any;  //Min end date - has to be one more than start date 
+  maxEndDate:any;  //Max end date -  current date has to be max
+  maxStartDate:any; //Start date - has to be one day less than end date
+
   constructor(
     activatedRoute: ActivatedRoute,
     public layoutService: LayoutService,
@@ -84,7 +110,9 @@ export class DatasetsComponent implements OnInit {
     public toasterService: ToasterService,
     public formService: FormService,
     public router: Router,
-    public location: Location
+    public location: Location,
+    public baseReportService: BaseReportService,
+    public reportService:ReportService
   ) {
     this.config = config;
     this.activatedRoute = activatedRoute;
@@ -104,7 +132,7 @@ export class DatasetsComponent implements OnInit {
   public userId: string;
   public selectedReport;
   public selectedSolution: string;
-
+  
   getProgramsList() {
     const paramOptions = {
       url:
@@ -143,9 +171,13 @@ export class DatasetsComponent implements OnInit {
         this.config.urlConFig.URLS.KENDRA.DISTRICTS_AND_ORGANISATIONS+ '/' + this.reportForm.controls.solution.value
     };
     this.kendraService.get(paramOptions).subscribe(data => {
-      if (data && data.result) {
+      if (data && Object.keys(data.result).length) {
        this.districts = data.result.districts;
-       this.organisations = data.result.organisations;
+        data.result.organisations.map(org =>{
+         if(org?.orgName !== null){
+           this.organisations.push(org)
+         }
+       });
       }
     }, error => {
       this.toasterService.error(_.get(this.resourceService, 'messages.fmsg.m0004'));
@@ -177,9 +209,33 @@ export class DatasetsComponent implements OnInit {
     this.initLayout();
     this.getProgramsList();
     this.getFormDetails();
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+    const today = Date.now()
+    this.minEndDate = new Date(currentYear - 1, 0, 1);
+    this.maxEndDate = new Date(currentYear,currentMonth,today);
+  }
+  
+  public resolveParameterizedPath(path: string, explicitValue?: string): string {
+    return _.reduce(PRE_DEFINED_PARAMETERS, (result: string, parameter: string) => {
+      if (_.includes(result, parameter)) {
+        result = _.replace(result, parameter, explicitValue);
+      }
+      return result;
+    }, path);
   }
 
+  public getUpdatedParameterizedPath(dataSources) {
+    const explicitValue = _.get(this.reportForm,'controls.solution.value')
+    return _.map(dataSources, (dataSource) => ({
+      id: dataSource.id,
+      path: this.resolveParameterizedPath(dataSource.path, explicitValue)
+    }));
+  }
+  selectedTabChange(event){
+    this.tabIndex = event.index;
 
+  }
   public programSelection($event) {
     this.reportForm.reset();
     const program = this.programs.filter(data => {
@@ -197,6 +253,9 @@ export class DatasetsComponent implements OnInit {
 
   public selectSolution($event) {
     this.newData = false;
+    this.noResult = false;
+    this.districts = []
+    this.organisations = [];
     if (this.programSelected && this.reportForm.value && this.reportForm.value['solution']) {
       const solution = this.solutions.filter(data => {
         if (data._id == $event.value) {
@@ -218,15 +277,49 @@ export class DatasetsComponent implements OnInit {
         this.getReportTypes(this.programSelected,solution[0].type);
       }
       this.getDistritAndOrganisationList();
+  
 
     }
   }
+
   public getReportTypes(programId,solutionType){
     this.reportTypes = [];
     let selectedProgram = this.programs.filter(program => program._id==programId);
     if(selectedProgram && selectedProgram[0]){
+      console.log(selectedProgram, 'Program selected');
      let role = selectedProgram[0]['role'];
+     console.log(role, 'role');
      let types = this.formData[solutionType];
+     console.log(this.formData, 'form data');
+     console.log(solutionType, 'Solution type');
+     let reportId;
+     if(solutionType == "improvementProject"){
+      reportId = "83960dff-4a6f-4999-8e08-8879daad530f"
+     }else if(solutionType == "observation"){
+       reportId = "2788047b-7a87-4cab-96d6-e0bed91235e2";
+     }else {
+       reportId = "88790d2b-c100-41ba-b349-bb3375025de5";
+     }
+     console.log(types,'types');
+
+    let filtersForReport = {
+      "reportconfig.report_type" : "program_dashboard",
+      "reportconfig.solution_type" : `${(solutionType === 'improvementProject') ? "project" : solutionType}`,
+      "reportconfig.report_status" : "active"
+    }
+
+    this.dashboardReport$ = this.renderReport(filtersForReport).pipe(
+      catchError(err => {
+        console.error('Error while rendering report', err);
+        this.noResultMessage = {
+          'messageText': _.get(err, 'messageText') || 'messages.stmsg.m0131'
+        };
+        this.noResult = true;
+        return of({});
+      })
+     );
+     console.log('Dashboard report', this.dashboardReport$);
+    
      if(types && types.length > 0){
        types.forEach(element => {
            let roleMatch = role.some(e =>  element.roles.includes(e));
@@ -237,6 +330,111 @@ export class DatasetsComponent implements OnInit {
      } 
     }
    }
+    fetchConfig(filters): Observable<any> {
+    return this.reportService.listAllReports(filters).pipe(
+      mergeMap(apiResponse => {
+        const report = _.get(apiResponse, 'reports');
+        return report ? of(_.head(report)) : throwError('No report found');
+      })
+    );
+  }
+    renderReport(reportId): Observable<any> {
+      return this.fetchConfig(reportId).pipe(switchMap(
+        (report => {
+        console.log('Report through fetch config', report);
+        const reportConfig = this.reportConfig = _.get(report, 'reportconfig');
+        const dataSource = _.get(reportConfig, 'dataSource') || [];
+        console.log('Datasources', dataSource)
+        let updatedDataSource = _.isArray(dataSource) ? dataSource : [{ id: 'default', path: dataSource }];
+        updatedDataSource = this.getUpdatedParameterizedPath(updatedDataSource);
+        console.log('Updated datasources', updatedDataSource)
+        const charts = _.get(reportConfig, 'charts'), tables = _.get(reportConfig, 'table')
+        return this.reportService.downloadMultipleDataSources(updatedDataSource).pipe(map((apiResponse) => {
+            const data = apiResponse;
+            console.log('Data from multiple download', data)
+            const result: any = Object.assign({});
+            const chart = (charts && this.reportService.prepareChartData(charts, data, updatedDataSource,
+              _.get(reportConfig, 'reportLevelDataSourceId'))) || [];
+            result['charts'] = chart;
+            console.log('charts',chart)
+            result['tables'] = (tables && this.reportService.prepareTableData(tables, data, _.get(reportConfig, 'downloadUrl'))) || [];
+            console.log('tables',tables);
+            result['reportMetaData'] = reportConfig;
+            result['lastUpdatedOn'] = this.reportService.getFormattedDate(this.reportService.getLatestLastModifiedOnDate(data));
+            this.lastUpdatedOn = moment(_.get(result, 'lastUpdatedOn')).format('DD-MMMM-YYYY');
+            this.chartsReportData = JSON.parse(JSON.stringify(result));
+            console.log('result', result)
+            return result;
+      }))
+    })
+    ))
+  }
+
+  downloadReport(reportType) {
+    this.reportExportInProgress = true;
+    this.toggleHtmlVisibilty(true);
+    setTimeout(() => {
+      switch (_.toLower( _.get(reportType, 'value'))) {
+        case 'img': {
+          this.downloadReportAsImage();
+          break;
+        }
+        case 'pdf': {
+          this.downloadReportAsPdf();
+          break;
+        }
+      }
+  })
+}
+
+  private convertHTMLToCanvas(element, options) {
+    return html2canvas(element, options);
+  }
+
+  private downloadReportAsPdf() {
+    this.convertHTMLToCanvas(this.reportElement.nativeElement, {
+      scrollX: 0,
+      scrollY: -window.scrollY,
+      scale: 2
+    }).then(canvas => {
+      const imageURL = canvas.toDataURL('image/jpeg');
+      const pdf = new jspdf('p', 'px', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+
+      const imageHeight = (canvas.height * pageWidth) / canvas.width;
+      pdf.internal.pageSize.setHeight(imageHeight);
+      pdf.addImage(imageURL, 'JPEG', 10, 8, pageWidth - 28, imageHeight - 24);
+      pdf.save('report.pdf');
+      this.toggleHtmlVisibilty(false);
+      this.reportExportInProgress = false;
+    }).catch(err => {
+      this.toggleHtmlVisibilty(false);
+      this.reportExportInProgress = false;
+    });
+  }
+
+  private downloadReportAsImage() {
+    this.convertHTMLToCanvas(this.reportElement.nativeElement, {
+      scrollX: 0,
+      scrollY: -window.scrollY,
+      scale: 2
+    }).then(canvas => {
+      const imageURL = canvas.toDataURL('image/jpeg');
+      const anchorElement = document.createElement('a');
+      anchorElement.href = imageURL.replace('image/jpeg', 'image/octet-stream');
+      anchorElement.download = 'report.jpg';
+      anchorElement.click();
+      this.toggleHtmlVisibilty(false);
+      this.reportExportInProgress = false;
+    }).catch(err => {
+      this.toggleHtmlVisibilty(false);
+      this.reportExportInProgress = false;
+    });
+  }
+
+  private toggleHtmlVisibilty(flag: boolean): void {
+    this.hideElements = flag;
+  }
 
   public closeModal(): void {
     this.popup = false;
@@ -258,6 +456,7 @@ export class DatasetsComponent implements OnInit {
   private closeConfirmationModal() {
     this.showConfirmationModal = false;
   }
+
   goBack() {
     this.goToPrevLocation ? this.location.back() : (this.showPopUpModal = false);
   }
@@ -299,10 +498,12 @@ export class DatasetsComponent implements OnInit {
   }
 
   districtSelection($event){
+    this.globalDistrict = $event.value
     this.reportForm.controls.districtName.setValue($event.value);
   }
 
   organisationSelection($event){
+    this.globalOrg = $event.value
     this.reportForm.controls.organisationName.setValue($event.value);
   }
 
@@ -422,6 +623,7 @@ export class DatasetsComponent implements OnInit {
     this.formService.getFormConfig(formServiceInputParams).subscribe((formData) => {
       if (formData) {
           this.formData = formData;
+          console.log('form data function',formData)
       }
     }, error => {
       this.toasterService.error(this.resourceService.messages.emsg.m0005);
@@ -473,4 +675,8 @@ export class DatasetsComponent implements OnInit {
     return row;
   }
 
+  dateChanged($event){
+    console.log('date changed',$event);
+    console.log(this.maxEndDate, 'maxenddate')
+  }
 }
