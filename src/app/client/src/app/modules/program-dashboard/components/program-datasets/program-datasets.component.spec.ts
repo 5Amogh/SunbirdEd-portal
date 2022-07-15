@@ -218,7 +218,7 @@ describe('DatasetsComponent', () => {
 
   }));
 
-  it('should call selectSolution', fakeAsync(() => {
+  it('should call selectSolution', fakeAsync((done) => {
 
     const spy = spyOn(component, 'selectSolution').and.callThrough();
     tick(1000);
@@ -228,11 +228,9 @@ describe('DatasetsComponent', () => {
 
     component.onDemandReportData = [];
     const onDemandReportService = TestBed.inject(OnDemandReportService);
-    const reportService = TestBed.inject(ReportService);
     spyOn(onDemandReportService, 'getReportList').and.returnValue(observableOf({ result: mockData.reportListResponse.result }));
     component.loadReports();
     tick(1000);
-    spyOn(reportService,'fetchReportById').and.returnValue(observableOf({ result: mockData.reportConfig }));
     spyOn(component,'loadReports').and.callThrough();
     component.reportForm.get('solution').setValue(['5f34ec17585244939f89f90d']);
     component.solutions = mockData.solutions.result;
@@ -262,6 +260,7 @@ describe('DatasetsComponent', () => {
         'roles': ['PM']
     }
     ]);
+    
     flush();
 
 
@@ -281,8 +280,6 @@ describe('DatasetsComponent', () => {
     // component.loadReports();
     tick(1000);
     spyOn(component,'loadReports').and.callThrough();
-    const reportService = TestBed.inject(ReportService);
-    spyOn(reportService,'fetchReportById').and.returnValue(observableOf({ result: mockData.reportConfig }));
     component.reportForm.get('solution').setValue(['5fbb75537380505718640436']);
     component.solutions = mockData.solutions.result;
     component.selectSolution({
@@ -321,8 +318,6 @@ describe('DatasetsComponent', () => {
     component.onDemandReportData = [];
     const onDemandReportService = TestBed.inject(OnDemandReportService);
     spyOn(onDemandReportService, 'getReportList').and.returnValue(observableOf({ result: mockData.reportListResponse.result }));
-    const reportService = TestBed.inject(ReportService);
-    spyOn(reportService,'fetchReportById').and.returnValue(observableOf({ result: mockData.reportConfig }));
     component.loadReports();
     component.solutions = mockData.solutions.result;  
     component.selectSolution({
@@ -340,9 +335,13 @@ describe('DatasetsComponent', () => {
     component.programs = mockData.programs.result;
     component.formData = mockData.FormData;
     component.reportTypes = [];
+    spyOn(component,'renderReport').and.callThrough();
+    spyOn(component,'fetchConfig').and.callThrough();
     component.getReportTypes("5f34ec17585244939f89f90c","observation");
     tick(1000);
     expect(component.getReportTypes).toHaveBeenCalled();
+    expect(component.renderReport).toHaveBeenCalled();
+    expect(component.fetchConfig).toHaveBeenCalled();
     expect(component.reportTypes).toEqual([
       {
         'name': 'Question Report',
@@ -486,6 +485,13 @@ describe('DatasetsComponent', () => {
     expect(component.showPopUpModal).toEqual(false);
   });
 
+  it('should call selectedTabChange',() => {
+    spyOn(component,'selectedTabChange').and.callThrough();
+    component.selectedTabChange({index:1});
+    expect(component.tabIndex).toEqual(1);
+    expect(component.selectedTabChange).toHaveBeenCalled();
+  })
+
   it('should export the report as pdf', fakeAsync(() => {
     spyOn<any>(component, 'downloadReportAsPdf');
     component.downloadReport({
@@ -507,4 +513,21 @@ describe('DatasetsComponent', () => {
     expect(component['downloadReportAsImage']).toHaveBeenCalledTimes(1);
     expect(component.hideElements).toBeTruthy();
   }));
+
+  it('should render the report configuration through report service',done => {
+    spyOn(component,'fetchConfig').and.returnValue(observableOf( mockData.reportConfig.reports));
+    component.fetchConfig('20ba7720-e350-4ec4-9bc6-2520dbf1329e').subscribe(res => {
+      expect(res).toBe(mockData.reportConfig.reports);
+      done();
+    })
+    expect(component.fetchConfig).toHaveBeenCalled();
+  })
+
+  it('should render the report',done => {
+    spyOn(component,'renderReport').and.returnValue(observableOf(mockData.reportData));
+    component.renderReport('20ba7720-e350-4ec4-9bc6-2520dbf1329e').subscribe(res => {
+      expect(res).toBe(mockData.reportData);
+      done();
+    })
+  })
 });

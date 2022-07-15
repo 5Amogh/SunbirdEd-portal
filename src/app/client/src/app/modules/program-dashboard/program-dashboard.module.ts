@@ -51,7 +51,9 @@ import { FilterChartPipe } from './pipes/filterChart/filter-chart.pipe';
   providers: [
     ResourceService,
     ToasterService,
-    BigDataPipe
+    BigDataPipe,
+    ChartTypePipe,
+    FilterChartPipe
   ]
 })
 export class programDashboardModule {

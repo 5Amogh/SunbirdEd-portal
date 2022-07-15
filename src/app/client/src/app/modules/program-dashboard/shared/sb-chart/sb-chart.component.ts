@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ResourceService } from '@sunbird/shared';
 import _ from 'lodash';
@@ -7,7 +7,7 @@ import _ from 'lodash';
   templateUrl: './sb-chart.component.html',
   styleUrls: ['./sb-chart.component.scss']
 })
-export class SbChartComponent implements OnInit{
+export class SbChartComponent implements OnInit,OnChanges{
   @Input() chart;
   @Input() lastUpdatedOn;
   @Input() hideElements = false;
@@ -33,22 +33,25 @@ export class SbChartComponent implements OnInit{
     this.updatedData = this.chartData = this.chart.chartData;
     this.chartConfig = this.chart.chartConfig;
     this.type = this.chartConfig.chartType;
-    this.checkGlobalFilters();
   }
-  public checkGlobalFilters(){
-    if(this.globalDistrict || this.globalOrg){
-      this.chartData.map(val =>{
-        if(val['District name'] == this.globalDistrict || val['Organisation'] == this.globalOrg){
-          this.currentFilters = val;
-          console.log('Current filters', this.currentFilters)
-          this.lib.instance.update({data:this.currentFilters });
 
-        }
-      })
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log('Changes in chart comp',changes);
+    if(this.globalDistrict !== undefined || this.globalOrg !== undefined){
+      this.resetForm();
+      this.updatedData = _.filter(this.chartData,(data)=>{
+        return (this.globalDistrict && this.globalOrg 
+          ? data.district_externalId == this.globalDistrict && data.organisation_id == this.globalOrg 
+          : this.globalDistrict ? data.district_externalId == this.globalDistrict
+          :this.globalOrg ? data.organisation_id == this.globalOrg 
+          : data)
+    });
+    console.log('The global update',this.updatedData);
+    this.lib.instance.update({data:this.updatedData})  
     }
   }
 
-  public changeChartType(change) {
+  changeChartType(change) {
     console.log('this.chartConfig.labelsExpr',this.chartConfig.labelsExpr)
     this.type = _.lowerCase(_.get(change, 'value'));
     this.chartConfig['chartType'] = this.type;
@@ -58,7 +61,7 @@ export class SbChartComponent implements OnInit{
     this.lib.instance.update({data:this.updatedData,type:this.type,config:this.chartConfig})
   }
 
-  public filterChanged(data: any): void {
+  filterChanged(data: any): void {
     console.log('filterChanged method called',data)
     this.currentFilters = data.filters;
     if (data.filters) {
@@ -67,7 +70,7 @@ export class SbChartComponent implements OnInit{
     } else {
       console.log('entered w/o data.filters')
       this.chartData['selectedFilters'] = {};
-      this.resetFilters = { data: this.chartData, reset: true };
+      this.resetFilters = { data:  (this.globalDistrict || this.globalOrg) ? this.updatedData : this.chartData, reset: true };
     }
     this.updatedData = data.chartData[0].data;
     this.lib.instance.update({data:this.updatedData});
@@ -77,10 +80,10 @@ export class SbChartComponent implements OnInit{
   resetForm() {
     this.chartData['selectedFilters'] = {};
     this.currentFilters = [];
-    this.updatedData = this.chartData
-    this.resetFilters = { data: this.chartData, reset: true };
+    this.updatedData =  (this.globalDistrict || this.globalOrg) ? this.updatedData : this.chartData
+    this.resetFilters = { data: this.updatedData, reset: true };
     console.log('reset form called',this.resetFilters)
-    this.lib.instance.update({data:this.chartData});
+    this.lib.instance.update({data:this.updatedData});
   }
 
   filterModalPopup(operator) {
@@ -90,26 +93,23 @@ export class SbChartComponent implements OnInit{
     }  else {
       if (this.currentFilters) {
         this.chartData['selectedFilters'] = this.currentFilters;
-        this.resetFilters = { data: this.chartData, reset: true };
+        this.resetFilters = { data: (this.globalDistrict || this.globalOrg) ? this.updatedData : this.chartData, reset: true };
       } else {
         this.chartData['selectedFilters'] = {};
       }
-
+      console.log('The global update',this.updatedData);
       this.openDialog();
     }
 
   }
-  getChartData() {
-    console.log('calling getchartData',this.chartData)
-    console.log('calling getchartData',this.chartConfig.id)
-    console.log('calling getchartData',this.currentFilters)
-    return [{ id: this.chartConfig.id , data: this.chartData , selectedFilters: this.currentFilters }];
-  }
+
+
   openDialog() {
     if (this.filterPopUpMat) {
       this.dialogRef = this.dialog.open(this.filterPopUpMat);
     }
   }
+  
   closeDialog() {
     if (this.dialogRef) {
       this.dialogRef.close();

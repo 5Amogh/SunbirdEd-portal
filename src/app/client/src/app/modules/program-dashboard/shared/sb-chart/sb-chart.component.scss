@@ -6,31 +6,32 @@
   font-weight: bold;
 }
 
-::ng-deep{
+::ng-deep {
 
-  .customGraph{
-    .sb-filter-g__item{
+  .customGraph {
+    .sb-filter-g__item {
       border-radius: 1.5rem !important;
     }
 
-    .multiselect-dropdown .dropdown-btn{
+    .multiselect-dropdown .dropdown-btn {
       border-radius: 1.5rem !important;
     }
   }
 
-  .bigNumberCard{
+  .bigNumberCard {
     border-bottom: 0.0625rem solid var(--rc-dddddd) !important;
     display: grid !important;
     grid-template-columns: 1fr 1fr 1fr !important;
-    gap: 1.5rem!important;
-    
-    sb-dashlet{
+    gap: 1.5rem !important;
+
+    sb-dashlet {
       border-right: 0.0625rem solid var(--rc-dddddd) !important;
 
       &:nth-child(3n + 3) {
         border-right: 0rem solid var(--rc-d4d8da) !important;
       }
     }
+
     .card {
       flex: 1 !important;
       background-color: var(--gray-hs) !important;
@@ -41,27 +42,28 @@
         font-size: 1.125rem !important;
         font-weight: unset !important;
       }
-      
-      .content{
+
+      .content {
         padding: 0% !important;
       }
+
       .description {
         color: var(--gray) !important;
         font-size: 2.5rem !important;
         font-weight: 700 !important;
         margin-top: 0% !important;
       }
-  
-      .meta{
+
+      .meta {
         color: var(--gray-200);
         font-size: calculateRem(18px) !important;
       }
-  
-    }
- 
 
-} 
-  
+    }
+
+
+  }
+
   .chart-title {
     font-size: 1rem;
     font-weight: 500;
@@ -69,6 +71,7 @@
     padding-top: 0.5rem;
   }
 }
+
 .sb-filter {
   &__container {
     width: 100%;
@@ -156,7 +159,7 @@
 
 ::ng-deep {
   .mat-dialog-container {
-      background-color: #E9E8D9 !important;
-      border-radius: 24px;
+    background-color: #E9E8D9 !important;
+    border-radius: 24px;
   }
 }

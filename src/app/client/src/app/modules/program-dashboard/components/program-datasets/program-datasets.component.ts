@@ -173,7 +173,7 @@ export class DatasetsComponent implements OnInit {
         this.config.urlConFig.URLS.KENDRA.DISTRICTS_AND_ORGANISATIONS+ '/' + this.reportForm.controls.solution.value
     };
     this.kendraService.get(paramOptions).subscribe(data => {
-      if (data && data.result) {
+      if (data && Object.keys(data.result).length) {
        this.districts = data.result.districts;
         data.result.organisations.map(org =>{
          if(org?.orgName !== null){
@@ -252,6 +252,8 @@ export class DatasetsComponent implements OnInit {
   public selectSolution($event) {
     this.newData = false;
     this.noResult = false;
+    this.districts = []
+    this.organisations = [];
     if (this.programSelected && this.reportForm.value && this.reportForm.value['solution']) {
       const solution = this.solutions.filter(data => {
         if (data._id == $event.value) {
@@ -290,16 +292,21 @@ export class DatasetsComponent implements OnInit {
      console.log(solutionType, 'Solution type');
      let reportId;
      if(solutionType == "improvementProject"){
-      // reportId = "c4d25422-2bf4-4c21-815b-401ef9de028c";
-      reportId = "88790d2b-c100-41ba-b349-bb3375025de5"
+      reportId = "83960dff-4a6f-4999-8e08-8879daad530f"
      }else if(solutionType == "observation"){
-       reportId = "aee96467-8f85-4e2b-9d35-e7a0beb0b836";
+       reportId = "2788047b-7a87-4cab-96d6-e0bed91235e2";
      }else {
-       reportId = "20ba7720-e350-4ec4-9bc6-2520dbf1329e";
+       reportId = "88790d2b-c100-41ba-b349-bb3375025de5";
      }
      console.log(types,'types');
-     console.log('report id', reportId);
-    this.dashboardReport$ = this.renderReport(reportId).pipe(
+
+    let filtersForReport = {
+      "reportconfig.report_type" : "program_dashboard",
+      "reportconfig.solution_type" : `${(solutionType === 'improvementProject') ? "project" : solutionType}`,
+      "reportconfig.report_status" : "active"
+    }
+
+    this.dashboardReport$ = this.renderReport(filtersForReport).pipe(
       catchError(err => {
         console.error('Error while rendering report', err);
         this.noResultMessage = {
@@ -321,8 +328,8 @@ export class DatasetsComponent implements OnInit {
      } 
     }
    }
-    fetchConfig(reportId): Observable<any> {
-    return this.reportService.fetchReportById(reportId).pipe(
+    fetchConfig(filters): Observable<any> {
+    return this.reportService.listAllReports(filters).pipe(
       mergeMap(apiResponse => {
         const report = _.get(apiResponse, 'reports');
         return report ? of(_.head(report)) : throwError('No report found');

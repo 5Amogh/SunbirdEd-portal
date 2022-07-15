@@ -88,7 +88,7 @@
               <mat-select role="radio" class="selection"  valueField="locationId" formControlName="districtName"
               [placeholder]="resourceService?.frmelmnts?.lbl?.dashboarddistrict"  (selectionChange)="districtSelection($event)">
                 <mat-option *ngFor="let district of districts" class="mat-dropdown__options" role="option" [value]="district.locationId">
-                  {{district.name}}
+                  {{district.name | titlecase }}
                 </mat-option>
               </mat-select>
               </mat-form-field>
@@ -172,6 +172,9 @@
         *ngFor="let chart of currentReport.charts; let i = index; let l = last;">
         <app-sb-chart [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-chart>
       </div>
+      <div class="ui warning message" *ngIf="!currentReport.charts.length">
+        {{resourceService?.frmelmnts?.lbl?.graphNotAvailable}}
+      </div>
   </div>
   <div *ngIf="noResult">
     <app-no-result [data]="noResultMessage"></app-no-result>
@@ -189,6 +192,7 @@
 <ng-template #table>
   <ng-container *ngTemplateOutlet="globalFilters"></ng-container>
   <div *ngIf="!noResult && (dashboardReport$ | async) as currentTable else loading">
+    <ng-container *ngIf="currentTable?.tables[0]?.data && currentTable?.tables[0]?.config">
     <div class="sb-graph-section p-24 my-24"
         *ngFor="let table of currentTable?.tables; let i = index; let l = last;">
         <ng-container *ngIf="table?.data && table?.config">
@@ -204,7 +208,8 @@
           </div>
         </ng-container>
       </div>
-      <div class="ui warning message mt-16" *ngIf="currentTable?.tables.length === 0 || !currentTable?.tables">
+    </ng-container>
+      <div class="ui warning message mt-16" *ngIf="currentTable?.tables.length === 0 || !currentTable?.tables || !currentTable?.tables[0]?.data || !currentTable?.tables[0]?.config">
         {{resourceService?.frmelmnts?.lbl?.tableNotAvailable}}
       </div>
   </div>
