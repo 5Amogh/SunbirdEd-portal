@@ -124,6 +124,14 @@
   
   .custom_mat_dd{
     
+    .mat-form-field-flex{
+      
+      input::placeholder{
+        color: rgba(0,0,0,.42) !important;
+        font-weight: bold !important;
+      }
+    }
+
     .mat-form-field-flex {
       display: flex;
       align-items: center !important;

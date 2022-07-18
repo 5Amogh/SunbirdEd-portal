@@ -21,7 +21,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FilterChartPipe } from './pipes/filterChart/filter-chart.pipe';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
-
+import { MatDatepickerModule } from '@angular/material/datepicker';
 @NgModule({
   declarations: [
   DatasetsComponent,
@@ -47,7 +47,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
     MatAutocompleteModule,
     NgInviewModule,
     DashletModule,
-    DashboardModule
+    DashboardModule,
+    MatDatepickerModule
   ],
   providers: [
     ResourceService,

@@ -216,7 +216,7 @@ export class DatasetsComponent implements OnInit {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth();
     const today = new Date().getDate();
-    // this.minEndDate = new Date(currentYear - 100, 0, 1);
+    this.minEndDate = new Date(currentYear - 100, 0, 1);
     this.maxEndDate =  new Date(currentYear + 0, currentMonth, today);
     this.maxStartDate = new Date(currentYear + 0, currentMonth, today -1);
   }
@@ -489,6 +489,7 @@ export class DatasetsComponent implements OnInit {
     this.onDemandReportData = [];
     this.goToPrevLocation = false;
     this.showPopUpModal = true;
+    this.timeRangeInit();
   }
 
   loadReports() {
@@ -684,22 +685,25 @@ export class DatasetsComponent implements OnInit {
 
   startDateChanged($event){
     console.log('start date',_.get($event,'value'));
-    const year = $event.value.getFullYear();
-    const month = $event.value.getMonth();
-    const day = $event.value.getDate();
-    this.minEndDate = new Date(year,month,day + 1);
-    this.reportForm.controls.startDate.setValue(moment(_.get($event,'value')).format('YYYY-MM-DD'));
-    console.log('start date',_.get(this.reportForm,'controls.startDate.value'));
+    if($event.value !== null && $event.value !== undefined){
+      const year = $event.value.getFullYear();
+      const month = $event.value.getMonth();
+      const day = $event.value.getDate();
+      this.minEndDate = new Date(year,month,day + 1);
+      this.reportForm.controls.startDate.setValue(moment(_.get($event,'value')).format('YYYY-MM-DD'));
+      console.log('start date',_.get(this.reportForm,'controls.startDate.value'));
+    }
   }
 
   endDateChanged($event){
     console.log('end date',_.get($event,'value'));
-    const year = $event.value.getFullYear();
-    const month = $event.value.getMonth();
-    const day = $event.value.getDate();
-    this.maxStartDate = new Date(year,month,day - 1);
-    this.reportForm.controls.endDate.setValue(moment(_.get($event,'value')).format('YYYY-MM-DD'));
-    console.log('end date',_.get(this.reportForm,'controls.endDate.value'));
-
+    if($event.value !== null && $event.value !== undefined){
+      const year = $event.value.getFullYear();
+      const month = $event.value.getMonth();
+      const day = $event.value.getDate();
+      this.maxStartDate = new Date(year,month,day - 1);
+      this.reportForm.controls.endDate.setValue(moment(_.get($event,'value')).format('YYYY-MM-DD'));
+      console.log('end date',_.get(this.reportForm,'controls.endDate.value'));
+    }
   }
 }
