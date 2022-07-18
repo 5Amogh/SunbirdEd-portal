@@ -209,13 +209,18 @@ export class DatasetsComponent implements OnInit {
     this.initLayout();
     this.getProgramsList();
     this.getFormDetails();
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth();
-    const today = Date.now()
-    this.minEndDate = new Date(currentYear - 1, 0, 1);
-    this.maxEndDate = new Date(currentYear,currentMonth,today);
+    this.timeRangeInit();
   }
   
+  timeRangeInit(){
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+    const today = new Date().getDate();
+    // this.minEndDate = new Date(currentYear - 100, 0, 1);
+    this.maxEndDate =  new Date(currentYear + 0, currentMonth, today);
+    this.maxStartDate = new Date(currentYear + 0, currentMonth, today -1);
+  }
+
   public resolveParameterizedPath(path: string, explicitValue?: string): string {
     return _.reduce(PRE_DEFINED_PARAMETERS, (result: string, parameter: string) => {
       if (_.includes(result, parameter)) {
@@ -538,6 +543,8 @@ export class DatasetsComponent implements OnInit {
       const config = {
         type: this.selectedReport['datasetId'],
         params: {
+          ...(_.get(this.reportForm,'controls.startDate.value') && {'startDate':_.get(this.reportForm,'controls.startDate.value')}),
+          ...(_.get(this.reportForm,'controls.endDate.value') && {'endDate':_.get(this.reportForm,'controls.endDate.value')}),
           filters: this.filter
         },
         title: this.selectedReport.name
@@ -675,8 +682,24 @@ export class DatasetsComponent implements OnInit {
     return row;
   }
 
-  dateChanged($event){
-    console.log('date changed',$event);
-    console.log(this.maxEndDate, 'maxenddate')
+  startDateChanged($event){
+    console.log('start date',_.get($event,'value'));
+    const year = $event.value.getFullYear();
+    const month = $event.value.getMonth();
+    const day = $event.value.getDate();
+    this.minEndDate = new Date(year,month,day + 1);
+    this.reportForm.controls.startDate.setValue(moment(_.get($event,'value')).format('YYYY-MM-DD'));
+    console.log('start date',_.get(this.reportForm,'controls.startDate.value'));
+  }
+
+  endDateChanged($event){
+    console.log('end date',_.get($event,'value'));
+    const year = $event.value.getFullYear();
+    const month = $event.value.getMonth();
+    const day = $event.value.getDate();
+    this.maxStartDate = new Date(year,month,day - 1);
+    this.reportForm.controls.endDate.setValue(moment(_.get($event,'value')).format('YYYY-MM-DD'));
+    console.log('end date',_.get(this.reportForm,'controls.endDate.value'));
+
   }
 }

@@ -105,18 +105,18 @@
               </mat-form-field>
           </div>
 
-          <div *ngIf="tabIndex !== 1 || tabIndex !== 2" class="d-flex flex-dc dateDrodpwonWidth">
+          <div *ngIf="tabIndex !== 1 && tabIndex !== 2" class="d-flex flex-dc dateDrodpwonWidth">
             <label>Start date</label>
             <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd sb-color-primary">
-              <input matInput placeholder="DD/MM/YYYY" (dateInput)="dateChanged($event)" formControlName="startDate" [matDatepicker]="picker">
+              <input matInput placeholder="dd/mm/yyyy" [max]="maxStartDate" (dateInput)="startDateChanged($event)" formControlName="startDate" [matDatepicker]="picker">
               <mat-datepicker-toggle matSuffix [for]="picker" class="sb-color-primary"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>            
           </div>
-          <div *ngIf="tabIndex !== 1 || tabIndex !== 2" class="d-flex flex-dc dateDrodpwonWidth">
+          <div *ngIf="tabIndex !== 1 && tabIndex !== 2" class="d-flex flex-dc dateDrodpwonWidth">
             <label>End date</label>
             <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd sb-color-primary">
-              <input matInput placeholder="DD/MM/YYYY" [min]="minEndDate" [max]="maxEndDate"  (dateInput)="dateChanged($event)" formControlName="endDate" [matDatepicker]="picker">
+              <input matInput placeholder="dd/mm/yyyy" [min]="minEndDate" [max]="maxEndDate"  (dateInput)="endDateChanged($event)" formControlName="endDate" [matDatepicker]="picker">
               <mat-datepicker-toggle matSuffix [for]="picker" class="sb-color-primary"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>            
@@ -240,9 +240,6 @@
       </div>
     </ng-container>
   </ng-template>
-  <!-- <div class="sbt-inside-page-container relative position mt-32">
-  <sb-dashlet [type]="'table'" [data]="dtOptions" [config]="columnsConfiguration" class="customDataTable" #lib></sb-dashlet>
-  </div> -->
 </ng-template>
 <app-modal-wrapper [config]="{disableClose: false, size: 'small'}" (dismiss)="closeModal()" #modal *ngIf="popup">
   <ng-template sbModalContent>
