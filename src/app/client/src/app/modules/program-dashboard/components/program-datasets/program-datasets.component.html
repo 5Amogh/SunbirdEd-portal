@@ -185,7 +185,12 @@
   <div *ngIf="!noResult && (dashboardReport$ | async) as currentReport else loading">
     <div class="sb-graph-section p-24 my-24"
         *ngFor="let chart of currentReport.charts; let i = index; let l = last;">
-        <app-sb-chart [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-chart>
+        <ng-container *ngIf="chart?.chartConfig?.id == 'Big_Number'">
+          <app-sb-bignumber [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-bignumber>
+        </ng-container>
+        <ng-container *ngIf="chart?.chartConfig?.id !== 'Big_Number' && chart?.chartData && chart?.chartConfig">
+      <app-sb-chart [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-chart>
+    </ng-container>
       </div>
       <div class="ui warning message" *ngIf="!currentReport.charts.length">
         {{resourceService?.frmelmnts?.lbl?.graphNotAvailable}}
@@ -212,14 +217,7 @@
         *ngFor="let table of currentTable?.tables; let i = index; let l = last;">
         <ng-container *ngIf="table?.data && table?.config">
           <div class="customTable">
-            <sb-dashlet [type]="'table'" [data]="table?.data | bigData" [config]="table?.config" #lib>
-              <ng-template sbTemplateRef="header" let-config>
-                <div class="chart-title">
-                  {{table?.name}}
-                </div>
-                <hr>
-              </ng-template>
-            </sb-dashlet>
+            <app-sb-table [table]="table" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-table>
           </div>
         </ng-container>
       </div>

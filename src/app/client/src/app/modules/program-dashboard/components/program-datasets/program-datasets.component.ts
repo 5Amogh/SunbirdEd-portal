@@ -254,6 +254,7 @@ export class DatasetsComponent implements OnInit {
     this.getSolutionList(program[0]);
     this.reportForm.controls.programName.setValue($event.value);
     this.newData = true;
+    this.globalDistrict = this.globalOrg = undefined;
   }
 
   public selectSolution($event) {
@@ -261,6 +262,7 @@ export class DatasetsComponent implements OnInit {
     this.noResult = false;
     this.districts = []
     this.organisations = [];
+    this.globalDistrict = this.globalOrg = undefined;
     if (this.programSelected && this.reportForm.value && this.reportForm.value['solution']) {
       const solution = this.solutions.filter(data => {
         if (data._id == $event.value) {
@@ -489,6 +491,7 @@ export class DatasetsComponent implements OnInit {
     this.onDemandReportData = [];
     this.goToPrevLocation = false;
     this.showPopUpModal = true;
+    this.globalDistrict = this.globalOrg = undefined;
     this.timeRangeInit();
   }
 

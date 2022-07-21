@@ -22,14 +22,18 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FilterChartPipe } from './pipes/filterChart/filter-chart.pipe';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { SbBignumberComponent } from './shared/sb-bignumber/sb-bignumber.component';
+import { SbTableComponent } from './shared/sb-table/sb-table.component';
 @NgModule({
   declarations: [
   DatasetsComponent,
   BigDataPipe,
   ChartTypePipe,
   SbChartComponent,
-  FilterChartPipe
-],
+  FilterChartPipe,
+  SbBignumberComponent,
+  SbTableComponent
+  ],
   imports: [
     CommonModule,
     SharedModule,

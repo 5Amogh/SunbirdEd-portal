@@ -1,20 +1,3 @@
-<ng-container *ngIf="chart?.chartConfig?.id == 'Big_Number'">
-  <div *ngIf="lastUpdatedOn !== 'Invalid date'" class="sb-last-update-status mb-8">
-    <span>{{ resourceService?.frmelmnts?.lbl?.lastUpdatedOn }}&nbsp;: </span>
-    &nbsp; {{ lastUpdatedOn }}
-  </div>
-  <div class="d-flex flex-dr bigNumberCard py-24">
-    <ng-container *ngFor="let bigNum of chart?.chartConfig?.bigNumbers">
-      <sb-dashlet [type]="'bigNumber'" [data]="chart?.chartData | bigData: bigNum" [config]="bigNum | bigData"
-        class="mt-8" #lib></sb-dashlet>
-    </ng-container>
-  </div>
-</ng-container>
-<ng-container *ngIf="
-    chart?.chartConfig?.id !== 'Big_Number' &&
-    chart?.chartData &&
-    chart?.chartConfig
-  ">
   <div class="d-flex flex-dr">
     <label class="pad5 col-6 chart-title">
       {{ chart?.chartConfig?.options?.title?.text }}
@@ -44,7 +27,7 @@
     &nbsp; {{ lastUpdatedOn }}
   </div>
   <div [ngSwitch]="type" class="mt-16">
-    <sb-dashlet *ngSwitchCase="'bar'" [type]="type" [data]="updatedData | chartType" [config]="chartConfig | chartType"
+    <sb-dashlet *ngSwitchCase="'bar'" [type]="type" [data]="(globalChange ? globalData:updatedData) | chartType" [config]="chartConfig | chartType"
       class="chart-container mt-32 customGraph" #lib>
       <ng-template sbTemplateRef="filter" let-context>
         <ng-template #filterPopUpMat>
@@ -52,7 +35,7 @@
         </ng-template>
       </ng-template>
     </sb-dashlet>
-    <sb-dashlet *ngSwitchCase="'line'" [type]="type" [data]="updatedData | chartType" [config]="chartConfig | chartType"
+    <sb-dashlet *ngSwitchCase="'line'" [type]="type" [data]="(globalChange ? globalData:updatedData) | chartType" [config]="chartConfig | chartType"
       class="chart-container mt-32 customGraph" #lib>
       <ng-template sbTemplateRef="filter" let-context>
         <ng-template #filterPopUpMat>
@@ -60,7 +43,7 @@
         </ng-template>
       </ng-template>
     </sb-dashlet>
-    <sb-dashlet *ngSwitchDefault [type]="type" [data]="updatedData | chartType" [config]="chartConfig | chartType"
+    <sb-dashlet *ngSwitchDefault [type]="type" [data]="(globalChange ? globalData:updatedData) | chartType" [config]="chartConfig | chartType"
       class="chart-container mt-32 customGraph" #lib>
       <ng-template sbTemplateRef="filter" let-context>
         <ng-template #filterPopUpMat>
@@ -88,9 +71,9 @@
                 <div class="sb-filter__container">
                   <div class="sb-filter__content">
                     <div class="sb-filter__content">
-                      <app-filter [filterType]="filterType" [resetFilters]="resetFilters" [hideElements]="hideElements"
+                      <app-filter [filterType]="filterType" selectedFilters="selectedFilters" [resetFilters]="resetFilters" [hideElements]="hideElements"
                         [filters]="chart.chartConfig.filters" (filterChanged)="filterChanged($event)" [chartData]="
-                          chartConfig.id | filterChart: chartData:currentFilters
+                          chartConfig.id | filterChart: (globalChange ? globalData:chartData):currentFilters
                         ">
                       </app-filter>
                     </div>
@@ -114,4 +97,3 @@
       </div>
     </ng-template>
   </div>
-</ng-container>

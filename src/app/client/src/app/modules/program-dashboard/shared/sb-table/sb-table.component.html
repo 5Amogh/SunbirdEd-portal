@@ -1,0 +1,8 @@
+<sb-dashlet [type]="'table'" [data]="(globalChange? globalData : tableData) | bigData" [config]="table?.config" #lib>
+    <ng-template sbTemplateRef="header" let-config>
+      <div class="chart-title">
+        {{table?.name}}
+      </div>
+      <hr>
+    </ng-template>
+  </sb-dashlet>

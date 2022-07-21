@@ -5,7 +5,7 @@ import _ from 'lodash';
 @Component({
   selector: 'app-sb-chart',
   templateUrl: './sb-chart.component.html',
-  styleUrls: ['./sb-chart.component.scss']
+  styleUrls: ['./sb-chart.component.scss'],
 })
 export class SbChartComponent implements OnInit,OnChanges{
   @Input() chart;
@@ -19,6 +19,9 @@ export class SbChartComponent implements OnInit,OnChanges{
   resetFilters;
   updatedData;
   type:string;
+  globalChange:boolean;
+  globalData;
+  selectedFilters: {};
   availableChartTypeOptions = ['Bar', 'Line'];
   @ViewChild('lib', { static: false }) lib: any;
   @ViewChild('filterPopUpMat') filterPopUpMat: TemplateRef<any>;
@@ -27,10 +30,10 @@ export class SbChartComponent implements OnInit,OnChanges{
   constructor(
     public resourceService: ResourceService,
     public dialog: MatDialog
-  ) { }
+    ) { }
 
   ngOnInit(){
-    this.updatedData = this.chartData = this.chart.chartData;
+    this.updatedData = this.chartData = _.compact(this.chart.chartData);
     this.chartConfig = this.chart.chartConfig;
     this.type = this.chartConfig.chartType;
   }
@@ -38,16 +41,22 @@ export class SbChartComponent implements OnInit,OnChanges{
   ngOnChanges(changes: SimpleChanges): void {
     console.log('Changes in chart comp',changes);
     if(this.globalDistrict !== undefined || this.globalOrg !== undefined){
-      this.resetForm();
-      this.updatedData = _.filter(this.chartData,(data)=>{
+      this.globalData = _.filter(this.chartData,(data)=>{
         return (this.globalDistrict && this.globalOrg 
-          ? data.district_externalId == this.globalDistrict && data.organisation_id == this.globalOrg 
-          : this.globalDistrict ? data.district_externalId == this.globalDistrict
-          :this.globalOrg ? data.organisation_id == this.globalOrg 
+          ? data?.district_externalId == this.globalDistrict && data?.organisation_id == this.globalOrg 
+          : this.globalDistrict ? data?.district_externalId == this.globalDistrict
+          :this.globalOrg ? data?.organisation_id == this.globalOrg 
           : data)
     });
-    console.log('The global update',this.updatedData);
-    this.lib.instance.update({data:this.updatedData})  
+    this.globalChange = true;
+    this.updatedData = this.globalData;
+    console.log('The global update',this.globalData);
+    this.lib.instance.update({data:this.globalData});
+    }else{
+      console.log('Global boolean changed')
+      this.globalChange = false;
+      this.updatedData = this.chartData
+      this.lib?.instance?.update({data:this.chartData});
     }
   }
 
@@ -66,11 +75,11 @@ export class SbChartComponent implements OnInit,OnChanges{
     this.currentFilters = data.filters;
     if (data.filters) {
       console.log('entered data.filters',data.filters)
-      this.chartData['selectedFilters'] = data.filters;
+      this.globalChange ? this.globalData['selectedFilters'] = data.filters : this.chartData['selectedFilters'] = data.filters;
     } else {
       console.log('entered w/o data.filters')
-      this.chartData['selectedFilters'] = {};
-      this.resetFilters = { data:  (this.globalDistrict || this.globalOrg) ? this.updatedData : this.chartData, reset: true };
+      this.globalChange ? this.globalData['selectedFilters'] = {} : this.chartData['selectedFilters'] = {};
+      this.resetFilters = { data:(this.globalChange? this.globalData: this.chartData), reset: true };
     }
     this.updatedData = data.chartData[0].data;
     this.lib.instance.update({data:this.updatedData});
@@ -79,9 +88,10 @@ export class SbChartComponent implements OnInit,OnChanges{
 
   resetForm() {
     this.chartData['selectedFilters'] = {};
+    if(this.globalChange){this.globalData['selectedFilters'] = {};}
     this.currentFilters = [];
-    this.updatedData =  (this.globalDistrict || this.globalOrg) ? this.updatedData : this.chartData
-    this.resetFilters = { data: this.updatedData, reset: true };
+    this.updatedData = this.globalChange ? this.globalData: this.chartData
+    this.resetFilters = { data:(this.globalChange ? this.globalData: this.chartData), reset: true };
     console.log('reset form called',this.resetFilters)
     this.lib.instance.update({data:this.updatedData});
   }
@@ -92,12 +102,13 @@ export class SbChartComponent implements OnInit,OnChanges{
       this.closeDialog();
     }  else {
       if (this.currentFilters) {
-        this.chartData['selectedFilters'] = this.currentFilters;
-        this.resetFilters = { data: (this.globalDistrict || this.globalOrg) ? this.updatedData : this.chartData, reset: true };
+        this.globalChange ? this.globalData['selectedFilters'] = this.currentFilters : this.chartData['selectedFilters'] = this.currentFilters;
+        this.resetFilters = { data:(this.globalChange ? this.globalData: this.chartData), reset: true };
+        console.log('Reset filter in filterModal',this.resetFilters)
       } else {
-        this.chartData['selectedFilters'] = {};
+        this.globalChange ? this.globalData['selectedFilters'] = {} : this.chartData['selectedFilters'] = {};
       }
-      console.log('The global update',this.updatedData);
+      console.log('The global update',this.globalData);
       this.openDialog();
     }
 
