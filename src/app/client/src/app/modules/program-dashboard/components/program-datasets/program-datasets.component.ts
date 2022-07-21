@@ -688,24 +688,24 @@ export class DatasetsComponent implements OnInit {
 
   startDateChanged($event){
     console.log('start date',_.get($event,'value'));
-    if($event.value !== null && $event.value !== undefined){
-      const year = $event.value.getFullYear();
-      const month = $event.value.getMonth();
-      const day = $event.value.getDate();
+    if(moment($event.value).isValid()){
+      const year = $event.value._d.getFullYear();
+      const month = $event.value._d.getMonth();
+      const day = $event.value._d.getDate();
       this.minEndDate = new Date(year,month,day + 1);
-      this.reportForm.controls.startDate.setValue(moment(_.get($event,'value')).format('YYYY-MM-DD'));
+      this.reportForm.controls.startDate.setValue(moment(_.get($event,'value._d')).format('YYYY-MM-DD'));
       console.log('start date',_.get(this.reportForm,'controls.startDate.value'));
     }
   }
 
   endDateChanged($event){
     console.log('end date',_.get($event,'value'));
-    if($event.value !== null && $event.value !== undefined){
-      const year = $event.value.getFullYear();
-      const month = $event.value.getMonth();
-      const day = $event.value.getDate();
+    if(moment($event.value).isValid()){
+      const year = $event.value._d.getFullYear();
+      const month = $event.value._d.getMonth();
+      const day = $event.value._d.getDate();
       this.maxStartDate = new Date(year,month,day - 1);
-      this.reportForm.controls.endDate.setValue(moment(_.get($event,'value')).format('YYYY-MM-DD'));
+      this.reportForm.controls.endDate.setValue(moment(_.get($event,'value._d')).format('YYYY-MM-DD'));
       console.log('end date',_.get(this.reportForm,'controls.endDate.value'));
     }
   }

@@ -20,10 +20,23 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FilterChartPipe } from './pipes/filterChart/filter-chart.pipe';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { DateAdapter, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { SbBignumberComponent } from './shared/sb-bignumber/sb-bignumber.component';
 import { SbTableComponent } from './shared/sb-table/sb-table.component';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+
+const TIME_RANGE_DATE_FORMAT = {
+  parse: {
+    dateInput: 'DD/MM/YYYY', // To parse date from input in this format
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY', // To display date from input in this format
+    monthYearLabel: 'MMM YYYY', // To display lable in this format as datepicker header
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMM YYYY',
+  },
+};
 @NgModule({
   declarations: [
   DatasetsComponent,
@@ -52,7 +65,8 @@ import { SbTableComponent } from './shared/sb-table/sb-table.component';
     NgInviewModule,
     DashletModule,
     DashboardModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [
     ResourceService,
@@ -60,7 +74,12 @@ import { SbTableComponent } from './shared/sb-table/sb-table.component';
     BigDataPipe,
     ChartTypePipe,
     FilterChartPipe,
-    {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}
+      {
+        provide: DateAdapter,
+        useClass: MomentDateAdapter,
+        deps: [MAT_DATE_LOCALE],
+      },
+      { provide: MAT_DATE_FORMATS, useValue: TIME_RANGE_DATE_FORMAT},
   ]
 })
 export class programDashboardModule {
