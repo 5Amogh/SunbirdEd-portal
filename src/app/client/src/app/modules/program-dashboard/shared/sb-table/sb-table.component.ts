@@ -1,6 +1,5 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import _ from 'lodash';
-
 @Component({
   selector: 'app-sb-table',
   templateUrl: './sb-table.component.html',
@@ -10,12 +9,16 @@ export class SbTableComponent implements OnInit, OnChanges {
   @Input() table;
   @Input() hideElements = false;
   @Input() globalDistrict;
-  @Input() globalOrg;  
+  @Input() globalOrg;
   tableData;
   globalData;
   globalChange;
+  filtered;
+  unfiltered;
+  keys = ['district_externalId', 'organisation_id', 'program_id', 'solution_id', 'programId', 'solutionId']
   @ViewChild('lib', { static: false }) lib: any;
-
+  @ViewChild('outlet', { read: ViewContainerRef }) outletRef: ViewContainerRef;
+  @ViewChild('content', { read: TemplateRef }) contentRef: TemplateRef<any>;
   constructor() { }
 
   ngOnInit(): void {
@@ -24,21 +27,32 @@ export class SbTableComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.tableData = this.table?.data;
-    if(this.globalDistrict !== undefined || this.globalOrg !== undefined){
-      this.globalData = _.filter(this.tableData,(data)=>{
-        return (this.globalDistrict && this.globalOrg 
-          ? data?.district_externalId == this.globalDistrict && data?.organisation_id == this.globalOrg 
+
+    _.remove(this.table.config
+      ? this.table?.config?.columnConfig
+      : this.table?.columnsConfiguration?.columnConfig, (col) => {
+        let remove = _.find(this.keys, (key) => {
+          return col['data'] == key
+        })
+        return remove;
+      })
+
+    if (this.globalDistrict !== undefined || this.globalOrg !== undefined) {
+      this.globalData = _.filter(this.tableData, (data) => {
+        return (this.globalDistrict && this.globalOrg
+          ? data?.district_externalId == this.globalDistrict && data?.organisation_id == this.globalOrg
           : this.globalDistrict ? data?.district_externalId == this.globalDistrict
-          :this.globalOrg ? data?.organisation_id == this.globalOrg 
-          : data)
-    });
-    this.globalChange = true;
-    console.log('The global update',this.globalData);
-    // this.lib.instance.update({data:this.globalData});
-    }else{
-      console.log('Global boolean changed')
+            : this.globalOrg ? data?.organisation_id == this.globalOrg
+              : data)
+      });
+      this.filtered = this.globalData.map(({ district_externalId, organisation_id, program_id, solution_id, programId, solutionId, ...data }) => data)
+      this.globalChange = true;
+      this.outletRef.clear();
+      this.outletRef.createEmbeddedView(this.contentRef);
+    } else {
       this.globalChange = false;
-      // this.lib?.instance?.update({data:this.tableData});
+      this.unfiltered = this.tableData.map(({ district_externalId, organisation_id, program_id, solution_id, programId, solutionId, ...data }) => data)
+
     }
   }
 

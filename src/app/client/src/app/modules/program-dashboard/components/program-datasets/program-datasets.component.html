@@ -212,17 +212,17 @@
 <ng-template #table>
   <ng-container *ngTemplateOutlet="globalFilters"></ng-container>
   <div *ngIf="!noResult && (dashboardReport$ | async) as currentTable else loading">
-    <ng-container *ngIf="currentTable?.tables[0]?.data && currentTable?.tables[0]?.config">
+    <ng-container *ngIf="currentTable?.tables[0]?.data">
     <div class="sb-graph-section p-24 my-24"
         *ngFor="let table of currentTable?.tables; let i = index; let l = last;">
-        <ng-container *ngIf="table?.data && table?.config">
+        <ng-container *ngIf="table?.data">
           <div class="customTable">
             <app-sb-table [table]="table" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-table>
           </div>
         </ng-container>
       </div>
     </ng-container>
-      <div class="ui warning message mt-16" *ngIf="currentTable?.tables.length === 0 || !currentTable?.tables || !currentTable?.tables[0]?.data || !currentTable?.tables[0]?.config">
+      <div class="ui warning message mt-16" *ngIf="currentTable?.tables.length === 0 || !currentTable?.tables || !currentTable?.tables[0]?.data">
         {{resourceService?.frmelmnts?.lbl?.tableNotAvailable}}
       </div>
   </div>

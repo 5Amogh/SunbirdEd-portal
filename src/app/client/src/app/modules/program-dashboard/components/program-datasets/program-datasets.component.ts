@@ -299,14 +299,6 @@ export class DatasetsComponent implements OnInit {
      let types = this.formData[solutionType];
      console.log(this.formData, 'form data');
      console.log(solutionType, 'Solution type');
-     let reportId;
-     if(solutionType == "improvementProject"){
-      reportId = "83960dff-4a6f-4999-8e08-8879daad530f"
-     }else if(solutionType == "observation"){
-       reportId = "2788047b-7a87-4cab-96d6-e0bed91235e2";
-     }else {
-       reportId = "88790d2b-c100-41ba-b349-bb3375025de5";
-     }
      console.log(types,'types');
 
     let filtersForReport = {
@@ -364,7 +356,7 @@ export class DatasetsComponent implements OnInit {
               _.get(reportConfig, 'reportLevelDataSourceId'))) || [];
             result['charts'] = chart;
             console.log('charts',chart)
-            result['tables'] = (tables && this.reportService.prepareTableData(tables, data, _.get(reportConfig, 'downloadUrl'))) || [];
+            result['tables'] = (tables && this.prepareTableData(tables, data, _.get(reportConfig, 'downloadUrl'))) || [];
             console.log('tables',tables);
             result['reportMetaData'] = reportConfig;
             result['lastUpdatedOn'] = this.reportService.getFormattedDate(this.reportService.getLatestLastModifiedOnDate(data));
@@ -375,6 +367,50 @@ export class DatasetsComponent implements OnInit {
       }))
     })
     ))
+  }
+
+prepareTableData(tablesArray: any, data: any, downloadUrl: string): Array<{}> {
+    tablesArray = _.isArray(tablesArray) ? tablesArray : [tablesArray];
+    return _.map(tablesArray, table => {
+      const tableId = _.get(table, 'id') || `table-${_.random(1000)}`;
+      const dataset = this.getTableData(data, _.get(table, 'id'));
+      const tableData: any = {};
+      tableData.id = tableId;
+      tableData.name = _.get(table, 'name') || 'Table';
+      tableData.config = _.get(table, 'config') ||  false;
+      tableData.data = dataset.data;
+      let columns = []
+      tableData.header = _.get(table, 'columns') || _.get(dataset, _.get(table, 'columnsExpr'));
+      tableData.header && tableData.header.map((col) => {
+        let obj = {title: col, data:col}
+        columns.push(obj);
+      })
+      tableData.columnsConfiguration = {
+        columnConfig: columns,
+        bLengthChange: true,
+        info: true,
+        lengthMenu: [10, 25, 50, 100],
+        paging: true,
+        searchable: true
+      }
+      tableData.downloadUrl = this.resolveParameterizedPath(_.get(table, 'downloadUrl') || downloadUrl, _.get(this.reportForm,'controls.solution.value'));
+      return tableData;
+
+    });
+  }
+
+getTableData(data: { result: any, id: string }[], tableId) {
+    if (data.length === 1) {
+      const [dataSource] = data;
+      if (dataSource.id === 'default') {
+        return dataSource.result;
+      }
+    }
+    return this.getDataSourceById(data, tableId) || {};
+  }
+
+  getDataSourceById(dataSources: { result: any, id: string }[], id: string = 'default') {
+    return _.get(_.find(dataSources, ['id', id]), 'result');
   }
 
   downloadReport(reportType) {

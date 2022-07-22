@@ -39,7 +39,6 @@ export class SbChartComponent implements OnInit,OnChanges{
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Changes in chart comp',changes);
     if(this.globalDistrict !== undefined || this.globalOrg !== undefined){
       this.globalData = _.filter(this.chartData,(data)=>{
         return (this.globalDistrict && this.globalOrg 
@@ -50,7 +49,6 @@ export class SbChartComponent implements OnInit,OnChanges{
     });
     this.globalChange = true;
     this.updatedData = this.globalData;
-    console.log('The global update',this.globalData);
     this.lib.instance.update({data:this.globalData});
     }else{
       console.log('Global boolean changed')
@@ -61,7 +59,6 @@ export class SbChartComponent implements OnInit,OnChanges{
   }
 
   changeChartType(change) {
-    console.log('this.chartConfig.labelsExpr',this.chartConfig.labelsExpr)
     this.type = _.lowerCase(_.get(change, 'value'));
     this.chartConfig['chartType'] = this.type;
     this.chartConfig.filters.map(data => {
@@ -71,7 +68,6 @@ export class SbChartComponent implements OnInit,OnChanges{
   }
 
   filterChanged(data: any): void {
-    console.log('filterChanged method called',data)
     this.currentFilters = data.filters;
     if (data.filters) {
       this.globalChange ? this.globalData['selectedFilters'] = data.filters : this.chartData['selectedFilters'] = data.filters;
