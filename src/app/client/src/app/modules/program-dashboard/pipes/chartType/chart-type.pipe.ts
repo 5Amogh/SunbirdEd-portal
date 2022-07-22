@@ -10,7 +10,6 @@ export class ChartTypePipe implements PipeTransform {
       let applicableData = {
         values: _.compact(chartData),
       };
-      console.log("chartData", applicableData);
       return applicableData;
     } else {
       const config = {
@@ -22,7 +21,6 @@ export class ChartTypePipe implements PipeTransform {
         filters: _.get(chartData, "filters"),
         type: _.get(chartData, "chartType") || _.get(chartData, "type"),
       };
-      console.log("Chart config", config);
       return config;
     }
   }

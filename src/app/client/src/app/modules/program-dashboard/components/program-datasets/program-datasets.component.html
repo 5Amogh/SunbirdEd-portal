@@ -41,13 +41,13 @@
       </mat-tab>
       <mat-tab appTelemetryInteract>
         <ng-template mat-tab-label>
-           <span class="font-weight-bold">Graphs</span>
+           <span class="font-weight-bold">{{resourceService?.frmelmnts?.lbl?.graphs}}</span>
         </ng-template>
        <ng-container *ngTemplateOutlet="graphs"></ng-container>
      </mat-tab>
       <mat-tab appTelemetryInteract> 
       <ng-template mat-tab-label>
-         <span class="font-weight-bold">Table</span>
+         <span class="font-weight-bold">{{resourceService?.frmelmnts?.lbl?.table}}</span>
       </ng-template>
      <ng-container *ngTemplateOutlet="table"></ng-container>
    </mat-tab> 
@@ -106,7 +106,7 @@
           </div>
 
           <div *ngIf="tabIndex !== 1 && tabIndex !== 2" class="d-flex flex-dc dateDrodpwonWidth">
-            <label>Start date</label>
+            <label>{{resourceService?.frmelmnts?.lbl?.startdate | titlecase }}</label>
             <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd sb-color-primary">
               <input matInput placeholder="dd/mm/yyyy" [max]="maxStartDate" (dateInput)="startDateChanged($event)" (dateChange)="startDateChanged($event)" formControlName="startDate" [matDatepicker]="picker">
               <mat-datepicker-toggle matSuffix [for]="picker" class="sb-color-primary"></mat-datepicker-toggle>
@@ -114,7 +114,7 @@
             </mat-form-field>            
           </div>
           <div *ngIf="tabIndex !== 1 && tabIndex !== 2" class="d-flex flex-dc dateDrodpwonWidth">
-            <label>End date</label>
+            <label>{{resourceService?.frmelmnts?.lbl?.enddate | titlecase }}</label>
             <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd sb-color-primary">
               <input matInput placeholder="dd/mm/yyyy" [min]="minEndDate" [max]="maxEndDate"  (dateInput)="endDateChanged($event)" (dateChange)="endDateChanged($event)" formControlName="endDate" [matDatepicker]="picker">
               <mat-datepicker-toggle matSuffix [for]="picker" class="sb-color-primary"></mat-datepicker-toggle>

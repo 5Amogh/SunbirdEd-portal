@@ -36,7 +36,6 @@ export class SbBignumberComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Changes in big num comp',changes);
     if(this.globalDistrict !== undefined || this.globalOrg !== undefined){
       this.globalData = _.filter(this.chartData,(data)=>{
         return (this.globalDistrict && this.globalOrg 
@@ -47,11 +46,9 @@ export class SbBignumberComponent implements OnInit, OnChanges {
     });
     this.globalChange = true;
     this.updatedData = this.globalData;
-    console.log('The global update',this.globalData);
     this.outletRef.clear();
     this.outletRef.createEmbeddedView(this.contentRef);
     }else{
-      console.log('Global boolean changed')
       this.globalData = this.chartData;
       this.globalChange = false;
 

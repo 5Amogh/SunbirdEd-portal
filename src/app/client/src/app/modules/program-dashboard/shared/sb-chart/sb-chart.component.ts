@@ -74,10 +74,8 @@ export class SbChartComponent implements OnInit,OnChanges{
     console.log('filterChanged method called',data)
     this.currentFilters = data.filters;
     if (data.filters) {
-      console.log('entered data.filters',data.filters)
       this.globalChange ? this.globalData['selectedFilters'] = data.filters : this.chartData['selectedFilters'] = data.filters;
     } else {
-      console.log('entered w/o data.filters')
       this.globalChange ? this.globalData['selectedFilters'] = {} : this.chartData['selectedFilters'] = {};
       this.resetFilters = { data:(this.globalChange? this.globalData: this.chartData), reset: true };
     }
@@ -92,23 +90,19 @@ export class SbChartComponent implements OnInit,OnChanges{
     this.currentFilters = [];
     this.updatedData = this.globalChange ? this.globalData: this.chartData
     this.resetFilters = { data:(this.globalChange ? this.globalData: this.chartData), reset: true };
-    console.log('reset form called',this.resetFilters)
     this.lib.instance.update({data:this.updatedData});
   }
 
   filterModalPopup(operator) {
-    console.log('Popup operated')
     if (operator == false) {
       this.closeDialog();
     }  else {
       if (this.currentFilters) {
         this.globalChange ? this.globalData['selectedFilters'] = this.currentFilters : this.chartData['selectedFilters'] = this.currentFilters;
         this.resetFilters = { data:(this.globalChange ? this.globalData: this.chartData), reset: true };
-        console.log('Reset filter in filterModal',this.resetFilters)
       } else {
         this.globalChange ? this.globalData['selectedFilters'] = {} : this.chartData['selectedFilters'] = {};
       }
-      console.log('The global update',this.globalData);
       this.openDialog();
     }
 

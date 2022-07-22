@@ -17,7 +17,6 @@ export class BigDataPipe implements PipeTransform {
         let applicableData = {
           values: _.compact(data),
         };
-        console.log("Data", data);
         return applicableData;
       } else {
         let applicableData = {
@@ -33,8 +32,6 @@ export class BigDataPipe implements PipeTransform {
           dataExpr: _.get(bigData, "dataExpr"),
           operation: "SUM",
         };
-
-        console.log("Big config", bigConfig);
         return bigConfig;
       }
     }
