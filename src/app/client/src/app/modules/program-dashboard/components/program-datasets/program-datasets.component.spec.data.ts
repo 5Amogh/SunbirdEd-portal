@@ -1,5 +1,14 @@
 export let mockData = {
   programs: {
+    ver: "1.0",
+    id:"2823343f-65d8-4061-ad3b-53a9eb943724",
+    ts: "2020-09-18T02:56:59.910+00:00",
+    params: {
+      resmsgid: "2823343f-65d8-4061-ad3b-53a9eb943724",
+      status: "successful",
+      client_key: null,
+    },
+    responseCode: "OK",
     result: [
       {
         _id: "5f34e44681871d939950bca6",
@@ -33,6 +42,15 @@ export let mockData = {
     ],
   },
   solutions: {
+    ver: "1.0",
+    id:"2823343f-65d8-4061-ad3b-53a9eb943724",
+    ts: "2020-09-18T02:56:59.910+00:00",
+    params: {
+      resmsgid: "2823343f-65d8-4061-ad3b-53a9eb943724",
+      status: "successful",
+      client_key: null,
+    },
+    responseCode: "OK",
     result: [
       {
         _id: "5f34ec17585244939f89f90d",
@@ -170,6 +188,7 @@ export let mockData = {
         orgjoindate: "2020-05-21 08:49:17:549+0000",
         isApproved: null,
         orgLeftDate: null,
+        identifier: "ORG_001"
       },
     ],
     rootOrg: {
@@ -230,7 +249,7 @@ export let mockData = {
     prevUsedEmail: "",
     firstName: "9885632",
     lastLoginTime: null,
-    emailVerified: false,
+    emailVerified: "false",
     tncAcceptedOn: "2020-05-21T08:49:18.211Z",
     framework: {},
     createdDate: "2020-05-21 08:49:14:762+0000",
@@ -351,6 +370,15 @@ export let mockData = {
     },
   },
   districtAndOrganisations: {
+    ver: "1.0",
+    id:"2823343f-65d8-4061-ad3b-53a9eb943724",
+    ts: "2020-09-18T02:56:59.910+00:00",
+    params: {
+      resmsgid: "2823343f-65d8-4061-ad3b-53a9eb943724",
+      status: "successful",
+      client_key: null,
+    },
+    responseCode: "OK",
     result: {
       districts: [
         {
@@ -2663,4 +2691,15 @@ export let mockData = {
     },
     lastUpdatedOn: "16-June-2022",
   },
+  urlConfig:{
+      URLS:{
+        KENDRA:{
+            "TARGETTED_ENTITY_TYPES": "users/mlcore/v1/targetedEntity/",
+            "PRESIGNED_URLS": "cloud-services/mlcore/v1/files/preSignedUrls",
+            "PROGRAMS_BY_PLATFORM_ROLES": "user-extension/mlcore/v1/programsByPlatformRoles",
+            "SOLUTIONS_BY_PROGRAMID": "user-extension/mlcore/v1/solutions",
+            "DISTRICTS_AND_ORGANISATIONS":"solutions/mlcore/v1/read"
+        }
+      }
+  }
 };

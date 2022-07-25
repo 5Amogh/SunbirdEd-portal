@@ -173,11 +173,13 @@ export class DatasetsComponent implements OnInit {
     this.kendraService.get(paramOptions).subscribe(data => {
       if (data && Object.keys(data.result).length) {
        this.districts = data.result.districts;
+       if(data.result.organisations){
         data.result.organisations.map(org =>{
-         if(org?.orgName !== null){
-           this.organisations.push(org)
-         }
-       });
+          if(org?.orgName !== null){
+            this.organisations.push(org)
+          }
+        });
+       }
       }
     }, error => {
       this.toasterService.error(_.get(this.resourceService, 'messages.fmsg.m0004'));
@@ -434,7 +436,7 @@ getTableData(data: { result: any, id: string }[], tableId) {
     return html2canvas(element, options);
   }
 
-  private downloadReportAsPdf() {
+  downloadReportAsPdf() {
     this.convertHTMLToCanvas(this.reportElement.nativeElement, {
       scrollX: 0,
       scrollY: -window.scrollY,
@@ -456,7 +458,7 @@ getTableData(data: { result: any, id: string }[], tableId) {
     });
   }
 
-  private downloadReportAsImage() {
+  downloadReportAsImage() {
     this.convertHTMLToCanvas(this.reportElement.nativeElement, {
       scrollX: 0,
       scrollY: -window.scrollY,
