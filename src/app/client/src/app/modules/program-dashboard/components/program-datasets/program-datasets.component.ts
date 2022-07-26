@@ -1,8 +1,8 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { INoResultMessage,ToasterService, IUserData, IUserProfile, LayoutService, ResourceService, ConfigService, OnDemandReportService } from '@sunbird/shared';
 import { TelemetryService } from '@sunbird/telemetry';
 import { Subject, Subscription, throwError } from 'rxjs';
-import { KendraService, UserService, FormService, BaseReportService } from '@sunbird/core';
+import { KendraService, UserService, FormService } from '@sunbird/core';
 import { first, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
 import { map, catchError} from 'rxjs/operators';
 import { Observable, of} from 'rxjs'; 
 import { ReportService } from '../../../dashboard/services';
-import moment from 'moment';
+import * as moment from 'moment';
 import html2canvas from 'html2canvas';
 import * as jspdf from 'jspdf';
 
@@ -23,7 +23,7 @@ const PRE_DEFINED_PARAMETERS = ['$slug','hawk-eye'];
 })
 
 
-export class DatasetsComponent implements OnInit {
+export class DatasetsComponent implements OnInit,OnDestroy{
 
   public activatedRoute: ActivatedRoute;
   public showConfirmationModal = false;
@@ -37,7 +37,6 @@ export class DatasetsComponent implements OnInit {
   solutions = [];
   public message = this.resourceService?.frmelmnts?.msg?.noDataDisplayed;
   instance: string;
-
   @ViewChild('reportElement') reportElement;
   public reportExportInProgress = false;
   @ViewChild('modal', { static: false }) modal;
@@ -94,6 +93,7 @@ export class DatasetsComponent implements OnInit {
   globalDistrict:any;
   globalOrg:any;
   tabIndex:number;
+  tableToCsv:boolean;
   minEndDate:any;  //Min end date - has to be one more than start date 
   maxEndDate:any;  //Max end date -  current date has to be max
   maxStartDate:any; //Start date - has to be one day less than end date
@@ -111,7 +111,6 @@ export class DatasetsComponent implements OnInit {
     public formService: FormService,
     public router: Router,
     public location: Location,
-    public baseReportService: BaseReportService,
     public reportService:ReportService
   ) {
     this.config = config;
@@ -138,7 +137,7 @@ export class DatasetsComponent implements OnInit {
       url:
         this.config.urlConFig.URLS.KENDRA.PROGRAMS_BY_PLATFORM_ROLES + '?role=' + this.userRoles.toString()
     };
-    this.kendraService.get(paramOptions).subscribe(data => {
+    this.kendraService.get(paramOptions).pipe(takeUntil(this.unsubscribe$)).subscribe(data => {
       if (data && data.result) {
         this.programs = data.result;
       }
@@ -154,7 +153,7 @@ export class DatasetsComponent implements OnInit {
       url:
         this.config.urlConFig.URLS.KENDRA.SOLUTIONS_BY_PROGRAMID + '/' + program._id + '?role=' + program.role[0]
     };
-    this.kendraService.get(paramOptions).subscribe(data => {
+    this.kendraService.get(paramOptions).pipe(takeUntil(this.unsubscribe$)).subscribe(data => {
       if (data && data.result) {
         this.solutions = data.result;
       }
@@ -170,7 +169,7 @@ export class DatasetsComponent implements OnInit {
       url:
         this.config.urlConFig.URLS.KENDRA.DISTRICTS_AND_ORGANISATIONS+ '/' + this.reportForm.controls.solution.value
     };
-    this.kendraService.get(paramOptions).subscribe(data => {
+    this.kendraService.get(paramOptions).pipe(takeUntil(this.unsubscribe$)).subscribe(data => {
       if (data && Object.keys(data.result).length) {
        this.districts = data.result.districts;
        if(data.result.organisations){
@@ -331,15 +330,17 @@ export class DatasetsComponent implements OnInit {
      } 
     }
    }
-    fetchConfig(filters): Observable<any> {
+
+fetchConfig(filters): Observable<any> {
     return this.reportService.listAllReports(filters).pipe(
       mergeMap(apiResponse => {
         const report = _.get(apiResponse, 'reports');
         return report ? of(_.head(report)) : throwError('No report found');
       })
     );
-  }
-    renderReport(reportId): Observable<any> {
+}
+
+renderReport(reportId): Observable<any> {
       return this.fetchConfig(reportId).pipe(switchMap(
         (report => {
         console.log('Report through fetch config', report);
@@ -362,6 +363,7 @@ export class DatasetsComponent implements OnInit {
             console.log('tables',tables);
             result['reportMetaData'] = reportConfig;
             result['lastUpdatedOn'] = this.reportService.getFormattedDate(this.reportService.getLatestLastModifiedOnDate(data));
+            console.log('lastupdatedon', result['lastUpdatedOn'])
             this.lastUpdatedOn = moment(_.get(result, 'lastUpdatedOn')).format('DD-MMMM-YYYY');
             this.chartsReportData = JSON.parse(JSON.stringify(result));
             console.log('result', result)
@@ -372,6 +374,9 @@ export class DatasetsComponent implements OnInit {
   }
 
 prepareTableData(tablesArray: any, data: any, downloadUrl: string): Array<{}> {
+  console.log('tablesArray',tablesArray);
+  console.log('data', data);
+  console.log('downloadUrl', downloadUrl)
     tablesArray = _.isArray(tablesArray) ? tablesArray : [tablesArray];
     return _.map(tablesArray, table => {
       const tableId = _.get(table, 'id') || `table-${_.random(1000)}`;
@@ -396,12 +401,15 @@ prepareTableData(tablesArray: any, data: any, downloadUrl: string): Array<{}> {
         searchable: true
       }
       tableData.downloadUrl = this.resolveParameterizedPath(_.get(table, 'downloadUrl') || downloadUrl, _.get(this.reportForm,'controls.solution.value'));
+      console.log('tableData',tableData)
       return tableData;
 
     });
   }
 
 getTableData(data: { result: any, id: string }[], tableId) {
+  console.log('getTableData data',data)
+  console.log('getTableData tableId',tableId)
     if (data.length === 1) {
       const [dataSource] = data;
       if (dataSource.id === 'default') {
@@ -412,6 +420,7 @@ getTableData(data: { result: any, id: string }[], tableId) {
   }
 
   getDataSourceById(dataSources: { result: any, id: string }[], id: string = 'default') {
+    console.log('getDataSourceById return',_.get(_.find(dataSources, ['id', id]), 'result'))
     return _.get(_.find(dataSources, ['id', id]), 'result');
   }
 
@@ -727,9 +736,9 @@ getTableData(data: { result: any, id: string }[], tableId) {
   startDateChanged($event){
     console.log('start date',_.get($event,'value'));
     if(moment($event.value).isValid()){
-      const year = $event.value._d.getFullYear();
-      const month = $event.value._d.getMonth();
-      const day = $event.value._d.getDate();
+      const year = new Date($event.value._d).getFullYear();
+      const month = new Date($event.value._d).getMonth();
+      const day = new Date($event.value._d).getDate();
       this.minEndDate = new Date(year,month,day + 1);
       this.reportForm.controls.startDate.setValue(moment(_.get($event,'value._d')).format('YYYY-MM-DD'));
       console.log('start date',_.get(this.reportForm,'controls.startDate.value'));
@@ -739,12 +748,20 @@ getTableData(data: { result: any, id: string }[], tableId) {
   endDateChanged($event){
     console.log('end date',_.get($event,'value'));
     if(moment($event.value).isValid()){
-      const year = $event.value._d.getFullYear();
-      const month = $event.value._d.getMonth();
-      const day = $event.value._d.getDate();
+      const year = new Date($event.value._d).getFullYear();
+      const month = new Date($event.value._d).getMonth();
+      const day = new Date($event.value._d).getDate();
       this.maxStartDate = new Date(year,month,day - 1);
       this.reportForm.controls.endDate.setValue(moment(_.get($event,'value._d')).format('YYYY-MM-DD'));
       console.log('end date',_.get(this.reportForm,'controls.endDate.value'));
     }
+  }
+
+  ngOnDestroy(){
+    if(this.userDataSubscription){
+      this.userDataSubscription.unsubscribe();
+    }
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 }

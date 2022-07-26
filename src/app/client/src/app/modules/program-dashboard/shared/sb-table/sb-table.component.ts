@@ -6,6 +6,7 @@ import _ from 'lodash';
   styleUrls: ['./sb-table.component.scss']
 })
 export class SbTableComponent implements OnInit, OnChanges {
+  @Input() tableToCsv;
   @Input() table;
   @Input() hideElements = false;
   @Input() globalDistrict;
@@ -27,7 +28,9 @@ export class SbTableComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.tableData = this.table?.data;
-
+    if(changes['tableToCsv'] && !changes['tableToCsv'].isFirstChange()){
+      this.exportToCsv();
+    }
     _.remove(this.table.config
       ? this.table?.config?.columnConfig
       : this.table?.columnsConfiguration?.columnConfig, (col) => {
@@ -54,6 +57,10 @@ export class SbTableComponent implements OnInit, OnChanges {
       this.unfiltered = this.tableData.map(({ district_externalId, organisation_id, program_id, solution_id, programId, solutionId, ...data }) => data)
 
     }
+  }
+
+  exportToCsv() {
+    this.lib.instance.exportAs('csv');
   }
 
 }
