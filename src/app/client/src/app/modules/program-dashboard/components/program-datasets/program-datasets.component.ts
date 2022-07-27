@@ -594,8 +594,8 @@ getTableData(data: { result: any, id: string }[], tableId) {
       const config = {
         type: this.selectedReport['datasetId'],
         params: {
-          ...(_.get(this.reportForm,'controls.startDate.value') && {'startDate':_.get(this.reportForm,'controls.startDate.value')}),
-          ...(_.get(this.reportForm,'controls.endDate.value') && {'endDate':_.get(this.reportForm,'controls.endDate.value')}),
+          ...(_.get(this.reportForm,'controls.startDate.value') && {'start_date':_.get(this.reportForm,'controls.startDate.value')}),
+          ...(_.get(this.reportForm,'controls.endDate.value') && {'end_date':_.get(this.reportForm,'controls.endDate.value')}),
           filters: this.filter
         },
         title: this.selectedReport.name

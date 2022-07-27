@@ -39,6 +39,10 @@ export class SbChartComponent implements OnInit,OnChanges{
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.checkForChanges();
+  }
+
+  checkForChanges(){
     if(this.globalDistrict !== undefined || this.globalOrg !== undefined){
       this.globalData = _.filter(this.chartData,(data)=>{
         return (this.globalDistrict && this.globalOrg 
@@ -51,13 +55,12 @@ export class SbChartComponent implements OnInit,OnChanges{
     this.updatedData = this.globalData;
     this.lib.instance.update({data:this.globalData});
     }else{
-      console.log('Global boolean changed')
       this.globalChange = false;
       this.updatedData = this.chartData
       this.lib?.instance?.update({data:this.chartData});
     }
   }
-
+  
   changeChartType(change) {
     this.type = _.lowerCase(_.get(change, 'value'));
     this.chartConfig['chartType'] = this.type;

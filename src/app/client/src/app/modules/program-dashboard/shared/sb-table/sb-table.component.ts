@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import _ from 'lodash';
+import * as _ from "lodash";
 @Component({
   selector: 'app-sb-table',
   templateUrl: './sb-table.component.html',
@@ -28,9 +28,18 @@ export class SbTableComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.tableData = this.table?.data;
-    if(changes['tableToCsv'] && !changes['tableToCsv'].isFirstChange()){
+
+    if (changes['tableToCsv'] && !changes['tableToCsv'].isFirstChange()) {
       this.exportToCsv();
     }
+    this.checkForGlobalChanges();
+  }
+
+  exportToCsv() {
+    this.lib.instance.exportAs('csv');
+  }
+
+  checkForGlobalChanges() {
     _.remove(this.table.config
       ? this.table?.config?.columnConfig
       : this.table?.columnsConfiguration?.columnConfig, (col) => {
@@ -58,9 +67,4 @@ export class SbTableComponent implements OnInit, OnChanges {
 
     }
   }
-
-  exportToCsv() {
-    this.lib.instance.exportAs('csv');
-  }
-
 }

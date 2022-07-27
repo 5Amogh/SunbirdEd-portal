@@ -1,15 +1,11 @@
-import { Component, Input, OnChanges, OnInit, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BigDataPipe } from '../../pipes/bigData/big-data.pipe';
 import { ResourceService } from '@sunbird/shared';
-import _ from 'lodash';
-import { DashletComponent } from '@project-sunbird/sb-dashlet-v9';
-
+import * as _ from "lodash";
 @Component({
   selector: 'app-sb-bignumber',
   templateUrl: './sb-bignumber.component.html',
-  styleUrls: ['./sb-bignumber.component.scss'],
-  providers:[BigDataPipe]
+  styleUrls: ['./sb-bignumber.component.scss']
 })
 export class SbBignumberComponent implements OnInit, OnChanges {
   @Input() chart;
@@ -27,7 +23,6 @@ export class SbBignumberComponent implements OnInit, OnChanges {
   constructor(
     public resourceService: ResourceService,
     public dialog: MatDialog,
-    public bigPipe : BigDataPipe
   ) { }
 
   ngOnInit(){
@@ -36,6 +31,10 @@ export class SbBignumberComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+   this.checkForGlobalChanges();
+  }
+
+  checkForGlobalChanges(){
     if(this.globalDistrict !== undefined || this.globalOrg !== undefined){
       this.globalData = _.filter(this.chartData,(data)=>{
         return (this.globalDistrict && this.globalOrg 
@@ -54,5 +53,4 @@ export class SbBignumberComponent implements OnInit, OnChanges {
 
     }
   }
-
 }
