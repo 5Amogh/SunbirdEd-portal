@@ -27,6 +27,13 @@
     &nbsp; {{ lastUpdatedOn }}
   </div>
   <div [ngSwitch]="type" class="mt-16">
+    <div class="sb-filter-label pt-16 pb-8" *ngIf="currentFilters">
+      <div *ngFor="let key of loadash.keys(currentFilters)" class="d-inline-flex flex-w-wrap pr-10">
+          <span class="sb-label-name mb-4">{{key}}:</span><span class="sb-label-value"
+            *ngFor="let val of currentFilters[key]">{{val}}
+          </span>
+      </div>
+    </div>
     <sb-dashlet *ngSwitchCase="'bar'" [type]="type" [data]="(globalChange ? globalData:updatedData) | chartType" [config]="chartConfig | chartType"
       class="chart-container mt-32 customGraph" #lib>
       <ng-template sbTemplateRef="filter" let-context>

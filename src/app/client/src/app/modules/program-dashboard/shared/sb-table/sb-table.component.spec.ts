@@ -8,18 +8,25 @@ describe("SbTableComponent", () => {
     component = new SbTableComponent();
     component.table = mockTable.table;
     component.hideElements = false;
-    component.tableData = mockTable.table[0].data;
+    component.tableData = mockTable.table.data;
   });
 
   beforeEach(() => {
     component.globalOrg = undefined;
     component.globalDistrict = undefined;
-    component.tableData = mockTable.table[0].data;
+    component.tableData = mockTable.table.data;
     jest.clearAllMocks();
   });
 
   it("should create bignumber component", () => {
     expect(component).toBeTruthy();
+  });
+
+  it("should call ngOnInit", () => {
+    jest.spyOn(component, "ngOnInit");
+    component.ngOnInit();
+    expect(component.ngOnInit).toHaveBeenCalled();
+    expect(component.tableData).toBeDefined();
   });
 
   it("should call ngOnChanges", () => {

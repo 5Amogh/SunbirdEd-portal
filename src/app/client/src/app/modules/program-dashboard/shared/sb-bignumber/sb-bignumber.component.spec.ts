@@ -11,7 +11,8 @@ describe("SbBignumberComponent", () => {
     component.chart = mockBigChart;
     component.hideElements = false;
     component.lastUpdatedOn = mockBigChart.chart.lastUpdatedOn;
-    component.chart.chartConfig = mockBigChart.chart.chartConfig
+    component.chart.chartConfig = mockBigChart.chart.chartConfig;
+    component.chartData = mockBigChart.chart.chartData;
   });
 
   beforeEach(() => {
@@ -30,6 +31,16 @@ describe("SbBignumberComponent", () => {
     expect(component.ngOnInit).toHaveBeenCalled();
     expect(component.updatedData).toBeDefined();
     expect(component.chartConfig).toBeDefined();
+  });
+
+  it("should call ngOnChanges", () => {
+    jest.spyOn(component, "ngOnChanges");
+    component.outletRef = {
+      clear(): void {},
+      createEmbeddedView(): void {},
+    } as unknown as ViewContainerRef;
+    component.ngOnChanges({});
+    expect(component.ngOnChanges).toHaveBeenCalled();
   });
 
   it("should call checkForGlobalChanges with only globalDistrict", () => {

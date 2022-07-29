@@ -1,36 +1,32 @@
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { INoResultMessage,ToasterService, IUserData, IUserProfile, LayoutService, ResourceService, ConfigService, OnDemandReportService } from '@sunbird/shared';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { INoResultMessage, ToasterService, IUserData, IUserProfile, LayoutService, ResourceService, ConfigService, OnDemandReportService } from '@sunbird/shared';
 import { TelemetryService } from '@sunbird/telemetry';
 import { Subject, Subscription, throwError } from 'rxjs';
 import { KendraService, UserService, FormService } from '@sunbird/core';
-import { first, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
+import { mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as _ from 'lodash-es';
 import { Location } from '@angular/common';
-import { map, catchError} from 'rxjs/operators';
-import { Observable, of} from 'rxjs'; 
+import { map, catchError } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { ReportService } from '../../../dashboard/services';
 import * as moment from 'moment';
 import html2canvas from 'html2canvas';
 import * as jspdf from 'jspdf';
-
-const PRE_DEFINED_PARAMETERS = ['$slug','hawk-eye'];
+const PRE_DEFINED_PARAMETERS = ['$slug', 'hawk-eye'];
 @Component({
   selector: 'app-datasets',
   templateUrl: './program-datasets.component.html',
   styleUrls: ['./program-datasets.component.scss'],
 })
-
-
-export class DatasetsComponent implements OnInit,OnDestroy{
-
+export class DatasetsComponent implements OnInit, OnDestroy {
   public activatedRoute: ActivatedRoute;
   public showConfirmationModal = false;
   public dashboardReport$;
   public noResultMessage: INoResultMessage;
   public noResult: boolean;
-  showPopUpModal:boolean;
+  showPopUpModal: boolean;
   config;
   reportTypes = [];
   programs = [];
@@ -69,10 +65,10 @@ export class DatasetsComponent implements OnInit,OnDestroy{
     programName: new FormControl('', [Validators.required]),
     solution: new FormControl('', [Validators.required]),
     reportType: new FormControl('', [Validators.required]),
-    districtName:new FormControl(),
-    organisationName:new FormControl(),
-    startDate:new FormControl(),
-    endDate:new FormControl()
+    districtName: new FormControl(),
+    organisationName: new FormControl(),
+    startDate: new FormControl(),
+    endDate: new FormControl()
   });
 
   passwordForm = new FormGroup({
@@ -80,23 +76,23 @@ export class DatasetsComponent implements OnInit,OnDestroy{
   });
   programSelected: any;
   solutionSelected: any;
-  districts:any;
-  organisations:any = [];
-  filter:any = [];
-  newData:boolean = false;
-  goToPrevLocation:boolean = true;
-  reportConfig:any;
-  chartsReportData:any;
-  lastUpdatedOn:any;
+  districts: any;
+  organisations: any = [];
+  filter: any = [];
+  newData: boolean = false;
+  goToPrevLocation: boolean = true;
+  reportConfig: any;
+  chartsReportData: any;
+  lastUpdatedOn: any;
   exportOptions = ['Pdf', 'Img'];
-  hideElements:boolean = false;
-  globalDistrict:any;
-  globalOrg:any;
-  tabIndex:number;
-  tableToCsv:boolean;
-  minEndDate:any;  //Min end date - has to be one more than start date 
-  maxEndDate:any;  //Max end date -  current date has to be max
-  maxStartDate:any; //Start date - has to be one day less than end date
+  hideElements: boolean = false;
+  globalDistrict: any;
+  globalOrg: any;
+  tabIndex: number;
+  tableToCsv: boolean;
+  minEndDate: any;  //Min end date - has to be one more than start date 
+  maxEndDate: any;  //Max end date -  current date has to be max
+  maxStartDate: any; //Start date - has to be one day less than end date
 
   constructor(
     activatedRoute: ActivatedRoute,
@@ -111,7 +107,7 @@ export class DatasetsComponent implements OnInit,OnDestroy{
     public formService: FormService,
     public router: Router,
     public location: Location,
-    public reportService:ReportService
+    public reportService: ReportService
   ) {
     this.config = config;
     this.activatedRoute = activatedRoute;
@@ -131,7 +127,7 @@ export class DatasetsComponent implements OnInit,OnDestroy{
   public userId: string;
   public selectedReport;
   public selectedSolution: string;
-  
+
   getProgramsList() {
     const paramOptions = {
       url:
@@ -167,18 +163,18 @@ export class DatasetsComponent implements OnInit,OnDestroy{
 
     const paramOptions = {
       url:
-        this.config.urlConFig.URLS.KENDRA.DISTRICTS_AND_ORGANISATIONS+ '/' + this.reportForm.controls.solution.value
+        this.config.urlConFig.URLS.KENDRA.DISTRICTS_AND_ORGANISATIONS + '/' + this.reportForm.controls.solution.value
     };
     this.kendraService.get(paramOptions).pipe(takeUntil(this.unsubscribe$)).subscribe(data => {
       if (data && Object.keys(data.result).length) {
-       this.districts = data.result.districts;
-       if(data.result.organisations){
-        data.result.organisations.map(org =>{
-          if(org?.orgName !== null){
-            this.organisations.push(org)
-          }
-        });
-       }
+        this.districts = data.result.districts;
+        if (data.result.organisations) {
+          data.result.organisations.map(org => {
+            if (org?.orgName !== null) {
+              this.organisations.push(org)
+            }
+          });
+        }
       }
     }, error => {
       this.toasterService.error(_.get(this.resourceService, 'messages.fmsg.m0004'));
@@ -212,14 +208,14 @@ export class DatasetsComponent implements OnInit,OnDestroy{
     this.getFormDetails();
     this.timeRangeInit();
   }
-  
-  timeRangeInit(){
+
+  timeRangeInit() {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth();
     const today = new Date().getDate();
     this.minEndDate = new Date(currentYear - 100, 0, 1);
-    this.maxEndDate =  new Date(currentYear + 0, currentMonth, today);
-    this.maxStartDate = new Date(currentYear + 0, currentMonth, today -1);
+    this.maxEndDate = new Date(currentYear + 0, currentMonth, today);
+    this.maxStartDate = new Date(currentYear + 0, currentMonth, today - 1);
   }
 
   public resolveParameterizedPath(path: string, explicitValue?: string): string {
@@ -232,16 +228,17 @@ export class DatasetsComponent implements OnInit,OnDestroy{
   }
 
   public getUpdatedParameterizedPath(dataSources) {
-    const explicitValue = _.get(this.reportForm,'controls.solution.value')
+    const explicitValue = _.get(this.reportForm, 'controls.solution.value')
     return _.map(dataSources, (dataSource) => ({
       id: dataSource.id,
       path: this.resolveParameterizedPath(dataSource.path, explicitValue)
     }));
   }
-  selectedTabChange(event){
+  
+  selectedTabChange(event) {
     this.tabIndex = event.index;
-
   }
+
   public programSelection($event) {
     this.reportForm.reset();
     const program = this.programs.filter(data => {
@@ -280,103 +277,86 @@ export class DatasetsComponent implements OnInit,OnDestroy{
 
       if (solution[0].isRubricDriven == true && solution[0].type == 'observation') {
         const type = solution[0].type + '_with_rubric';
-        this.getReportTypes(this.programSelected,type);
+        this.getReportTypes(this.programSelected, type);
       } else {
-        this.getReportTypes(this.programSelected,solution[0].type);
+        this.getReportTypes(this.programSelected, solution[0].type);
       }
       this.getDistritAndOrganisationList();
-  
+
 
     }
   }
 
-  public getReportTypes(programId,solutionType){
+  public getReportTypes(programId, solutionType) {
     this.reportTypes = [];
-    let selectedProgram = this.programs.filter(program => program._id==programId);
-    if(selectedProgram && selectedProgram[0]){
-      console.log(selectedProgram, 'Program selected');
-     let role = selectedProgram[0]['role'];
-     console.log(role, 'role');
-     let types = this.formData[solutionType];
-     console.log(this.formData, 'form data');
-     console.log(solutionType, 'Solution type');
-     console.log(types,'types');
+    let selectedProgram = this.programs.filter(program => program._id == programId);
+    if (selectedProgram && selectedProgram[0]) {
+      let role = selectedProgram[0]['role'];
+      let types = this.formData[solutionType];
 
-    let filtersForReport = {
-      "reportconfig.report_type" : "program_dashboard",
-      "reportconfig.solution_type" : `${(solutionType === 'improvementProject') ? "project" : solutionType}`,
-      "reportconfig.report_status" : "active"
+      let filtersForReport = {
+        "reportconfig.report_type": "program_dashboard",
+        "reportconfig.solution_type": `${(solutionType === 'improvementProject') ? "project" : solutionType}`,
+        "reportconfig.report_status": "active"
+      }
+
+      this.dashboardReport$ = this.renderReport(filtersForReport).pipe(
+        catchError(err => {
+          console.error('Error while rendering report', err);
+          this.noResultMessage = {
+            'messageText': _.get(err, 'messageText') || 'messages.stmsg.m0131'
+          };
+          this.noResult = true;
+          return of({});
+        })
+      );
+
+      if (types && types.length > 0) {
+        types.forEach(element => {
+          let roleMatch = role.some(e => element.roles.includes(e));
+          if (roleMatch) {
+            this.reportTypes.push(element);
+          }
+        });
+      }
     }
+  }
 
-    this.dashboardReport$ = this.renderReport(filtersForReport).pipe(
-      catchError(err => {
-        console.error('Error while rendering report', err);
-        this.noResultMessage = {
-          'messageText': _.get(err, 'messageText') || 'messages.stmsg.m0131'
-        };
-        this.noResult = true;
-        return of({});
-      })
-     );
-     console.log('Dashboard report', this.dashboardReport$);
-    
-     if(types && types.length > 0){
-       types.forEach(element => {
-           let roleMatch = role.some(e =>  element.roles.includes(e));
-           if(roleMatch){
-             this.reportTypes.push(element);
-           }
-       });
-     } 
-    }
-   }
-
-fetchConfig(filters): Observable<any> {
+  fetchConfig(filters): Observable<any> {
     return this.reportService.listAllReports(filters).pipe(
       mergeMap(apiResponse => {
         const report = _.get(apiResponse, 'reports');
         return report ? of(_.head(report)) : throwError('No report found');
       })
     );
-}
+  }
 
-renderReport(reportId): Observable<any> {
-      return this.fetchConfig(reportId).pipe(switchMap(
-        (report => {
-        console.log('Report through fetch config', report);
+  renderReport(reportId): Observable<any> {
+    return this.fetchConfig(reportId).pipe(switchMap(
+      (report => {
         const reportConfig = this.reportConfig = _.get(report, 'reportconfig');
         const dataSource = _.get(reportConfig, 'dataSource') || [];
-        console.log('Datasources', dataSource)
         let updatedDataSource = _.isArray(dataSource) ? dataSource : [{ id: 'default', path: dataSource }];
         updatedDataSource = this.getUpdatedParameterizedPath(updatedDataSource);
-        console.log('Updated datasources', updatedDataSource)
         const charts = _.get(reportConfig, 'charts'), tables = _.get(reportConfig, 'table')
         return this.reportService.downloadMultipleDataSources(updatedDataSource).pipe(map((apiResponse) => {
-            const data = apiResponse;
-            console.log('Data from multiple download', data)
-            const result: any = Object.assign({});
-            const chart = (charts && this.reportService.prepareChartData(charts, data, updatedDataSource,
-              _.get(reportConfig, 'reportLevelDataSourceId'))) || [];
-            result['charts'] = chart;
-            console.log('charts',chart)
-            result['tables'] = (tables && this.prepareTableData(tables, data, _.get(reportConfig, 'downloadUrl'))) || [];
-            console.log('tables',tables);
-            result['reportMetaData'] = reportConfig;
-            result['lastUpdatedOn'] = this.reportService.getFormattedDate(this.reportService.getLatestLastModifiedOnDate(data));
-            console.log('lastupdatedon', result['lastUpdatedOn'])
-            this.lastUpdatedOn = moment(_.get(result, 'lastUpdatedOn')).format('DD-MMMM-YYYY');
-            this.chartsReportData = JSON.parse(JSON.stringify(result));
-            console.log('result', result)
-            return result;
-      }))
-    })
+          const data = apiResponse;
+          const result: any = Object.assign({});
+          const chart = (charts && this.reportService.prepareChartData(charts, data, updatedDataSource,
+            _.get(reportConfig, 'reportLevelDataSourceId'))) || [];
+          result['charts'] = chart;
+          result['tables'] = (tables && this.prepareTableData(tables, data, _.get(reportConfig, 'downloadUrl'))) || [];
+          result['reportMetaData'] = reportConfig;
+          result['lastUpdatedOn'] = this.reportService.getFormattedDate(this.reportService.getLatestLastModifiedOnDate(data));
+          this.lastUpdatedOn = moment(_.get(result, 'lastUpdatedOn')).format('DD-MMMM-YYYY');
+          this.chartsReportData = JSON.parse(JSON.stringify(result));
+          return result;
+        }))
+      })
     ))
   }
 
-prepareTableData(tablesArray: any, data: any, downloadUrl: string): Array<{}> {
-  console.log('tablesArray',tablesArray);
-  console.log('data', data);
-  console.log('downloadUrl', downloadUrl)
+  prepareTableData(tablesArray: any, data: any, downloadUrl: string): Array<{}> {
     tablesArray = _.isArray(tablesArray) ? tablesArray : [tablesArray];
     return _.map(tablesArray, table => {
       const tableId = _.get(table, 'id') || `table-${_.random(1000)}`;
@@ -384,12 +364,12 @@ prepareTableData(tablesArray: any, data: any, downloadUrl: string): Array<{}> {
       const tableData: any = {};
       tableData.id = tableId;
       tableData.name = _.get(table, 'name') || 'Table';
-      tableData.config = _.get(table, 'config') ||  false;
+      tableData.config = _.get(table, 'config') || false;
       tableData.data = dataset.data;
       let columns = []
       tableData.header = _.get(table, 'columns') || _.get(dataset, _.get(table, 'columnsExpr'));
       tableData.header && tableData.header.map((col) => {
-        let obj = {title: col, data:col}
+        let obj = { title: col, data: col }
         columns.push(obj);
       })
       tableData.columnsConfiguration = {
@@ -400,16 +380,13 @@ prepareTableData(tablesArray: any, data: any, downloadUrl: string): Array<{}> {
         paging: true,
         searchable: true
       }
-      tableData.downloadUrl = this.resolveParameterizedPath(_.get(table, 'downloadUrl') || downloadUrl, _.get(this.reportForm,'controls.solution.value'));
-      console.log('tableData',tableData)
+      tableData.downloadUrl = this.resolveParameterizedPath(_.get(table, 'downloadUrl') || downloadUrl, _.get(this.reportForm, 'controls.solution.value'));
       return tableData;
 
     });
   }
 
-getTableData(data: { result: any, id: string }[], tableId) {
-  console.log('getTableData data',data)
-  console.log('getTableData tableId',tableId)
+  getTableData(data: { result: any, id: string }[], tableId) {
     if (data.length === 1) {
       const [dataSource] = data;
       if (dataSource.id === 'default') {
@@ -420,7 +397,6 @@ getTableData(data: { result: any, id: string }[], tableId) {
   }
 
   getDataSourceById(dataSources: { result: any, id: string }[], id: string = 'default') {
-    console.log('getDataSourceById return',_.get(_.find(dataSources, ['id', id]), 'result'))
     return _.get(_.find(dataSources, ['id', id]), 'result');
   }
 
@@ -428,7 +404,7 @@ getTableData(data: { result: any, id: string }[], tableId) {
     this.reportExportInProgress = true;
     this.toggleHtmlVisibilty(true);
     setTimeout(() => {
-      switch (_.toLower( _.get(reportType, 'value'))) {
+      switch (_.toLower(_.get(reportType, 'value'))) {
         case 'img': {
           this.downloadReportAsImage();
           break;
@@ -438,8 +414,8 @@ getTableData(data: { result: any, id: string }[], tableId) {
           break;
         }
       }
-  })
-}
+    })
+  }
 
   private convertHTMLToCanvas(element, options) {
     return html2canvas(element, options);
@@ -515,7 +491,7 @@ getTableData(data: { result: any, id: string }[], tableId) {
     this.goToPrevLocation ? this.location.back() : (this.showPopUpModal = false);
   }
 
-  confirm(){
+  confirm() {
     this.showPopUpModal = false;
   }
   public handleConfirmationEvent(event: boolean) {
@@ -528,7 +504,7 @@ getTableData(data: { result: any, id: string }[], tableId) {
     this.awaitPopUp = false;
   }
 
-  public resetFilter(){
+  public resetFilter() {
     this.reportForm.reset();
     this.filter = [];
     this.districts = [];
@@ -553,12 +529,12 @@ getTableData(data: { result: any, id: string }[], tableId) {
     });
   }
 
-  districtSelection($event){
+  districtSelection($event) {
     this.globalDistrict = $event.value
     this.reportForm.controls.districtName.setValue($event.value);
   }
 
-  organisationSelection($event){
+  organisationSelection($event) {
     this.globalOrg = $event.value
     this.reportForm.controls.organisationName.setValue($event.value);
   }
@@ -566,21 +542,21 @@ getTableData(data: { result: any, id: string }[], tableId) {
   reportChanged(selectedReportData) {
     this.selectedReport = selectedReportData;
   }
- addFilters(){ 
+  addFilters() {
     let filterKeysObj = {
-    program_id:_.get(this.reportForm,'controls.programName.value'),
-    solution_id:_.get(this.reportForm,'controls.solution.value'),
-    programId:_.get(this.reportForm,'controls.programName.value'),
-    solutionId:_.get(this.reportForm,'controls.solution.value'),
-    district_externalId:_.get(this.reportForm,'controls.districtName.value')|| undefined,
-    organisation_id:_.get(this.reportForm,'controls.organisationName.value')|| undefined
+      program_id: _.get(this.reportForm, 'controls.programName.value'),
+      solution_id: _.get(this.reportForm, 'controls.solution.value'),
+      programId: _.get(this.reportForm, 'controls.programName.value'),
+      solutionId: _.get(this.reportForm, 'controls.solution.value'),
+      district_externalId: _.get(this.reportForm, 'controls.districtName.value') || undefined,
+      organisation_id: _.get(this.reportForm, 'controls.organisationName.value') || undefined
     }
     let keys = Object.keys(filterKeysObj);
-    this.selectedReport['filters'].map(data=> {
-     keys.filter(key => {
+    this.selectedReport['filters'].map(data => {
+      keys.filter(key => {
         return data.dimension == key && (data.value = filterKeysObj[key]);
       })
-      if(data.value !== undefined){
+      if (data.value !== undefined) {
         this.filter.push(data);
       }
     });
@@ -594,8 +570,8 @@ getTableData(data: { result: any, id: string }[], tableId) {
       const config = {
         type: this.selectedReport['datasetId'],
         params: {
-          ...(_.get(this.reportForm,'controls.startDate.value') && {'start_date':_.get(this.reportForm,'controls.startDate.value')}),
-          ...(_.get(this.reportForm,'controls.endDate.value') && {'end_date':_.get(this.reportForm,'controls.endDate.value')}),
+          ...(_.get(this.reportForm, 'controls.startDate.value') && { 'start_date': _.get(this.reportForm, 'controls.startDate.value') }),
+          ...(_.get(this.reportForm, 'controls.endDate.value') && { 'end_date': _.get(this.reportForm, 'controls.endDate.value') }),
           filters: this.filter
         },
         title: this.selectedReport.name
@@ -618,14 +594,14 @@ getTableData(data: { result: any, id: string }[], tableId) {
       this.onDemandReportService.submitRequest(request).subscribe((data: any) => {
         if (data && data.result) {
           if (data.result.status === this.reportStatus.failed) {
-            const error =  _.get(this.resourceService, 'frmelmnts.lbl.reportRequestFailed');
+            const error = _.get(this.resourceService, 'frmelmnts.lbl.reportRequestFailed');
             this.toasterService.error(error);
           } else {
 
             if (data['result'] && data['result']['requestId']) {
 
-            const dataFound =  this.onDemandReportData.filter(function(submittedReports) {
-                 if ( submittedReports['requestId'] == data['result']['requestId']) {
+              const dataFound = this.onDemandReportData.filter(function (submittedReports) {
+                if (submittedReports['requestId'] == data['result']['requestId']) {
                   return data;
                 }
 
@@ -655,8 +631,8 @@ getTableData(data: { result: any, id: string }[], tableId) {
       }, error => {
         this.toasterService.error(_.get(this.resourceService, 'messages.fmsg.m0004'));
       });
-      this.filter= [];
-      
+      this.filter = [];
+
     } else {
       this.popup = false;
       this.isProcessed = true;
@@ -680,8 +656,7 @@ getTableData(data: { result: any, id: string }[], tableId) {
 
     this.formService.getFormConfig(formServiceInputParams).subscribe((formData) => {
       if (formData) {
-          this.formData = formData;
-          console.log('form data function',formData)
+        this.formData = formData;
       }
     }, error => {
       this.toasterService.error(this.resourceService.messages.emsg.m0005);
@@ -693,7 +668,7 @@ getTableData(data: { result: any, id: string }[], tableId) {
     let requestStatus = true;
     const selectedReportList = [];
     _.forEach(this.onDemandReportData, (value) => {
-      if (value.datasetConfig.type == this.selectedReport.datasetId  && value.datasetConfig.params.solutionId == this.selectedSolution) {
+      if (value.datasetConfig.type == this.selectedReport.datasetId && value.datasetConfig.params.solutionId == this.selectedSolution) {
         selectedReportList.push(value);
       }
     });
@@ -733,32 +708,28 @@ getTableData(data: { result: any, id: string }[], tableId) {
     return row;
   }
 
-  startDateChanged($event){
-    console.log('start date',_.get($event,'value'));
-    if(moment($event.value).isValid()){
+  startDateChanged($event) {
+    if (moment($event.value).isValid()) {
       const year = new Date($event.value._d).getFullYear();
       const month = new Date($event.value._d).getMonth();
       const day = new Date($event.value._d).getDate();
-      this.minEndDate = new Date(year,month,day + 1);
-      this.reportForm.controls.startDate.setValue(moment(_.get($event,'value._d')).format('YYYY-MM-DD'));
-      console.log('start date',_.get(this.reportForm,'controls.startDate.value'));
+      this.minEndDate = new Date(year, month, day + 1);
+      this.reportForm.controls.startDate.setValue(moment(_.get($event, 'value._d')).format('YYYY-MM-DD'));
     }
   }
 
-  endDateChanged($event){
-    console.log('end date',_.get($event,'value'));
-    if(moment($event.value).isValid()){
+  endDateChanged($event) {
+    if (moment($event.value).isValid()) {
       const year = new Date($event.value._d).getFullYear();
       const month = new Date($event.value._d).getMonth();
       const day = new Date($event.value._d).getDate();
-      this.maxStartDate = new Date(year,month,day - 1);
-      this.reportForm.controls.endDate.setValue(moment(_.get($event,'value._d')).format('YYYY-MM-DD'));
-      console.log('end date',_.get(this.reportForm,'controls.endDate.value'));
+      this.maxStartDate = new Date(year, month, day - 1);
+      this.reportForm.controls.endDate.setValue(moment(_.get($event, 'value._d')).format('YYYY-MM-DD'));
     }
   }
 
-  ngOnDestroy(){
-    if(this.userDataSubscription){
+  ngOnDestroy() {
+    if (this.userDataSubscription) {
       this.userDataSubscription.unsubscribe();
     }
     this.unsubscribe$.next();

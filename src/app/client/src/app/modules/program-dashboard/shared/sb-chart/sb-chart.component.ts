@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ResourceService } from '@sunbird/shared';
-import _ from 'lodash';
+import * as _ from "lodash-es";
 @Component({
   selector: 'app-sb-chart',
   templateUrl: './sb-chart.component.html',
@@ -22,6 +22,7 @@ export class SbChartComponent implements OnInit,OnChanges{
   globalChange:boolean;
   globalData;
   selectedFilters: {};
+  loadash = _;
   availableChartTypeOptions = ['Bar', 'Line'];
   @ViewChild('lib', { static: false }) lib: any;
   @ViewChild('filterPopUpMat') filterPopUpMat: TemplateRef<any>;
@@ -39,10 +40,10 @@ export class SbChartComponent implements OnInit,OnChanges{
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.checkForChanges();
+    this.checkForGlobalChanges();
   }
 
-  checkForChanges(){
+  checkForGlobalChanges(){
     if(this.globalDistrict !== undefined || this.globalOrg !== undefined){
       this.globalData = _.filter(this.chartData,(data)=>{
         return (this.globalDistrict && this.globalOrg 
@@ -51,6 +52,7 @@ export class SbChartComponent implements OnInit,OnChanges{
           :this.globalOrg ? data?.organisation_id == this.globalOrg 
           : data)
     });
+    this.currentFilters = [];
     this.globalChange = true;
     this.updatedData = this.globalData;
     this.lib.instance.update({data:this.globalData});

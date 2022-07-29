@@ -1,5 +1,5 @@
 export let mockTable = {
-  table: [
+  table:
     {
       id: "ml_district_wise_observation_status_and_entities_observed_new_new_new_new_api_new_dataaa_pabitra_eight",
       name: "District wise observation status and entities observed",
@@ -189,5 +189,4 @@ export let mockTable = {
       downloadUrl:
         "/reports/fetch/6214be63c7fe210007b65221/ml_district_wise_observation_status_and_entities_observed_new_new_new_new_api_new_dataaa_pabitra_eight.csv",
     }
-  ],
 };

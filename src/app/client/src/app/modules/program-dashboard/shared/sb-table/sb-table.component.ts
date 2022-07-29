@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import * as _ from "lodash";
+import * as _ from "lodash-es";
 @Component({
   selector: 'app-sb-table',
   templateUrl: './sb-table.component.html',
