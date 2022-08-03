@@ -90,6 +90,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
   globalOrg: any;
   tabIndex: number;
   tableToCsv: boolean;
+  hideTableToCsv:boolean = true;
   minEndDate: any;  //Min end date - has to be one more than start date 
   maxEndDate: any;  //Max end date -  current date has to be max
   maxStartDate: any; //Start date - has to be one day less than end date
@@ -346,6 +347,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
             _.get(reportConfig, 'reportLevelDataSourceId'))) || [];
           result['charts'] = chart;
           result['tables'] = (tables && this.prepareTableData(tables, data, _.get(reportConfig, 'downloadUrl'))) || [];
+          (result?.tables[0]?.data != undefined) ? this.hideTableToCsv = true : this.hideTableToCsv = false; 
           result['reportMetaData'] = reportConfig;
           result['lastUpdatedOn'] = this.reportService.getFormattedDate(this.reportService.getLatestLastModifiedOnDate(data));
           this.lastUpdatedOn = moment(_.get(result, 'lastUpdatedOn')).format('DD-MMMM-YYYY');

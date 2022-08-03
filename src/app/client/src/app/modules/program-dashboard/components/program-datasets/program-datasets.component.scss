@@ -55,7 +55,7 @@
 }
 
 .col-gap{
-  column-gap:1.875rem;
+  gap:1.875rem;
 }
 
 .modalNote{
@@ -78,9 +78,6 @@
   font-weight: bold;
 }
 
-.dateDrodpwonWidth{
-  width: 12%;
-}
 ::ng-deep {
   
   .cdk-overlay-container{
@@ -114,6 +111,11 @@
     }
   }
   
+  .customDate{
+    .mat-form-field-infix{
+      width: 8.75rem !important;
+    }
+  }
   .chart-title {
     font-size: 1rem;
     font-weight: 500;
@@ -154,7 +156,5 @@
   .mat-option-text{
     display: flex !important;
   }
-
-
 
 }

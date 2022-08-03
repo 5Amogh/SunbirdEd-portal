@@ -105,7 +105,7 @@
               </mat-form-field>
           </div>
 
-          <div *ngIf="tabIndex !== 1 && tabIndex !== 2" class="d-flex flex-dc dateDrodpwonWidth">
+          <div *ngIf="tabIndex !== 1 && tabIndex !== 2" class="d-flex flex-dc customDate">
             <label>{{resourceService?.frmelmnts?.lbl?.startdate | titlecase }}</label>
             <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd sb-color-primary">
               <input matInput placeholder="dd/mm/yyyy" [max]="maxStartDate" (dateInput)="startDateChanged($event)" (dateChange)="startDateChanged($event)" formControlName="startDate" [matDatepicker]="picker">
@@ -113,7 +113,7 @@
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>            
           </div>
-          <div *ngIf="tabIndex !== 1 && tabIndex !== 2" class="d-flex flex-dc dateDrodpwonWidth">
+          <div *ngIf="tabIndex !== 1 && tabIndex !== 2" class="d-flex flex-dc customDate">
             <label>{{resourceService?.frmelmnts?.lbl?.enddate | titlecase }}</label>
             <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd sb-color-primary">
               <input matInput placeholder="dd/mm/yyyy" [min]="minEndDate" [max]="maxEndDate"  (dateInput)="endDateChanged($event)" (dateChange)="endDateChanged($event)" formControlName="endDate" [matDatepicker]="picker">
@@ -129,7 +129,7 @@
               attr.aria-label="{{option}}">{{option}}</mat-option>
               </mat-select>
               </mat-form-field>
-              <button  *ngIf="!noResult && (tabIndex == 2)" type="button" class="sb-btn sb-btn-normal sb-btn-primary export-btn flex-as-flex-end"
+              <button  *ngIf="!noResult && hideTableToCsv && (tabIndex == 2)" type="button" class="sb-btn sb-btn-normal sb-btn-primary export-btn flex-as-flex-end"
               (click)="tableToCsv = !tableToCsv"><i class="download icon"></i>{{resourceService?.frmelmnts?.lbl?.exportCsv}}</button>    
           </div>
         </div>
