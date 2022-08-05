@@ -41,7 +41,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   public unsubscribe = new Subject<void>();
   previousFilters: any;
   formChartData: any = [];
-
+  constReference: any;
+  firstFilter: any;
   @Input()
   set selectedFilter(val: any) {
     if (val) {
@@ -61,19 +62,19 @@ export class FilterComponent implements OnInit, OnDestroy {
   @Input()
   set resetFilters(val: any) {
     if (val) {
-        const currentFilterValue = _.get(this.filtersFormGroup, 'value');
-        this.resetFilter();
-        this.chartData = val.data;
-        this.buildFiltersForm();
-        if (val.reset && val.reset == true) {
-          this.selectedFilters = {};
-        } else if (val.filters) {
-          this.filtersFormGroup.patchValue(val.filters);
-          this.selectedFilters = val.filters;
-        } else if (currentFilterValue) {
-          this.filtersFormGroup.patchValue(currentFilterValue);
-          this.selectedFilters = currentFilterValue;
-        }
+      const currentFilterValue = _.get(this.filtersFormGroup, 'value');
+      this.resetFilter();
+      this.chartData = val.data;
+      this.buildFiltersForm();
+      if (val.reset && val.reset == true) {
+        this.selectedFilters = {};
+      } else if (val.filters) {
+        this.filtersFormGroup.patchValue(val.filters);
+        this.selectedFilters = val.filters;
+      } else if (currentFilterValue) {
+        this.filtersFormGroup.patchValue(currentFilterValue);
+        this.selectedFilters = currentFilterValue;
+      }
     }
   }
 
@@ -102,7 +103,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const charts = [];
     if (this.chartData && this.chartData.length > 0) {
-      this.chartData.map(function(data) {
+      this.chartData.map(function (data) {
         charts.push(...data.data);
         return data.data;
       });
@@ -121,18 +122,27 @@ export class FilterComponent implements OnInit, OnDestroy {
     const filterKeys = Object.keys(this.selectedFilters);
     let previousKeys = [];
     if (this.previousFilters) {
+      console.log('prev filters', this.previousFilters)
       previousKeys = Object.keys(this.previousFilters);
     }
     _.forEach(this.filters, filter => {
+      const { reference } = filter;
       const options = (_.sortBy(_.uniq(
-        _.map(chartData, (data) => (data && data[filter.reference]) ? data[filter.reference].toLowerCase() : ''
+        _.map(chartData, (data) => (data && data[reference]) ? data[reference].toLowerCase() : ''
         )))).filter(Boolean);
 
-      if (!filterKeys.includes(filter.reference)) {
+      if (this.selectedFilters[reference] && this.selectedFilters[reference].length > 0) {
+        this.selectedFilters[reference] = options;
+      };
+
+      if (this.constReference != reference) {
+        filter.options = options;
+      }
+      if (!filterKeys.includes(reference)) {
         filter.options = options;
       } else {
-        if (previousKeys && previousKeys.includes(filter.reference) && this.previousFilters && this.previousFilters[filter.reference].length == this.selectedFilters[filter.reference].length) {
-          if (options.length > filter.options) {
+        if (previousKeys && previousKeys.includes(reference) && this.previousFilters && this.previousFilters[reference].length == this.selectedFilters[reference].length) {
+          if (options.length < filter.options && this.constReference != reference) {
             filter.options = options;
           }
         }
@@ -141,21 +151,21 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.previousFilters = this.selectedFilters;
   }
   formGeneration(chartData) {
-      this.filtersFormGroup = this.fb.group({});
-      _.forEach(this.filters, filter => {
+    this.filtersFormGroup = this.fb.group({});
+    _.forEach(this.filters, filter => {
 
-        if (filter.controlType === 'date' || /date/i.test(_.get(filter, 'reference'))) {
-          const dateRange = _.uniq(_.map(chartData, _.get(filter, 'reference')));
-          this.pickerMinDate = moment(dateRange[0], 'DD-MM-YYYY');
-          this.pickerMaxDate = moment(dateRange[dateRange.length - 1], 'DD-MM-YYYY');
-          this.dateFilterReferenceName = filter.reference;
-        }
-        this.filtersFormGroup.addControl(_.get(filter, 'reference'), this.fb.control(''));
-        filter.options = (_.sortBy(_.uniq(
-          _.map(chartData, (data) => (data && data[filter.reference]) ? data[filter.reference].toLowerCase() : ''
-          )))).filter(Boolean);
+      if (filter.controlType === 'date' || /date/i.test(_.get(filter, 'reference'))) {
+        const dateRange = _.uniq(_.map(chartData, _.get(filter, 'reference')));
+        this.pickerMinDate = moment(dateRange[0], 'DD-MM-YYYY');
+        this.pickerMaxDate = moment(dateRange[dateRange.length - 1], 'DD-MM-YYYY');
+        this.dateFilterReferenceName = filter.reference;
+      }
+      this.filtersFormGroup.addControl(_.get(filter, 'reference'), this.fb.control(''));
+      filter.options = (_.sortBy(_.uniq(
+        _.map(chartData, (data) => (data && data[filter.reference]) ? data[filter.reference].toLowerCase() : ''
+        )))).filter(Boolean);
 
-      });
+    });
 
   }
 
@@ -165,6 +175,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.unsubscribe),
         map(filters => {
+          console.log('buildFiltersForm filter', filters)
           return _.omitBy(filters, _.isEmpty);
         }),
         debounceTime(100),
@@ -172,13 +183,25 @@ export class FilterComponent implements OnInit, OnDestroy {
       )
       .subscribe((filters) => {
         this.selectedFilters = filters;
+        //  const proceed =  _.find(filters, (value,key)=> {
+        //     return this.firstFilter && this.firstFilter == key
+        //   }); 
+        //   if(this.firstFilter && !proceed){
+        //     this.selectedFilters = {};
+        //     return;
+        //   }
+        if (filters && Object.keys(filters).length == 1 && (!this.previousFilters || !Object.keys(this.previousFilters).length)) {
+          this.firstFilter = Object.keys(filters)[0];
+          console.log('firstFilter', this.firstFilter);
+        }
+        console.log('selectedFilters in buildFiltersForm', this.selectedFilters)
         this.filterData();
       }, (err) => {
         console.log(err);
       });
-      if (this.chartData.selectedFilters) {
-          this.filtersFormGroup.patchValue(this.chartData.selectedFilters);
-      }
+    if (this.chartData.selectedFilters) {
+      this.filtersFormGroup.patchValue(this.chartData.selectedFilters);
+    }
 
   }
 
@@ -220,23 +243,22 @@ export class FilterComponent implements OnInit, OnDestroy {
       const filterData = [];
       const filteredChartData = [];
       this.chartData.forEach(chart => {
-
         const id = chart.id;
         delete chart.id;
         delete chart.data.selectedFilters;
         delete chart.data.id;
 
         const result: Array<{}> = _.filter(chart.data, data => {
-            return _.every(this.selectedFilters, (filterValues, key) => {
-              if (data && data[key]) {
-                return _.some(filterValues, filterValue => _.trim(_.toLower(filterValue)) === _.trim(_.toLower(_.get(data, key))));
-              }
-            });
-
+          return _.every(this.selectedFilters, (filterValues, key) => {
+            if (data && data[key]) {
+              return _.some(filterValues, filterValue => _.trim(_.toLower(filterValue)) === _.trim(_.toLower(_.get(data, key))));
+            }
+          });
         });
 
         filteredChartData.push({ id: id, data: result });
         result['selectedFilters'] = this.selectedFilters;
+        console.log('selectedFilters', this.selectedFilters)
         filterData.push(...result);
       });
 
@@ -244,13 +266,13 @@ export class FilterComponent implements OnInit, OnDestroy {
       const keys = Object.keys(this.selectedFilters);
       this.dateFilters = [];
       this.filters.map(ele => {
-          if (ele && ele['controlType'].toLowerCase() == 'date') {
-            keys.map(item => {
-              if (item == ele['reference']) {
-                this.dateFilters.push(item);
-              }
-            });
-          }
+        if (ele && ele['controlType'].toLowerCase() == 'date') {
+          keys.map(item => {
+            if (item == ele['reference']) {
+              this.dateFilters.push(item);
+            }
+          });
+        }
       });
 
       this.filterChanged.emit({
@@ -268,6 +290,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
 
   }
+
   checkFilterReferance(element) {
     if (this.dateFilters && this.dateFilters.includes(element)) {
       return true;
@@ -279,6 +302,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     const object = {};
     if (data && data.length > 0) {
       object[reference] = data;
+      this.constReference = reference;
     }
     this.filtersFormGroup.controls[reference].setValue(data);
   }
@@ -306,7 +330,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   getFiltersValues(filter) {
-   return Array.isArray(filter) ? filter : [filter];
+    return Array.isArray(filter) ? filter : [filter];
   }
 
 }
