@@ -41,7 +41,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   public unsubscribe = new Subject<void>();
   previousFilters: any;
   formChartData: any = [];
-
+  constReference: any;
+  firstFilter: any;
   @Input()
   set selectedFilter(val: any) {
     if (val) {
@@ -51,6 +52,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
       this.formGeneration(val.data);
       if (val.selectedFilters) {
+        console.log('val.selectedFilters',val.selectedFilters)
         this.selectedFilters = val.selectedFilters;
         this.filtersFormGroup.patchValue(val.selectedFilters);
       }
@@ -68,9 +70,11 @@ export class FilterComponent implements OnInit, OnDestroy {
         if (val.reset && val.reset == true) {
           this.selectedFilters = {};
         } else if (val.filters) {
+          console.log('val.filters',val.filters)
           this.filtersFormGroup.patchValue(val.filters);
           this.selectedFilters = val.filters;
         } else if (currentFilterValue) {
+          console.log('currentFilterValue',currentFilterValue)
           this.filtersFormGroup.patchValue(currentFilterValue);
           this.selectedFilters = currentFilterValue;
         }
@@ -119,26 +123,36 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   formUpdate(chartData) {
     const filterKeys = Object.keys(this.selectedFilters);
+    console.log('filterKeys', filterKeys)
+
     let previousKeys = [];
     if (this.previousFilters) {
       previousKeys = Object.keys(this.previousFilters);
     }
     _.forEach(this.filters, filter => {
+      const { reference } = filter;
       const options = (_.sortBy(_.uniq(
         _.map(chartData, (data) => (data && data[filter.reference]) ? data[filter.reference].toLowerCase() : ''
         )))).filter(Boolean);
 
+        if (this.selectedFilters[reference] && this.selectedFilters[reference].length > 0) {
+          this.selectedFilters[reference] = options;
+        };
+  
+        if (this.constReference != reference && this.firstFilter[0] != reference) {
+          filter.options = options;
+        }
+
       if (!filterKeys.includes(filter.reference)) {
         filter.options = options;
-      } else {
-        if (previousKeys && previousKeys.includes(filter.reference) && this.previousFilters && this.previousFilters[filter.reference].length == this.selectedFilters[filter.reference].length) {
-          if (options.length > filter.options) {
-            filter.options = options;
-          }
-        }
+      }else if(previousKeys && previousKeys.includes(filter.reference) && this.previousFilters && this.previousFilters[filter.reference].length == this.selectedFilters[filter.reference].length) {
+        if (options.length > filter.options) {
+          filter.options = options;
       }
+    }
     });
     this.previousFilters = this.selectedFilters;
+    console.log('Prev fil', this.previousFilters);
   }
   formGeneration(chartData) {
       this.filtersFormGroup = this.fb.group({});
@@ -197,6 +211,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.datepicker) {
       this.datepicker.nativeElement.value = '';
     }
+    this.firstFilter = [];
     this.showFilters = false;
     this.cdr.detectChanges(); // to fix change detection issue in sui select
     this.showFilters = true;
@@ -216,7 +231,26 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   filterData() {
     if (this.selectedFilters) {
+      const filterKeys = Object.keys(this.selectedFilters);
+      if(!this.previousFilters && Object.keys(this.selectedFilters).length == 1){
+        this.firstFilter = Object.keys(this.selectedFilters);
+        console.log('First filter', this.firstFilter);
+      }
 
+    if(this.firstFilter && this.firstFilter.length && !filterKeys.includes(this.firstFilter[0])){
+      this.selectedFilters = this.previousFilters = {}
+      this.firstFilter = [];
+      this.chartData['selectedFilters'] = {};
+      this.filterChanged.emit({
+        allFilters: this.filters,
+        filters: {},
+        chartData: this.chartData,
+      });
+      console.log('first filter emptied', this.firstFilter);
+      this.showFilters = false;
+      this.cdr.detectChanges(); // to fix change detection issue in sui select
+      this.showFilters = true;
+    };
       const filterData = [];
       const filteredChartData = [];
       this.chartData.forEach(chart => {
@@ -279,6 +313,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     const object = {};
     if (data && data.length > 0) {
       object[reference] = data;
+      this.constReference = reference;
     }
     this.filtersFormGroup.controls[reference].setValue(data);
   }
