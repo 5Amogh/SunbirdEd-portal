@@ -40,8 +40,9 @@ export class FilterComponent implements OnInit, OnDestroy {
   public unsubscribe = new Subject<void>();
   previousFilters: any;
   formChartData: any = [];
-  constReference: any;
+  currentReference: any;
   firstFilter: any;
+  
   @Input()
   set selectedFilter(val: any) {
     if (val) {
@@ -131,13 +132,11 @@ export class FilterComponent implements OnInit, OnDestroy {
         if(this.firstFilter && this.firstFilter[0] != reference){
           if (this.selectedFilters[reference] && this.selectedFilters[reference].length > 0) {
             this.selectedFilters[reference] = options;
-          };
-    
-          if (this.constReference != reference) {
+          }   
+          if (this.currentReference != reference) {
             filter.options = options;
           }
         }
-
 
       if (!filterKeys.includes(reference)) {
         filter.options = options;
@@ -180,8 +179,8 @@ export class FilterComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe((filters) => {
-          this.selectedFilters = filters;
-          this.filterData();
+        this.selectedFilters = filters;
+        this.filterData();
       }, (err) => {
         console.log(err);
       });
@@ -308,7 +307,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     const object = {};
     if (data && data.length > 0) {
       object[reference] = data;
-      this.constReference = reference;
+      this.currentReference = reference;
     }
     this.filtersFormGroup.controls[reference].setValue(data);
   }
