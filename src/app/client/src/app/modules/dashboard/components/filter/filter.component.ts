@@ -51,7 +51,6 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
       this.formGeneration(val.data);
       if (val.selectedFilters) {
-        console.log('val.selectedFilters',val.selectedFilters)
         this.selectedFilters = val.selectedFilters;
         this.filtersFormGroup.patchValue(val.selectedFilters);
       }
@@ -69,11 +68,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         if (val.reset && val.reset == true) {
           this.selectedFilters = {};
         } else if (val.filters) {
-          console.log('val.filters',val.filters)
           this.filtersFormGroup.patchValue(val.filters);
           this.selectedFilters = val.filters;
         } else if (currentFilterValue) {
-          console.log('currentFilterValue',currentFilterValue)
           this.filtersFormGroup.patchValue(currentFilterValue);
           this.selectedFilters = currentFilterValue;
         }
@@ -122,8 +119,6 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   formUpdate(chartData) {
     const filterKeys = Object.keys(this.selectedFilters);
-    console.log('filterKeys', filterKeys)
-
     let previousKeys = [];
     if (this.previousFilters) {
       previousKeys = Object.keys(this.previousFilters);
@@ -133,14 +128,16 @@ export class FilterComponent implements OnInit, OnDestroy {
       const options = (_.sortBy(_.uniq(
         _.map(chartData, (data) => (data && data[reference]) ? data[reference].toLowerCase() : ''
         )))).filter(Boolean);
-
-        if (this.selectedFilters[reference] && this.selectedFilters[reference].length > 0) {
-          this.selectedFilters[reference] = options;
-        };
-  
-        if (this.constReference != reference && this.firstFilter && this.firstFilter[0] != reference) {
-          filter.options = options;
+        if(this.firstFilter && this.firstFilter[0] != reference){
+          if (this.selectedFilters[reference] && this.selectedFilters[reference].length > 0) {
+            this.selectedFilters[reference] = options;
+          };
+    
+          if (this.constReference != reference) {
+            filter.options = options;
+          }
         }
+
 
       if (!filterKeys.includes(reference)) {
         filter.options = options;
@@ -151,7 +148,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
     });
     this.previousFilters = this.selectedFilters;
-    console.log('Prev fil', this.previousFilters);
   }
   formGeneration(chartData) {
       this.filtersFormGroup = this.fb.group({});
@@ -184,8 +180,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe((filters) => {
-        console.log('Previous filters', this.previousFilters);
-        console.log('filters', filters);
           this.selectedFilters = filters;
           this.filterData();
       }, (err) => {
@@ -237,20 +231,15 @@ export class FilterComponent implements OnInit, OnDestroy {
       const filterKeys = Object.keys(this.selectedFilters);
       if((!this.previousFilters || Object.keys(this.previousFilters).length == 0)&& Object.keys(this.selectedFilters).length == 1){
         this.firstFilter = Object.keys(this.selectedFilters);
-        console.log('First filter', this.firstFilter);
       }
 
     if(this.firstFilter && this.firstFilter.length && !filterKeys.includes(this.firstFilter[0])){
-      this.selectedFilters = null;
-      this.firstFilter = null;
-      this.previousFilters = null;
       this.chartData['selectedFilters'] = {};
       this.filterChanged.emit({
         allFilters: this.filters,
         filters: {},
         chartData: this.chartData,
       });
-      console.log('first filter emptied', this.firstFilter);
       this.showFilters = false;
       this.resetFilter();
       this.cdr.detectChanges();
@@ -262,10 +251,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.chartData.forEach(chart => {
 
         const id = chart.id;
-        delete chart.id;
-        delete chart.data.selectedFilters;
-        delete chart.data.id;
-
+        delete chart?.id;
+        delete chart?.data?.selectedFilters;
+        delete chart?.data?.id;
         const result: Array<{}> = _.filter(chart.data, data => {
             return _.every(this.selectedFilters, (filterValues, key) => {
               if (data && data[key]) {
@@ -274,7 +262,7 @@ export class FilterComponent implements OnInit, OnDestroy {
             });
 
         });
-
+        
         filteredChartData.push({ id: id, data: result });
         result['selectedFilters'] = this.selectedFilters;
         filterData.push(...result);
