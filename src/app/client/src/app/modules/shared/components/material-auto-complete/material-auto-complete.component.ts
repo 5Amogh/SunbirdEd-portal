@@ -7,6 +7,8 @@ import { Component, Input, HostListener, ElementRef, Output, EventEmitter, OnCha
 })
 export class MaterialAutoCompleteComponent implements OnChanges {
   @Input() dynamicplaceholder:string;
+  @Input() dependency;
+  @Input() checkFilters;
   @Input()
   get selectedFilters() {
     return this._selectedFilters;
@@ -98,12 +100,13 @@ export class MaterialAutoCompleteComponent implements OnChanges {
   }
 
   DisplayDropdown() {
-    this.displayDropdown = true;
-    this.changeDetectorRef.detectChanges();
-    setTimeout(() => {
-        this.searchField.nativeElement.focus();
-    }, 100);
-
+    if(!this.dependency || (this.dependency && this.checkFilters && this.checkFilters[this.dependency])){
+      this.displayDropdown = true;
+      this.changeDetectorRef.detectChanges();
+      setTimeout(() => {
+          this.searchField.nativeElement.focus();
+      }, 100);
+    }
   }
   isChecked(item) {
 

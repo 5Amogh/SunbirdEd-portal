@@ -179,7 +179,25 @@ export class ReportComponent implements OnInit {
                 result['reportSummary'] = reportSummary;
                 result['files'] = this.reportService.getParameterizedFiles(files || [], this.hash);
                 result['lastUpdatedOn'] = this.reportService.getFormattedDate(this.reportService.getLatestLastModifiedOnDate(data));
-
+                result['filters'] =  [
+                  {
+                      "reference": "state name",
+                      "controlType": "multi-select",
+                      "displayName": "State"
+                  },
+                  {
+                      "reference": "Program_name",
+                      "controlType": "multi-select",
+                      "displayName": "Program",
+                      "dependency":"state name"
+                  },
+                  {
+                      "reference": "District name",
+                      "controlType": "multi-select",
+                      "displayName": "District",
+                      "dependency":"Program name"
+                  }
+              ]
                 this.chartsReportData = JSON.parse(JSON.stringify(result));
                 this.reportData = JSON.parse(JSON.stringify(result));
                 return result;
