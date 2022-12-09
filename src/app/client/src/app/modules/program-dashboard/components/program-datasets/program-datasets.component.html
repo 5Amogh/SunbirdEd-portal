@@ -39,18 +39,21 @@
          </ng-template>
         <ng-container *ngTemplateOutlet="programDataset"></ng-container>
       </mat-tab>
+      <ng-container *ngIf="!noResult && (dashboardReport$ | async) as currentReport">
       <mat-tab appTelemetryInteract>
         <ng-template mat-tab-label>
            <span class="font-weight-bold">{{resourceService?.frmelmnts?.lbl?.graphs}}</span>
         </ng-template>
-       <ng-container *ngTemplateOutlet="graphs"></ng-container>
+       <ng-container *ngTemplateOutlet="graphs;context:{$implicit:currentReport}"></ng-container>
      </mat-tab>
-      <mat-tab appTelemetryInteract> 
-      <ng-template mat-tab-label>
-         <span class="font-weight-bold">{{resourceService?.frmelmnts?.lbl?.table}}</span>
-      </ng-template>
-     <ng-container *ngTemplateOutlet="table"></ng-container>
-   </mat-tab> 
+      <mat-tab *ngFor="let table of currentReport?.tables;"> 
+        <ng-template mat-tab-label>
+           <span class="font-weight-bold">{{table.name}}</span>
+        </ng-template>
+       <ng-container *ngTemplateOutlet="tables;context:{$implicit:table}"></ng-container>
+     </mat-tab> 
+     </ng-container>
+    
     </mat-tab-group>
 </div>
 
@@ -88,6 +91,17 @@
               <mat-select role="radio" class="selection"  valueField="locationId" formControlName="districtName"
               [placeholder]="resourceService?.frmelmnts?.lbl?.dashboarddistrict"  (selectionChange)="districtSelection($event)">
                 <mat-option *ngFor="let district of districts" class="mat-dropdown__options" role="option" [value]="district.locationId">
+                  {{district.name | titlecase }}
+                </mat-option>
+              </mat-select>
+              </mat-form-field>
+          </div>
+          <div class="d-flex flex-dc">
+            <label>Block</label>
+              <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd">
+              <mat-select role="radio" class="selection"  valueField="locationId" multiple formControlName="districtName"
+              placeholder="Select block"  (selectionChange)="districtSelection($event)">
+                <mat-option *ngFor="let district of districts" class="mat-dropdown__options custom_mat_multi" role="option" [value]="district.locationId">
                   {{district.name | titlecase }}
                 </mat-option>
               </mat-select>
@@ -196,11 +210,10 @@
   
  
 </ng-template>
-<ng-template #graphs>
+<ng-template #graphs let-currentReport>
   <ng-container *ngTemplateOutlet="globalFilters" ></ng-container>
-  <div *ngIf="!noResult && (dashboardReport$ | async) as currentReport else loading">
     <div class="sb-graph-section p-24 my-24"
-        *ngFor="let chart of currentReport.charts; let i = index; let l = last;">
+        *ngFor="let chart of currentReport.charts;">
         <ng-container *ngIf="chart?.chartConfig?.id == 'Big_Number'">
           <app-sb-bignumber [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-bignumber>
         </ng-container>
@@ -211,7 +224,7 @@
       <div class="ui warning message mt-16" *ngIf="!currentReport.charts.length">
         {{resourceService?.frmelmnts?.lbl?.graphNotAvailable}}
       </div>
-  </div>
+
   <div *ngIf="noResult">
     <app-no-result [data]="noResultMessage"></app-no-result>
   </div>
@@ -225,23 +238,20 @@
     </ng-container>
   </ng-template>
 </ng-template>
-<ng-template #table>
+<ng-template #tables let-table>
   <ng-container *ngTemplateOutlet="globalFilters"></ng-container>
-  <div *ngIf="!noResult && (dashboardReport$ | async) as currentTable else loading">
-    <ng-container *ngIf="currentTable?.tables[0]?.data">
-    <div class="sb-graph-section p-24 my-24"
-        *ngFor="let table of currentTable?.tables; let i = index; let l = last;">
+    <div class="sb-graph-section p-24 my-24">
         <ng-container *ngIf="table?.data">
           <div class="customTable">
             <app-sb-table [tableToCsv]="tableToCsv" [table]="table" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-table>
           </div>
         </ng-container>
       </div>
-    </ng-container>
-      <div class="ui warning message mt-16" *ngIf="currentTable?.tables.length === 0 || !currentTable?.tables || !currentTable?.tables[0]?.data">
+    
+      <!-- <div class="ui warning message mt-16" *ngIf="currentTable?.tables.length === 0 || !currentTable?.tables || !currentTable?.tables[0]?.data">
         {{resourceService?.frmelmnts?.lbl?.tableNotAvailable}}
-      </div>
-  </div>
+      </div> -->
+ 
   <div *ngIf="noResult">
     <app-no-result [data]="noResultMessage"></app-no-result>
   </div>

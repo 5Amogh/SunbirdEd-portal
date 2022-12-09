@@ -96,7 +96,6 @@
 }
 
 ::ng-deep {
-  
   .cdk-overlay-container{
     z-index: 1 !important;
 }
@@ -178,5 +177,9 @@
     display: flex !important;
     align-self: flex-end !important;
   }
+
+  .custom_mat_multi.mat-option{
+    display: flex !important;
+}
 
 }
