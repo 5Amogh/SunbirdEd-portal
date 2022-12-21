@@ -8,7 +8,7 @@
           <div *ngIf="filter.controlType === 'multi-select'">
             <app-material-auto-complete name="mat-ms-auto" [dynamicplaceholder]="filter.displayName" [dropdownList]="filter.options"
               [selectedFilters]="getSelectedData(filter.reference)"
-              (selectionChanged)="autoCompleteChange($event,filter.reference)" display-key="name">
+              (selectionChanged)="autoCompleteChange($event,filter.reference)" [dependency]="filter.dependency" [checkFilters]="selectedFilters" display-key="name">
             </app-material-auto-complete>
 
           </div>

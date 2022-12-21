@@ -101,6 +101,91 @@ export class FilterComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
+    this.filters = [
+      {
+          "reference": "state name",
+          "controlType": "multi-select",
+          "displayName": "State",
+          "options": [
+              "andhra pradesh",
+              "bihar",
+              "karnataka",
+              "kerala",
+              "tamil nadu",
+              "unknown",
+              "uttar pradesh"
+          ]
+      },
+      {
+          "reference": "Program name",
+          "controlType": "multi-select",
+          "displayName": "Program",
+          "options": [
+              "3.8 test ap program",
+              "3.8.0 testing program - 2",
+              "4.2 test program",
+              "ap-test-program-3.6.5",
+              "cbse sqaa",
+              "grc-chhattisgarh",
+              "observation led projects testing",
+              "prerak head teacher of the block",
+              "prerak head teacher of the block 19-20",
+              "regression test program 3.6.5",
+              "school development program",
+              "test 4.2.5 program",
+              "test program",
+              "testing 4.4",
+              "testing 4.5",
+              "testing program 4.6",
+              "testing program 4.7",
+              "testing program 4.8",
+              "up micro innovation program",
+              "up sldp"
+          ],
+          "dependency":{
+            "reference":"state name",
+            "displayName":"State"
+          }
+      },
+      {
+          "reference": "District name",
+          "controlType": "multi-select",
+          "displayName": "District",
+          "options": [
+              "agra",
+              "alappuzha",
+              "aligarh",
+              "ambedkar nagar",
+              "amethi",
+              "amroha",
+              "anantapur",
+              "ayodhya(faizabad)",
+              "azamgarh",
+              "ballia",
+              "banda",
+              "belagavi chikkodi",
+              "bengaluru urban south",
+              "chennai",
+              "chittoor",
+              "cuddalore",
+              "east godavari",
+              "etah",
+              "guntur",
+              "kadapa",
+              "krishna",
+              "nellore",
+              "prakasam",
+              "tirunelveli",
+              "tiruvallur",
+              "unknown",
+              "vizianagaram"
+          ],
+          "dependency":{
+            "reference":"Program name",
+            "displayName":"Program"
+          }
+      }
+  ]
     const charts = [];
     if (this.chartData && this.chartData.length > 0) {
       this.chartData.map(function(data) {

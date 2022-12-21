@@ -1,4 +1,5 @@
 import { Component, Input, HostListener, ElementRef, Output, EventEmitter, OnChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { ToasterService } from '../../services/toaster/toaster.service';
 
 @Component({
   selector: 'app-material-auto-complete',
@@ -7,6 +8,8 @@ import { Component, Input, HostListener, ElementRef, Output, EventEmitter, OnCha
 })
 export class MaterialAutoCompleteComponent implements OnChanges {
   @Input() dynamicplaceholder:string;
+  @Input() dependency;
+  @Input() checkFilters;
   @Input()
   get selectedFilters() {
     return this._selectedFilters;
@@ -29,7 +32,7 @@ export class MaterialAutoCompleteComponent implements OnChanges {
     this.dropDownSelectedShow();
   }
 
-  constructor(private _elementRef: ElementRef<HTMLElement>, private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private _elementRef: ElementRef<HTMLElement>, private changeDetectorRef: ChangeDetectorRef, public toasterService: ToasterService) {}
   get selectedDpdwnInput() {
     return this._selectedDpdwnInput;
   }
@@ -98,12 +101,16 @@ export class MaterialAutoCompleteComponent implements OnChanges {
   }
 
   DisplayDropdown() {
-    this.displayDropdown = true;
-    this.changeDetectorRef.detectChanges();
-    setTimeout(() => {
-        this.searchField.nativeElement.focus();
-    }, 100);
-
+    console.log('selected filters',this.checkFilters)
+    if(!this.dependency || (this.dependency && this.checkFilters && this.checkFilters[this.dependency.reference])){
+      this.displayDropdown = true;
+      this.changeDetectorRef.detectChanges();
+      setTimeout(() => {
+          this.searchField.nativeElement.focus();
+      }, 100);
+    }else{
+      this.toasterService.error(`Please select a ${this.dependency.displayName} first from the ${this.dependency.displayName} filter`);
+    }
   }
   isChecked(item) {
 
