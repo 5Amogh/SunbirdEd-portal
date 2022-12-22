@@ -72,7 +72,8 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     districtName: new FormControl(),
     organisationName: new FormControl(),
     startDate: new FormControl(),
-    endDate: new FormControl()
+    endDate: new FormControl(),
+    block:new FormControl()
   });
 
   passwordForm = new FormGroup({
@@ -767,6 +768,9 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     }
   }
 
+  blockChanged(){
+    console.log('blocks:', this.reportForm.value.block)
+  }
   closeDashboard(){
     this.location.back()
   }

@@ -99,8 +99,8 @@
           <div class="d-flex flex-dc">
             <label>Block</label>
               <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd">
-              <mat-select role="radio" class="selection"  valueField="locationId" multiple formControlName="districtName"
-              placeholder="Select block"  (selectionChange)="districtSelection($event)">
+              <mat-select role="radio" class="selection"  valueField="locationId" multiple formControlName="block"
+              placeholder="Select block"  (selectionChange)="blockChanged()">
                 <mat-option *ngFor="let district of districts" class="mat-dropdown__options custom_mat_multi" role="option" [value]="district.locationId">
                   {{district.name | titlecase }}
                 </mat-option>
@@ -218,7 +218,7 @@
           <app-sb-bignumber [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-bignumber>
         </ng-container>
         <ng-container *ngIf="chart?.chartConfig?.id !== 'Big_Number' && chart?.chartData && chart?.chartConfig">
-      <app-sb-chart [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-chart>
+      <app-sb-chart [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg" [globalBlock]="reportForm.value.block"></app-sb-chart>
     </ng-container>
       </div>
       <div class="ui warning message mt-16" *ngIf="!currentReport.charts.length">
