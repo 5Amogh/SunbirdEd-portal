@@ -67,7 +67,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
 
   reportForm = new FormGroup({
     programName: new FormControl('', [Validators.required]),
-    solution: new FormControl('', [Validators.required]),
+    solution: new FormControl(),
     reportType: new FormControl('', [Validators.required]),
     districtName: new FormControl(),
     organisationName: new FormControl(),
@@ -135,6 +135,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
   public userId: string;
   public selectedReport;
   public selectedSolution: string;
+  public userAccess:boolean;
 
   getProgramsList() {
     const paramOptions = {
@@ -236,7 +237,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
   }
 
   public getUpdatedParameterizedPath(dataSources) {
-    const explicitValue = _.get(this.reportForm, 'controls.solution.value')
+    const explicitValue = this.userAccess ? _.get(this.reportForm, 'controls.programName.value') : _.get(this.reportForm, 'controls.solution.value')
     return _.map(dataSources, (dataSource) => ({
       id: dataSource.id,
       path: this.resolveParameterizedPath(dataSource.path, explicitValue)
@@ -254,6 +255,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
         return data;
       }
     });
+    console.log('program',program)
     this.solutions = [];
     this.reportTypes = [];
     this.onDemandReportData = [];
@@ -261,11 +263,19 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.getSolutionList(program[0]);
     this.displayFilters['Program'] = [program[0].name]
     this.reportForm.controls.programName.setValue($event.value);
-    this.newData = true;
+    this.userAccess = this.checkUserAccess();
+    this.newData = !this.userAccess;
     this.globalDistrict = this.globalOrg = undefined;
+    if(this.userAccess){
+      this.tag = program[0]._id + '_' + this.userId;
+      this.loadReports();
+      this.getReportTypes($event.value,'user_detail_report');
+    }
+
   }
 
   public selectSolution($event) {
+    this.userAccess = this.checkUserAccess();
     this.newData = false;
     this.noResult = false;
     this.districts = []
@@ -545,7 +555,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.globalDistrict = $event.value;
     this.reportForm.controls.districtName.setValue($event.value);
     this.displayFilters['District'] = [$event?.source?.triggerValue]
-    this.tag =  _.get(this.reportForm, 'controls.solution.value')+ '_' + this.userId+'_'+ _.toLower(_.trim([$event?.source?.triggerValue]," "));
+    this.tag =  (this.userAccess ? _.get(this.reportForm, 'controls.programName.value') : _.get(this.reportForm, 'controls.solution.value'))+ '_' + this.userId+'_'+ _.toLower(_.trim([$event?.source?.triggerValue]," "));
     this.loadReports();
   }
 
@@ -582,10 +592,10 @@ export class DatasetsComponent implements OnInit, OnDestroy {
 
   addFilters() {
     let filterKeysObj = {
-      program_id: _.get(this.reportForm, 'controls.programName.value'),
-      solution_id: _.get(this.reportForm, 'controls.solution.value'),
-      programId: _.get(this.reportForm, 'controls.programName.value'),
-      solutionId: _.get(this.reportForm, 'controls.solution.value'),
+      program_id: _.get(this.reportForm, 'controls.programName.value') || undefined,
+      solution_id: _.get(this.reportForm, 'controls.solution.value') || undefined,
+      programId: _.get(this.reportForm, 'controls.programName.value') || undefined,
+      solutionId: _.get(this.reportForm, 'controls.solution.value') || undefined,
       district_externalId: _.get(this.reportForm, 'controls.districtName.value') || undefined,
       organisation_id: _.get(this.reportForm, 'controls.organisationName.value') || undefined,
       ...this.configuredFilters
@@ -679,7 +689,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
       this.filter = [];
       setTimeout(() => {
         this.isProcessed = false;
-      }, 5000);
+      }, 10000);
       this.toasterService.error(_.get(this.resourceService, 'frmelmnts.lbl.reportRequestFailed'));
       this.passwordForm.reset();
     }
@@ -697,6 +707,49 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.formService.getFormConfig(formServiceInputParams).subscribe((formData) => {
       if (formData) {
         this.formData = formData;
+        let user_detail_report = [
+          {
+              "name": "User Detail Report",
+              "encrypt": true,
+              "datasetId": "ml-observation-with-rubric-question-detail-exhaust",
+              "roles": [
+                  "PROGRAM_MANAGER"
+              ],
+              "filters": [
+                  {
+                      "type": "equals",
+                      "dimension": "isAPrivateProgram",
+                      "value": "false"
+                  },
+                  {
+                      "type": "equals",
+                      "dimension": "programId",
+                      "value": "$programId"
+                  },
+                  {
+                      "type": "equals",
+                      "dimension": "solutionId",
+                      "value": "$solutionId"
+                  },
+                  {
+                      "type": "equals",
+                      "dimension": "district_externalId",
+                      "value": "$district_externalId"
+                  },
+                  {
+                      "type": "equals",
+                      "dimension": "organisation_id",
+                      "value": "$organisation_id"
+                  },
+                  {
+                      "type": "notequals",
+                      "dimension": "isSubmissionDeleted",
+                      "value": "true"
+                  }
+              ]
+          }
+      ]
+        this.formData["user_detail_report"] = user_detail_report
       }
     }, error => {
       this.toasterService.error(this.resourceService.messages.emsg.m0005);
@@ -710,7 +763,9 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     _.forEach(this.onDemandReportData, (value) => {
       if (value.datasetConfig.type == this.selectedReport.datasetId){
         _.forEach(value.datasetConfig.params.filters, (filter) => {
-          if(['solutionId','solution_id'].includes(filter['dimension']) && filter.value  === this.selectedSolution){
+          if(!this.userAccess && ['solutionId','solution_id'].includes(filter['dimension']) && filter.value  === this.selectedSolution){
+            selectedReportList.push(value);
+          }else if(this.userAccess && ['programId','program_id'].includes(filter['dimension']) && filter.value === this.reportForm.controls.programName.value){
             selectedReportList.push(value);
           }
         });
@@ -759,16 +814,19 @@ export class DatasetsComponent implements OnInit, OnDestroy {
       const day = new Date($event.value._d).getDate();
       if(type === 'startDate'){
         this.minEndDate = new Date(year, month, day + 1);
-        this.reportForm.controls.startDate.setValue(moment(_.get($event, 'value._d')).format('YYYY-MM-DD'));
       }else{
         this.maxStartDate = new Date(year, month, day - 1);
-        this.reportForm.controls.endDate.setValue(moment(_.get($event, 'value._d')).format('YYYY-MM-DD'));
       }
+      this.reportForm.controls[type].setValue(moment(_.get($event, 'value._d')).format('YYYY-MM-DD'));
     }
   }
 
   closeDashboard(){
     this.location.back()
+  }
+
+  checkUserAccess():boolean{
+    return this.userRoles.includes('PROGRAM_MANAGER') && !this.reportForm.controls.solution.value
   }
 
   ngOnDestroy() {

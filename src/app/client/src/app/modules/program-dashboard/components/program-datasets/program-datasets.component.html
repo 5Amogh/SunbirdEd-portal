@@ -178,10 +178,10 @@
                   </button>
         </div>
       </div>
-      <div *ngIf="isProcessed" class="d-flex">
+      <div *ngIf="isProcessed" class="d-flex flex-ai-baseline mt-12">
         <div class="information-icon">
           <img src="assets/images/error-icon.svg" class="infoIcon"></div>
-        <p class="fsmall note-text my-8 administrator-text">{{resourceService.frmelmnts?.lbl?.reportStatus}}</p>
+        <p class="fsmall note-text my-8 administrator-text ml-12 sb-color-error">{{resourceService.frmelmnts?.lbl?.reportStatus}}</p>
       </div>
      
 
@@ -349,7 +349,7 @@
               <mat-icon class="info">info</mat-icon> 
              </div>
              <div class="font-weight-bold sb-color-primary modalNote"> {{resourceService?.frmelmnts?.lbl?.modalNote}}</div>
-             <div>
+             <div class="ml-auto">
               <mat-icon class="goback" (click)="goBack()">highlight_off</mat-icon>
              </div>
             </div>
@@ -370,22 +370,8 @@
                </div>
               
             </div>
-            <div class="mt-48 flex-dc" [formGroup]="reportForm">
-              <label  class="d-flex flex-jc-center sb-color-primary">{{ resourceService?.frmelmnts?.lbl?.solutionLbl }}</label>
-              <div class="d-flex flex-jc-center mt-24">
-                <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd w-80">
-                  <mat-select role="radio" class="selection" [(ngModel)]="solutionSelected" valueField="_id" formControlName="solution"
-                  [placeholder]="resourceService?.frmelmnts?.lbl?.solution"  (selectionChange)="selectSolution($event)">
-                    <mat-option *ngFor="let solution of solutions" class="mat-dropdown__options" role="option" [value]="solution._id">
-                      {{solution.name}} 
-                    </mat-option>
-                  </mat-select>
-                  </mat-form-field>
-              </div>  
-              
-            </div>
             <div class="mt-32 sb-modal-actions">
-              <button [disabled]="reportForm.controls.solution.value == undefined" [ngClass]="{'sb-btn-disabled': (reportForm.controls.solution.value == undefined)}" type="button" class="sb-field sb-btn sb-btn-normal sb-btn-primary" (click)="confirm()">{{resourceService?.frmelmnts?.btn?.confirmBtn}}</button>
+              <button [disabled]="!reportForm.controls.programName.value" [ngClass]="{'sb-btn-disabled': (!reportForm.controls.programName.value)}" type="button" class="sb-field sb-btn sb-btn-normal sb-btn-primary" (click)="confirm()">{{resourceService?.frmelmnts?.btn?.confirmBtn}}</button>
             </div>
           </div>
         </div>
