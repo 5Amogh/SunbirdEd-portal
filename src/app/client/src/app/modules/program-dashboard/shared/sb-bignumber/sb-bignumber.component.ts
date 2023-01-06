@@ -13,6 +13,7 @@ export class SbBignumberComponent implements OnInit, OnChanges {
   @Input() hideElements = false;
   @Input() globalDistrict;
   @Input() globalOrg;  
+  @Input() globalBlock;
   chartData;
   chartConfig;
   updatedData;
@@ -35,12 +36,15 @@ export class SbBignumberComponent implements OnInit, OnChanges {
   }
 
   checkForChanges(){
-    if(this.globalDistrict !== undefined || this.globalOrg !== undefined){
+    if(this.globalDistrict || this.globalOrg){
       this.globalData = _.filter(this.chartData, (data) => {
         if(this.globalDistrict && this.globalOrg){
           return data?.district_externalId == this.globalDistrict && data?.organisation_id == this.globalOrg;
         }
         if(this.globalDistrict){
+          if(this.globalBlock && this.globalBlock.length){
+            return this.globalBlock.includes(data.organisation_id) && data.district_externalId == this.globalDistrict
+          }
           return  data?.district_externalId == this.globalDistrict;
          } 
          if(this.globalOrg){

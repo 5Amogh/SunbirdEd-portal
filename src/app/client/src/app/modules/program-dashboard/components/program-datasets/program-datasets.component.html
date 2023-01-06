@@ -101,8 +101,8 @@
               <mat-form-field appearance="fill" class="sb-mat__dropdown custom_mat_dd">
               <mat-select role="radio" class="selection"  valueField="locationId" multiple formControlName="block"
               placeholder="Select block"  (selectionChange)="blockChanged()">
-                <mat-option *ngFor="let district of districts" class="mat-dropdown__options custom_mat_multi" role="option" [value]="district.locationId">
-                  {{district.name | titlecase }}
+                <mat-option *ngFor="let organisation of organisations" class="mat-dropdown__options custom_mat_multi" role="option" [value]="organisation.organisationId">
+                  {{organisation.orgName}}
                 </mat-option>
               </mat-select>
               </mat-form-field>
@@ -215,7 +215,7 @@
     <div class="sb-graph-section p-24 my-24"
         *ngFor="let chart of currentReport.charts;">
         <ng-container *ngIf="chart?.chartConfig?.id == 'Big_Number'">
-          <app-sb-bignumber [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg"></app-sb-bignumber>
+          <app-sb-bignumber [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg" [globalBlock]="reportForm.value.block"></app-sb-bignumber>
         </ng-container>
         <ng-container *ngIf="chart?.chartConfig?.id !== 'Big_Number' && chart?.chartData && chart?.chartConfig">
       <app-sb-chart [chart]="chart" [lastUpdatedOn]="lastUpdatedOn" [hideElements]="hideElements" [globalDistrict]="globalDistrict" [globalOrg]="globalOrg" [globalBlock]="reportForm.value.block"></app-sb-chart>

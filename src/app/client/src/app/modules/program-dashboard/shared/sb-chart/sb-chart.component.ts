@@ -13,6 +13,7 @@ export class SbChartComponent implements OnInit, OnChanges {
   @Input() hideElements = false;
   @Input() globalDistrict;
   @Input() globalOrg;
+  @Input() globalBlock;
   chartData;
   chartConfig;
   currentFilters: Array<{}>;
@@ -44,12 +45,15 @@ export class SbChartComponent implements OnInit, OnChanges {
   }
 
   checkForGlobalChanges() {
-    if (this.globalDistrict !== undefined || this.globalOrg !== undefined) {
+    if (this.globalDistrict || this.globalOrg) {
       this.globalData = _.filter(this.chartData, (chart) => {
         if (this.globalDistrict && this.globalOrg) {
           return chart?.district_externalId == this.globalDistrict && chart?.organisation_id == this.globalOrg;
         }
         if (this.globalDistrict) {
+          if(this.globalBlock && this.globalBlock.length){
+            return this.globalBlock.includes(chart.organisation_id) && chart.district_externalId == this.globalDistrict
+          }
           return chart?.district_externalId == this.globalDistrict;
         }
         if (this.globalOrg) {
@@ -57,6 +61,7 @@ export class SbChartComponent implements OnInit, OnChanges {
         }
         return chart;
       });
+      console.log('globalData',this.globalData)
       this.currentFilters = [];
       this.globalChange = true;
       this.updatedData = this.globalData;
