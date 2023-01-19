@@ -263,19 +263,17 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.getSolutionList(program[0]);
     this.displayFilters['Program'] = [program[0].name]
     this.reportForm.controls.programName.setValue($event.value);
-    this.userAccess = this.checkUserAccess();
-    this.newData = !this.userAccess;
     this.globalDistrict = this.globalOrg = undefined;
+    this.getReportTypes($event.value,'user_detail_report');
+    this.userAccess = this.reportTypes.length > 0
     if(this.userAccess){
       this.tag = program[0]._id + '_' + this.userId;
       this.loadReports();
-      this.getReportTypes($event.value,'user_detail_report');
     }
-
+    this.newData = !this.userAccess;
   }
 
   public selectSolution($event) {
-    this.userAccess = this.checkUserAccess();
     this.newData = false;
     this.noResult = false;
     this.districts = []
@@ -574,6 +572,8 @@ export class DatasetsComponent implements OnInit, OnDestroy {
         this.configuredFilters[filter['reference']] = filter['defaultValue'] as number -1
       })
     }
+
+    this.addFilters();
   }
   
   resetConfigFilters(){
@@ -591,26 +591,47 @@ export class DatasetsComponent implements OnInit, OnDestroy {
   }
 
   addFilters() {
+    this.filter = [];
     let filterKeysObj = {
       program_id: _.get(this.reportForm, 'controls.programName.value') || undefined,
       solution_id: _.get(this.reportForm, 'controls.solution.value') || undefined,
       programId: _.get(this.reportForm, 'controls.programName.value') || undefined,
       solutionId: _.get(this.reportForm, 'controls.solution.value') || undefined,
       district_externalId: _.get(this.reportForm, 'controls.districtName.value') || undefined,
+      district_id:_.get(this.reportForm, 'controls.districtName.value') || undefined,
       organisation_id: _.get(this.reportForm, 'controls.organisationName.value') || undefined,
       ...this.configuredFilters
     }
 
     let keys = Object.keys(filterKeysObj);
 
-    this.selectedReport['filters'].map(data => {
+   this.selectedReport['queryType'] !== "cassandra" && this.selectedReport['filters'].map(data => {
       keys.filter(key => {
-        return data.dimension == key && (data.value = filterKeysObj[key]);
+        return data.dimension === key && (data.value = filterKeysObj[key]);
       })
       if (data.value !== undefined) {
         this.filter.push(data);
       }
     });
+
+    if(this.selectedReport['queryType'] === "cassandra"){
+     const keyForCassandraQuery = _.findKey(this.selectedReport['filters'][0], (cassandraKey)=> {
+        return _.isArray(cassandraKey)
+      })
+      this.filter = {}
+      this.filter[keyForCassandraQuery] = []
+      this.filter['table_name'] = this.selectedReport['filters'][0]['table_name']
+      this.selectedReport['filters'][0][keyForCassandraQuery].map(data => {
+        keys.filter(key => {
+          return data.name === key && (data.value = filterKeysObj[key]);
+        })
+        if (data.value !== undefined) {
+          this.filter[keyForCassandraQuery].push(data);
+        }
+      });
+      console.log(keyForCassandraQuery)
+      console.log('filter to be sent',this.filter)
+    }
   }
   submitRequest() {
     this.addFilters();
@@ -711,41 +732,32 @@ export class DatasetsComponent implements OnInit, OnDestroy {
           {
               "name": "User Detail Report",
               "encrypt": true,
-              "datasetId": "ml-observation-with-rubric-question-detail-exhaust",
+              "datasetId": "ml-program-user-exhaust",
               "roles": [
                   "PROGRAM_MANAGER"
               ],
+              "queryType":"cassandra",
               "filters": [
-                  {
-                      "type": "equals",
-                      "dimension": "isAPrivateProgram",
-                      "value": "false"
-                  },
-                  {
-                      "type": "equals",
-                      "dimension": "programId",
-                      "value": "$programId"
-                  },
-                  {
-                      "type": "equals",
-                      "dimension": "solutionId",
-                      "value": "$solutionId"
-                  },
-                  {
-                      "type": "equals",
-                      "dimension": "district_externalId",
-                      "value": "$district_externalId"
-                  },
-                  {
-                      "type": "equals",
-                      "dimension": "organisation_id",
-                      "value": "$organisation_id"
-                  },
-                  {
-                      "type": "notequals",
-                      "dimension": "isSubmissionDeleted",
-                      "value": "true"
-                  }
+                {
+                  "table_name": "ml_program_user",
+                  "table_filters": [
+                    {
+                      "name": "program_id",
+                      "operator": "=",
+                      "value": "123"
+                    },
+                    {
+                      "name": "district_id",
+                      "operator": "=",
+                      "value": "789"
+                    },
+                    {
+                      "name": "organisation_id",
+                      "operator": "=",
+                      "value": "xyz"
+                    }
+                  ]
+                }
               ]
           }
       ]
@@ -761,7 +773,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     let requestStatus = true;
     const selectedReportList = [];
     _.forEach(this.onDemandReportData, (value) => {
-      if (value.datasetConfig.type == this.selectedReport.datasetId){
+      if (value.datasetConfig.type === this.selectedReport.datasetId){
         _.forEach(value.datasetConfig.params.filters, (filter) => {
           if(!this.userAccess && ['solutionId','solution_id'].includes(filter['dimension']) && filter.value  === this.selectedSolution){
             selectedReportList.push(value);
@@ -823,10 +835,6 @@ export class DatasetsComponent implements OnInit, OnDestroy {
 
   closeDashboard(){
     this.location.back()
-  }
-
-  checkUserAccess():boolean{
-    return this.userRoles.includes('PROGRAM_MANAGER') && !this.reportForm.controls.solution.value
   }
 
   ngOnDestroy() {

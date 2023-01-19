@@ -12,6 +12,7 @@ import * as $ from 'jquery';
 import 'datatables.net';
 import { Location } from '@angular/common';
 
+const reportsToExclude : string[] = ['program_dashboard']
 @Component({
   selector: 'app-list-all-reports',
   templateUrl: './list-all-reports.component.html',
@@ -100,6 +101,11 @@ export class ListAllReportsComponent implements OnInit {
       map(reports => {
         const [reportsArr, datasetsArr] = this.reports = _.partition(reports, report => _.toLower(_.get(report, 'report_type')) === 'report');
         const count = _.get(reports, 'length');
+        console.log('before',reportsArr.length)
+        _.remove(reportsArr, (report) => {
+          return reportsToExclude.includes(report.reportconfig.report_type)
+        })
+        console.log('after',reportsArr.length)
         return { count, reportsArr, datasetsArr };
       })
     );
