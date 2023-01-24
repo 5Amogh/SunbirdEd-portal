@@ -1,9 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ObservationService, ObservationUtilService } from '@sunbird/core';
 import { ConfigService, ResourceService, ILoaderMessage, INoResultMessage, LayoutService, ToasterService } from '@sunbird/shared';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import {Editdata} from '../edit-submission/edit-submission.component';
+import _ from 'lodash';
+interface ConsentConfiguration{
+  tncLink:string,
+  tncText:string
+}
 @Component({
   selector: 'app-observation-details',
   templateUrl: './observation-details.component.html',
@@ -44,6 +49,10 @@ export class ObservationDetailsComponent implements OnInit {
     'messageText': 'frmelmnts.msg.noEntityFound'
   };
   courseHierarchy: any = {};
+  programJoined:boolean = false;
+  joinProgramPopUp:boolean = false;
+  openConsentPopUp:boolean;
+  consentConfig:ConsentConfiguration;
   constructor(
     private observationService: ObservationService,
     config: ConfigService,
@@ -75,6 +84,7 @@ export class ObservationDetailsComponent implements OnInit {
       }
     });
     this.getProfileData();
+    this.consentConfig = { tncLink: _.get(this.resourceService, 'frmelmnts.lbl.privacyPolicy'), tncText: _.get(this.resourceService, 'frmelmnts.lbl.programConsent') };
   }
   getProfileData() {
     this.observationUtilService.getProfileDataList().then(data => {
@@ -149,7 +159,7 @@ export class ObservationDetailsComponent implements OnInit {
   }
 
   addEntity() {
-    this.showDownloadModal = true;
+      this.showDownloadModal = true;
   }
   changeEntity(event) {
     this.selectedEntity = event;
@@ -182,9 +192,9 @@ export class ObservationDetailsComponent implements OnInit {
     metaData.footer.className = 'double-btn';
     const returnData = await this.observationUtilService.showPopupAlert(metaData);
     returnData ? this.observeAgain() : '';
-  }
+}
   observeAgain() {
-    this.showLoader = true;
+      this.showLoader = true;
     const paramOptions = {
       url: this.config.urlConFig.URLS.OBSERVATION.OBSERVATION_SUBMISSION_CREATE + `${this.observationId}?entityId=${this.selectedEntity._id}`,
       param: {},
@@ -329,7 +339,6 @@ export class ObservationDetailsComponent implements OnInit {
     }
     event.action == 'edit' ? this.openEditSubmission(event.data) : this.deleteSubmission(event.data);
   }
-
   dropDownAction(submission, type) {
     const data = {
       action: type,
@@ -411,5 +420,11 @@ export class ObservationDetailsComponent implements OnInit {
       }
     );
 
+  }
+
+  joinProgram(){
+    console.log('joined the program')
+    this.programJoined = this.openConsentPopUp = true;
+    this.toasterService.success('You have successfully joined this program')
   }
 }
