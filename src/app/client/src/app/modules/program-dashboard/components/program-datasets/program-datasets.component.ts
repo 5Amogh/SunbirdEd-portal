@@ -525,6 +525,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
 
   public resetFilter() {
     this.reportForm.reset();
+    console.log('report form',this.reportForm.value)
     this.filter = [];
     this.districts = [];
     this.organisations = [];
@@ -600,6 +601,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
       district_externalId: _.get(this.reportForm, 'controls.districtName.value') || undefined,
       district_id:_.get(this.reportForm, 'controls.districtName.value') || undefined,
       organisation_id: _.get(this.reportForm, 'controls.organisationName.value') || undefined,
+      object_id:_.get(this.reportForm, 'controls.programName.value') || undefined,
       ...this.configuredFilters
     }
 
@@ -615,21 +617,39 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     });
 
     if(this.selectedReport['queryType'] === "cassandra"){
-     const keyForCassandraQuery = _.findKey(this.selectedReport['filters'][0], (cassandraKey)=> {
-        return _.isArray(cassandraKey)
-      })
-      this.filter = {}
-      this.filter[keyForCassandraQuery] = []
-      this.filter['table_name'] = this.selectedReport['filters'][0]['table_name']
-      this.selectedReport['filters'][0][keyForCassandraQuery].map(data => {
-        keys.filter(key => {
-          return data.name === key && (data.value = filterKeysObj[key]);
+      console.log('start date', _.get(this.reportForm, 'controls.startDate.value'))
+    //  const keyForCassandraQuery = _.findKey(this.selectedReport['filters'][0], (cassandraKey)=> {
+    //     return _.isArray(cassandraKey)
+    //   })
+    //   this.filter = {}
+    //   this.filter[keyForCassandraQuery] = []
+    //   this.filter['table_name'] = this.selectedReport['filters'][0]['table_name']
+    //   this.selectedReport['filters'][0][keyForCassandraQuery].map(data => {
+    //     keys.filter(key => {
+    //       return data.name === key && (data.value = filterKeysObj[key]);
+    //     })
+    //     if (data.value !== undefined) {
+    //       this.filter[keyForCassandraQuery].push(data);
+    //     }
+    //   });
+    //   console.log(keyForCassandraQuery)
+    this.filter = this.selectedReport['filters'];
+    _.map(this.filter, filterObj => {
+       _.remove(filterObj['table_filters'], filterItem => {
+           _.map(keys,key => {
+          if(filterItem.name === key) {
+            filterItem.value = filterKeysObj[key]
+          }
         })
-        if (data.value !== undefined) {
-          this.filter[keyForCassandraQuery].push(data);
+        if(filterItem.operator === '>='){
+          filterItem.value = this.reportForm.value.startDate ?  this.reportForm.value.startDate : undefined
         }
-      });
-      console.log(keyForCassandraQuery)
+        if(filterItem.operator === '<='){
+          filterItem.value = this.reportForm.value.endDate ?  this.reportForm.value.endDate : undefined
+        }
+        return filterItem.value === undefined
+      })
+    })
       console.log('filter to be sent',this.filter)
     }
   }
@@ -739,22 +759,47 @@ export class DatasetsComponent implements OnInit, OnDestroy {
               "queryType":"cassandra",
               "filters": [
                 {
-                  "table_name": "ml_program_user",
+                  "table_name": "program_enrollment",
                   "table_filters": [
                     {
                       "name": "program_id",
-                      "operator": "=",
-                      "value": "123"
+                      "operator": "==",
+                      "value": "602512d8e6aefa27d9629bc3"
+                    },
+                    {
+                      "name": "state_id",
+                      "operator": "==",
+                      "value": "6d884bb0-307f-4f83-abfe-fc21bbd36abb"
                     },
                     {
                       "name": "district_id",
-                      "operator": "=",
-                      "value": "789"
+                      "operator": "==",
+                      "value": "ed9e0963-0707-443a-99c4-5994fcac7a5f"
                     },
                     {
                       "name": "organisation_id",
-                      "operator": "=",
-                      "value": "xyz"
+                      "operator": "==",
+                      "value": "0126796199493140480"
+                    },
+                    {
+                      "name": "updated_at",
+                      "operator": ">=",
+                      "value": "startDate"
+                    },
+                    {
+                      "name": "updated_at",
+                      "operator": "<=",
+                      "value": "endDate"
+                    }
+                  ]
+                },
+                {
+                  "table_name": "user_consent",
+                  "table_filters": [
+                    {
+                      "name": "object_id",
+                      "operator": "==",
+                      "value": "602512d8e6aefa27d9629bc3"
                     }
                   ]
                 }
