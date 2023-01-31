@@ -56,8 +56,8 @@ export class GlobalConsentPiiComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(`program consent 11`)
     this.usersProfile = _.cloneDeep(this.userService.userProfile);
+    console.log('userprofile', this.usersProfile)
     this.getUserInformation();
     this.getUserConsent();
     if (this.isglobalConsent || this.type === 'program-consent') {
@@ -202,7 +202,7 @@ export class GlobalConsentPiiComponent implements OnInit {
           this.updateUserDeclaration(declReq);
         }
       } else if(this.type === 'program-consent'){
-        request.consumerId = this.userService.channel;
+        request.consumerId = this.usersProfile.rootOrgId;
         request.objectId = this.collection.programId
       }
       this.csUserService.getConsent(request, { apiPath: '/learner/user/v1' })
@@ -244,7 +244,8 @@ export class GlobalConsentPiiComponent implements OnInit {
       request.objectId = this.userService.channel;
       request.objectType = 'Organisation';
     } else if(this.type === 'program-consent'){
-      request.consumerId = this.userService.channel;
+      console.log('userprofile', this.usersProfile)
+      request.consumerId = this.usersProfile.rootOrgId;
       request.objectId = this.collection.programId;
       request.objectType = 'Program'
     }
