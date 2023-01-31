@@ -617,23 +617,10 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     });
 
     if(this.selectedReport['queryType'] === "cassandra"){
-      console.log('start date', _.get(this.reportForm, 'controls.startDate.value'))
-    //  const keyForCassandraQuery = _.findKey(this.selectedReport['filters'][0], (cassandraKey)=> {
-    //     return _.isArray(cassandraKey)
-    //   })
-    //   this.filter = {}
-    //   this.filter[keyForCassandraQuery] = []
-    //   this.filter['table_name'] = this.selectedReport['filters'][0]['table_name']
-    //   this.selectedReport['filters'][0][keyForCassandraQuery].map(data => {
-    //     keys.filter(key => {
-    //       return data.name === key && (data.value = filterKeysObj[key]);
-    //     })
-    //     if (data.value !== undefined) {
-    //       this.filter[keyForCassandraQuery].push(data);
-    //     }
-    //   });
-    //   console.log(keyForCassandraQuery)
-    this.filter = this.selectedReport['filters'];
+    console.log('start date', _.get(this.reportForm, 'controls.startDate.value'))
+    this.filter = _.cloneDeep(this.selectedReport['filters'])
+    console.log('selected filters',this.selectedReport['filters'])
+    console.log('filters',this.filter)
     _.map(this.filter, filterObj => {
        _.remove(filterObj['table_filters'], filterItem => {
            _.map(keys,key => {
