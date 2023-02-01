@@ -94,6 +94,7 @@ describe('DatasetsComponent', () => {
   it('should call programSelection', () => {
     component.programs = mockData.programs.result;
     jest.spyOn(kendraService, 'get').mockReturnValue(of(mockData.solutions));
+    jest.spyOn(reportService,'listAllReports').mockReturnValue(of(mockData.reportConfig))
     component.programSelection({
       value: '5f34ec17585244939f89f90c'
     });

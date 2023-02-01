@@ -617,7 +617,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
       this.configuredFilters[filter['reference']] = filter['options']
       }
     })
-    let filterKeysObj = {
+    const filterKeysObj = {
       program_id: _.get(this.reportForm, 'controls.programName.value') || undefined,
       solution_id: _.get(this.reportForm, 'controls.solution.value') || undefined,
       programId: _.get(this.reportForm, 'controls.programName.value') || undefined,
@@ -626,43 +626,12 @@ export class DatasetsComponent implements OnInit, OnDestroy {
       district_id:_.get(this.reportForm, 'controls.districtName.value') || undefined,
       organisation_id: _.get(this.reportForm, 'controls.organisationName.value') || undefined,
       object_id:_.get(this.reportForm, 'controls.programName.value') || undefined,
+      '>=':_.get(this.reportForm,'controls.startDate.value') || undefined,
+      '<=':_.get(this.reportForm,'controls.endDate.value') || undefined,
       ...this.configuredFilters
     }
-
-    let keys = Object.keys(filterKeysObj);
-
-   this.selectedReport['queryType'] !== "cassandra" && this.selectedReport['filters'].map(data => {
-      keys.filter(key => {
-        return data.dimension === key && (_.has(data,'value') ? data.value = filterKeysObj[key] : data.values = filterKeysObj[key]);
-      })
-      if (data.value !== undefined || data.values !== undefined) {
-        this.filter.push(data);
-      }
-    });
-
-    if(this.selectedReport['queryType'] === "cassandra"){
-    console.log('start date', _.get(this.reportForm, 'controls.startDate.value'))
-    this.filter = _.cloneDeep(this.selectedReport['filters'])
-    console.log('selected filters',this.selectedReport['filters'])
-    console.log('filters',this.filter)
-    _.map(this.filter, filterObj => {
-       _.remove(filterObj['table_filters'], filterItem => {
-           _.map(keys,key => {
-          if(filterItem.name === key) {
-            filterItem.value = filterKeysObj[key]
-          }
-        })
-        if(filterItem.operator === '>='){
-          filterItem.value = this.reportForm.value.startDate ?  this.reportForm.value.startDate : undefined
-        }
-        if(filterItem.operator === '<='){
-          filterItem.value = this.reportForm.value.endDate ?  this.reportForm.value.endDate : undefined
-        }
-        return filterItem.value === undefined
-      })
-    })
-      console.log('filter to be sent',this.filter)
-    }
+    const keys = Object.keys(filterKeysObj);
+    this.dataFilterQuery(filterKeysObj,keys);
   }
   submitRequest() {
     this.addFilters();
@@ -893,6 +862,31 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.location.back()
   }
 
+  dataFilterQuery(filterKeysObj,keys){
+    if(this.selectedReport['queryType'] === "cassandra"){
+      console.log('start date', _.get(this.reportForm, 'controls.startDate.value'))
+      this.filter = _.cloneDeep(this.selectedReport['filters'])
+      console.log('selected filters',this.selectedReport['filters'])
+      _.map(this.filter, filterObj => {
+         _.remove(filterObj['table_filters'], filterItem => {
+             _.map(keys,key => {
+            (filterItem.name === key || filterItem.operator === key) && (filterItem.value = filterKeysObj[key])
+          })
+          return filterItem.value === undefined
+        })
+      })
+    }else{
+        this.selectedReport['filters'].map(data => {
+        keys.filter(key => {
+          return data.dimension === key && (_.has(data,'value') ? data.value = filterKeysObj[key] : data.values = filterKeysObj[key]);
+        })
+        if (data.value !== undefined || data.values !== undefined) {
+          this.filter.push(data);
+        }
+      });
+    }
+    console.log('filter to be sent',this.filter)
+  }
   ngOnDestroy() {
     if (this.userDataSubscription) {
       this.userDataSubscription.unsubscribe();
