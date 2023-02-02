@@ -86,6 +86,7 @@ describe('DatasetsComponent', () => {
   it('should fetch programsList', () => {
     userService._userProfile = mockData.userProfile;
     component.userRoles = mockData.userProfile.roles;
+    component.reportTypes.length = 1
     jest.spyOn(kendraService, 'get').mockReturnValue(of(mockData.programs));
     component.getProgramsList();
     expect(component.programs).toEqual(mockData.programs.result);
@@ -503,6 +504,56 @@ describe('DatasetsComponent', () => {
       }
     ]);
 
+  }));
+
+  it('should call addFilters for user detail report', fakeAsync(() => {
+
+    const spy = jest.spyOn(component, 'addFilters');
+    component.reportForm.get('programName').setValue('5f34ec17585244939f89f90c');
+    component.reportForm.get('districtName').setValue('2f76dcf5-e43b-4f71-a3f2-c8f19e1fce03');
+    component.reportForm.get('organisationName').setValue('01269878797503692810');
+    component.reportForm.get('startDate').setValue('10/10/2022');
+    component.selectedReport = mockData.selectedReportUserDetailReport
+    component.addFilters();
+    tick(1000);
+    expect(spy).toHaveBeenCalled();
+    expect(component.filter).toEqual([
+      {
+        "table_name": "program_enrollment",
+        "table_filters": [
+          {
+            "name": "program_id",
+            "operator": "==",
+            "value": "5f34ec17585244939f89f90c"
+          },
+          {
+            "name": "district_id",
+            "operator": "==",
+            "value": "2f76dcf5-e43b-4f71-a3f2-c8f19e1fce03"
+          },
+          {
+            "name": "organisation_id",
+            "operator": "==",
+            "value": "01269878797503692810"
+          },
+          {
+            "name": "updated_at",
+            "operator": ">=",
+            "value": "10/10/2022"
+          }
+        ]
+      },
+      {
+        "table_name": "user_consent",
+        "table_filters": [
+          {
+            "name": "object_id",
+            "operator": "==",
+            "value": "5f34ec17585244939f89f90c"
+          }
+        ]
+      }
+    ])
   }));
 
   it('should call goBack', () => {

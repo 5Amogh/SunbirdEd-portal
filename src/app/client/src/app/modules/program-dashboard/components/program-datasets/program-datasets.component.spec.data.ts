@@ -3075,6 +3075,58 @@ export let mockData = {
       ]
   }
   ],
+
+  selectedReportUserDetailReport: {
+    "name": "User Detail Report",
+    "encrypt": true,
+    "datasetId": "ml-program-user-exhaust",
+    "roles": [
+        "PROGRAM_MANAGER"
+    ],
+    "queryType":"cassandra",
+    "filters": [
+      {
+        "table_name": "program_enrollment",
+        "table_filters": [
+          {
+            "name": "program_id",
+            "operator": "==",
+            "value": "602512d8e6aefa27d9629bc3"
+          },
+          {
+            "name": "district_id",
+            "operator": "==",
+            "value": "ed9e0963-0707-443a-99c4-5994fcac7a5f"
+          },
+          {
+            "name": "organisation_id",
+            "operator": "==",
+            "value": "0126796199493140480"
+          },
+          {
+            "name": "updated_at",
+            "operator": ">=",
+            "value": "startDate"
+          },
+          {
+            "name": "updated_at",
+            "operator": "<=",
+            "value": "endDate"
+          }
+        ]
+      },
+      {
+        "table_name": "user_consent",
+        "table_filters": [
+          {
+            "name": "object_id",
+            "operator": "==",
+            "value": "602512d8e6aefa27d9629bc3"
+          }
+        ]
+      }
+    ]
+},
   multipleDataDownloaded: [
     {
       loaded: true,
