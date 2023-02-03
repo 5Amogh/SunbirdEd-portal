@@ -583,8 +583,6 @@ export class DatasetsComponent implements OnInit, OnDestroy {
         }
       })
     }
-
-    this.addFilters();
   }
   
   resetConfigFilters(){
@@ -743,22 +741,22 @@ export class DatasetsComponent implements OnInit, OnDestroy {
                   "table_filters": [
                     {
                       "name": "program_id",
-                      "operator": "==",
+                      "operator": "=",
                       "value": "602512d8e6aefa27d9629bc3"
                     },
                     {
                       "name": "state_id",
-                      "operator": "==",
+                      "operator": "=",
                       "value": "6d884bb0-307f-4f83-abfe-fc21bbd36abb"
                     },
                     {
                       "name": "district_id",
-                      "operator": "==",
+                      "operator": "=",
                       "value": "ed9e0963-0707-443a-99c4-5994fcac7a5f"
                     },
                     {
                       "name": "organisation_id",
-                      "operator": "==",
+                      "operator": "=",
                       "value": "0126796199493140480"
                     },
                     {
@@ -778,7 +776,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
                   "table_filters": [
                     {
                       "name": "object_id",
-                      "operator": "==",
+                      "operator": "=",
                       "value": "602512d8e6aefa27d9629bc3"
                     }
                   ]
@@ -800,9 +798,9 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     _.forEach(this.onDemandReportData, (value) => {
       if (value.datasetConfig.type === this.selectedReport.datasetId){
         _.forEach(value.datasetConfig.params.filters, (filter) => {
-          if(!this.userAccess && ['solutionId','solution_id'].includes(filter['dimension']) && filter.value  === this.selectedSolution){
+          if(['solutionId','solution_id'].includes(filter['dimension']) && filter.value  === this.selectedSolution){
             selectedReportList.push(value);
-          }else if(this.userAccess && ['programId','program_id'].includes(filter['dimension']) && filter.value === this.reportForm.controls.programName.value){
+          }else if(['object_id'].includes(filter?.table_filters?.[0]['name']) && filter?.table_filters?.[0].value === this.reportForm.controls.programName.value){
             selectedReportList.push(value);
           }
         });

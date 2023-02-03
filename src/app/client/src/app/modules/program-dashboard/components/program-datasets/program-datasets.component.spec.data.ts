@@ -3075,7 +3075,209 @@ export let mockData = {
       ]
   }
   ],
-
+  OnDemandReportForSolutionTest:[
+    {
+        "requestId": "43AAC9A63194A5385555053E08CD9E87",
+        "tag": "607d3410e9cce45e22ce90c1_4c4e7a7a-d44e-45cc-9319-d22d84f749bd:01269934121990553633",
+        "dataset": "druid-dataset",
+        "requestedBy": "4c4e7a7a-d44e-45cc-9319-d22d84f749bd",
+        "requestedChannel": "01269934121990553633",
+        "status": "SUBMITTED",
+        "lastUpdated": 1674618446125,
+        "datasetConfig": {
+            "type": "ml-project-status-exhaust",
+            "params": {
+                "end_date": "2023-01-19",
+                "filters": [
+                    {
+                        "type": "in",
+                        "dimension": "status_of_project",
+                        "values": [
+                            "started",
+                            "submitted",
+                            "inProgress"
+                        ]
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "private_program",
+                        "value": "false"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "sub_task_deleted_flag",
+                        "value": "false"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "task_deleted_flag",
+                        "value": "false"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "project_deleted_flag",
+                        "value": "false"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "program_id",
+                        "value": "607d320de9cce45e22ce90c0"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "solution_id",
+                        "value": "607d3410e9cce45e22ce90c1"
+                    }
+                ]
+            },
+            "title": "Status Report"
+        },
+        "attempts": 0,
+        "jobStats": {
+            "dtJobSubmitted": 1674618446125,
+            "dtJobCompleted": null,
+            "executionTime": null
+        },
+        "downloadUrls": [],
+        "expiresAt": 1675405928901,
+        "statusMessage": null,
+        "title": "Status Report"
+    },
+    {
+        "requestId": "8AC5135EF3353DCAD380C3603F5783A9",
+        "tag": "607d3410e9cce45e22ce90c1_4c4e7a7a-d44e-45cc-9319-d22d84f749bd:01269934121990553633",
+        "dataset": "druid-dataset",
+        "requestedBy": "4c4e7a7a-d44e-45cc-9319-d22d84f749bd",
+        "requestedChannel": "01269934121990553633",
+        "status": "FAILED",
+        "lastUpdated": 1673245705646,
+        "datasetConfig": {
+            "type": "ml-filtered-task-detail-exhaust",
+            "params": {
+                "filters": [
+                    {
+                        "type": "equals",
+                        "dimension": "status_of_project",
+                        "value": "submitted"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "private_program",
+                        "value": "false"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "sub_task_deleted_flag",
+                        "value": "false"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "task_deleted_flag",
+                        "value": "false"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "project_deleted_flag",
+                        "value": "false"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "program_id",
+                        "value": "607d320de9cce45e22ce90c0"
+                    },
+                    {
+                        "type": "equals",
+                        "dimension": "solution_id",
+                        "value": "607d3410e9cce45e22ce90c1"
+                    }
+                ]
+            },
+            "title": "Filtered task detail report"
+        },
+        "attempts": 3,
+        "jobStats": {
+            "dtJobSubmitted": 1672895781054,
+            "dtJobCompleted": 1673245705646,
+            "executionTime": 0
+        },
+        "downloadUrls": [],
+        "expiresAt": 1675405928901,
+        "statusMessage": "No data present",
+        "title": "Filtered task detail report"
+    }
+],
+  selectedReportForSolutionTest:{
+    "name": "Status Report",
+    "encrypt": false,
+    "datasetId": "ml-project-status-exhaust",
+    "roles": [
+        "PROGRAM_MANAGER",
+        "PROGRAM_DESIGNER"
+    ],
+    "configurableFilters": true,
+    "filters": [
+        {
+            "type": "in",
+            "dimension": "status_of_project",
+            "values": [
+                "started",
+                "submitted",
+                "inProgress"
+            ]
+        },
+        {
+            "type": "equals",
+            "dimension": "private_program",
+            "value": "false"
+        },
+        {
+            "type": "equals",
+            "dimension": "sub_task_deleted_flag",
+            "value": "false"
+        },
+        {
+            "type": "equals",
+            "dimension": "task_deleted_flag",
+            "value": "false"
+        },
+        {
+            "type": "equals",
+            "dimension": "project_deleted_flag",
+            "value": "false"
+        },
+        {
+            "type": "equals",
+            "dimension": "program_id",
+            "value": "607d320de9cce45e22ce90c0"
+        },
+        {
+            "type": "equals",
+            "dimension": "solutionId",
+            "value": "607d3410e9cce45e22ce90c1"
+        },
+        {
+            "type": "equals",
+            "dimension": "district_externalId"
+        },
+        {
+            "type": "equals",
+            "dimension": "organisation_id"
+        }
+    ],
+    "uiFilters": [
+        {
+            "label": "Status",
+            "controlType": "multi-select",
+            "reference": "status_of_project",
+            "placeholder": "Select status",
+            "options": [
+                "started",
+                "submitted",
+                "inProgress"
+            ]
+        }
+    ]
+},
   selectedReportUserDetailReport: {
     "name": "User Detail Report",
     "encrypt": true,

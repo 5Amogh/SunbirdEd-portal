@@ -34,7 +34,8 @@ describe('DatasetsComponent', () => {
   };
   const onDemandReportService: Partial<OnDemandReportService> = {
     getReportList: jest.fn() as any,
-    submitRequest: jest.fn() as any
+    submitRequest: jest.fn() as any,
+    isInProgress: jest.fn() as any
   };
   const config: Partial<ConfigService> = {
     urlConFig: mockData.urlConfig
@@ -803,6 +804,17 @@ describe('DatasetsComponent', () => {
     expect(component.closeDashboard).toHaveBeenCalled();
   });
 
+  it('should call checkStatus', () => {
+    component.selectedSolution = "607d3410e9cce45e22ce90c1"
+    jest.spyOn(onDemandReportService,'isInProgress').mockReturnValue(true)
+    component.onDemandReportData = mockData.OnDemandReportForSolutionTest
+    component.selectedReport = mockData.selectedReportForSolutionTest
+    jest.spyOn(component,'checkStatus');
+    component.checkStatus();
+    expect(component.checkStatus).toHaveBeenCalled();
+  });
+
+
   it('should call ngOnDestroy', () => {
     component.userDataSubscription = of().subscribe();
     component.ngOnDestroy();
@@ -810,5 +822,6 @@ describe('DatasetsComponent', () => {
   });
   
 });
+
 
 
