@@ -87,7 +87,6 @@ describe('DatasetsComponent', () => {
   it('should fetch programsList', () => {
     userService._userProfile = mockData.userProfile;
     component.userRoles = mockData.userProfile.roles;
-    component.reportTypes.length = 1
     jest.spyOn(kendraService, 'get').mockReturnValue(of(mockData.programs));
     component.getProgramsList();
     expect(component.programs).toEqual(mockData.programs.result);
@@ -95,6 +94,8 @@ describe('DatasetsComponent', () => {
 
   it('should call programSelection', () => {
     component.programs = mockData.programs.result;
+    component.reportTypes = [mockData.selectedReportForSolutionTest]
+    component.userId = '1234567890';
     jest.spyOn(kendraService, 'get').mockReturnValue(of(mockData.solutions));
     jest.spyOn(reportService,'listAllReports').mockReturnValue(of(mockData.reportConfig))
     component.programSelection({
@@ -814,6 +815,131 @@ describe('DatasetsComponent', () => {
     expect(component.checkStatus).toHaveBeenCalled();
   });
 
+  it('should call checkStatus with completed request', () => {
+    component.selectedSolution = "607d3410e9cce45e22ce90c1"
+    jest.spyOn(onDemandReportService,'isInProgress').mockReturnValue(false)
+    component.onDemandReportData = mockData.OnDemandReportForSolutionTest
+    component.selectedReport = mockData.selectedReportForSolutionTest
+    jest.spyOn(component,'checkStatus');
+    component.checkStatus();
+    expect(component.checkStatus).toHaveBeenCalled();
+  });
+
+  it('should call checkStatus with program', () => {
+    component.selectedSolution = undefined;
+    jest.spyOn(onDemandReportService,'isInProgress').mockReturnValue(true)
+    component.onDemandReportData = [{
+      "requestId": "D6A2781F934CBC9FFC84B7B5145BDB92",
+      "tag": "607d320de9cce45e22ce90c0_4c4e7a7a-d44e-45cc-9319-d22d84f749bd:01269934121990553633",
+      "dataset": "druid-dataset",
+      "requestedBy": "4c4e7a7a-d44e-45cc-9319-d22d84f749bd",
+      "requestedChannel": "01269934121990553633",
+      "status": "SUBMITTED",
+      "lastUpdated": 1675336792963,
+      "datasetConfig": {
+          "type": "ml-program-user-exhaust",
+          "params": {
+              "filters": [
+                  {
+                      "table_name": "program_enrollment",
+                      "table_filters": [
+                          {
+                              "name": "program_id",
+                              "operator": "==",
+                              "value": "607d320de9cce45e22ce90c0"
+                          },
+                          {
+                              "name": "state_id",
+                              "operator": "==",
+                              "value": "6d884bb0-307f-4f83-abfe-fc21bbd36abb"
+                          }
+                      ]
+                  },
+                  {
+                      "table_name": "user_consent",
+                      "table_filters": [
+                          {
+                              "name": "object_id",
+                              "operator": "==",
+                              "value": "607d320de9cce45e22ce90c0"
+                          }
+                      ]
+                  }
+              ]
+          },
+          "title": "User Detail Report"
+      },
+      "attempts": 0,
+      "jobStats": {
+          "dtJobSubmitted": 1675336792963,
+          "dtJobCompleted": null,
+          "executionTime": null
+      },
+      "downloadUrls": [],
+      "expiresAt": 1675664901267,
+      "statusMessage": null,
+      "title": "User Detail Report"
+  }]
+    component.selectedReport = {
+      "name": "User Detail Report",
+      "encrypt": true,
+      "datasetId": "ml-program-user-exhaust",
+      "roles": [
+          "PROGRAM_MANAGER"
+      ],
+      "queryType": "cassandra",
+      "filters": [
+          {
+              "table_name": "program_enrollment",
+              "table_filters": [
+                  {
+                      "name": "program_id",
+                      "operator": "=",
+                      "value": "602512d8e6aefa27d9629bc3"
+                  },
+                  {
+                      "name": "state_id",
+                      "operator": "=",
+                      "value": "6d884bb0-307f-4f83-abfe-fc21bbd36abb"
+                  },
+                  {
+                      "name": "district_id",
+                      "operator": "=",
+                      "value": "ed9e0963-0707-443a-99c4-5994fcac7a5f"
+                  },
+                  {
+                      "name": "organisation_id",
+                      "operator": "=",
+                      "value": "0126796199493140480"
+                  },
+                  {
+                      "name": "updated_at",
+                      "operator": ">=",
+                      "value": "startDate"
+                  },
+                  {
+                      "name": "updated_at",
+                      "operator": "<=",
+                      "value": "endDate"
+                  }
+              ]
+          },
+          {
+              "table_name": "user_consent",
+              "table_filters": [
+                  {
+                      "name": "object_id",
+                      "operator": "=",
+                      "value": "602512d8e6aefa27d9629bc3"
+                  }
+              ]
+          }
+      ]
+  }
+    jest.spyOn(component,'checkStatus');
+    component.checkStatus();
+    expect(component.checkStatus).toHaveBeenCalled();
+  });
 
   it('should call ngOnDestroy', () => {
     component.userDataSubscription = of().subscribe();
