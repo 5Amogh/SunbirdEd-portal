@@ -106,12 +106,12 @@ let envVariables = {
   sunbird_portal_cassandra_db_health_status: "true",
 
   // Keys
-  KONG_DEVICE_REGISTER_AUTH_TOKEN: env.sunbird_kong_device_register_token,
-  sunbird_anonymous_default_token: env.sunbird_anonymous_default_token,
-  sunbird_anonymous_register_token: env.sunbird_anonymous_register_token,
-  sunbird_loggedin_register_token: env.sunbird_loggedin_register_token,
-  sunbird_logged_default_token: env.sunbird_logged_default_token,
-  PORTAL_API_AUTH_TOKEN: env.sunbird_api_auth_token,
+  KONG_DEVICE_REGISTER_AUTH_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXI4RWplMW0yMFB5cXpISWljM2tUM3FraVZoWmZXRSJ9.3M23YKULRjFWW9NkbZQQgq1-_BaIVcsUh-Cr3PkHG54',
+  sunbird_anonymous_default_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiTzEwOVoyU3VnQzZTMERhbVJlazlzT05ZQkN1UURhayJ9.gBdWUwSl-W2SQ13tX4qH9K4G3icwAwOgmcmSPO-p3Sc',
+  sunbird_anonymous_register_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXI4RWplMW0yMFB5cXpISWljM2tUM3FraVZoWmZXRSJ9.3M23YKULRjFWW9NkbZQQgq1-_BaIVcsUh-Cr3PkHG54',
+  sunbird_loggedin_register_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJVS25Oc1Jka2hvUk9KUnAwZ0NpbHhmMmtnQUw0TzBRRiJ9.FINGlN1a3ZqBnC1cIFk097RTp08Y6O1le2XY2jpQEnw',
+  sunbird_logged_default_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiTzEwOVoyU3VnQzZTMERhbVJlazlzT05ZQkN1UURhayJ9.gBdWUwSl-W2SQ13tX4qH9K4G3icwAwOgmcmSPO-p3Sc',
+  PORTAL_API_AUTH_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXI4RWplMW0yMFB5cXpISWljM2tUM3FraVZoWmZXRSJ9.3M23YKULRjFWW9NkbZQQgq1-_BaIVcsUh-Cr3PkHG54',  
 
 }
 envVariables.PORTAL_CASSANDRA_URLS = ["localhost:9042"];
