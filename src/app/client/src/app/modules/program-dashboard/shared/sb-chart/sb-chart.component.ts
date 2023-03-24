@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewCh
 import { MatDialog } from '@angular/material/dialog';
 import { ResourceService } from '@sunbird/shared';
 import * as _ from "lodash-es";
-import { SbDataFilterService } from '../services/sb-data-filter.service';
+import { PdServiceService } from '../services/pd-service/pd-service.service';
 @Component({
   selector: 'app-sb-chart',
   templateUrl: './sb-chart.component.html',
@@ -12,13 +12,7 @@ export class SbChartComponent implements OnInit, OnChanges {
   @Input() chart;
   @Input() lastUpdatedOn;
   @Input() hideElements = false;
-  @Input() globalDistrict;
-  @Input() globalOrg;
-  @Input() globalBlock;
-  appliedFilters = {
-    district_externalId:'2f76dcf5-e43b-4f71-a3f2-c8f19e1fce03',
-    organisation_id:['0126796199493140480','0127920475840593920'] //testing for block data
-}
+  @Input() appliedFilters;
   chartData;
   chartConfig;
   currentFilters: Array<{}>;
@@ -37,7 +31,7 @@ export class SbChartComponent implements OnInit, OnChanges {
   constructor(
     public resourceService: ResourceService,
     public dialog: MatDialog,
-    public filterService:SbDataFilterService
+    public filterService:PdServiceService
   ) { }
 
   ngOnInit() {
@@ -51,22 +45,8 @@ export class SbChartComponent implements OnInit, OnChanges {
   }
 
   checkForGlobalChanges() {
-    if (this.globalDistrict || this.globalOrg) {
+    if (Object.keys(this.appliedFilters).length) {
       this.globalData = this.filterService.getFilteredData(this.chartData,this.appliedFilters)
-      //   if (this.globalDistrict && this.globalOrg) {
-      //     return chart?.district_externalId == this.globalDistrict && chart?.organisation_id == this.globalOrg;
-      //   }
-      //   if (this.globalDistrict) {
-      //     if(this.globalBlock && this.globalBlock.length){
-      //       return this.globalBlock.includes(chart.organisation_id) && chart.district_externalId == this.globalDistrict
-      //     }
-      //     return chart?.district_externalId == this.globalDistrict;
-      //   }
-      //   if (this.globalOrg) {
-      //     return chart?.organisation_id == this.globalOrg
-      //   }
-      //   return chart;
-      // });
       this.currentFilters = [];
       this.globalChange = true;
       this.updatedData = this.globalData;

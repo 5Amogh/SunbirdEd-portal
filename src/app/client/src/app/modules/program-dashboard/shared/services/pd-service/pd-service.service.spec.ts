@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SbDataFilterService } from './sb-data-filter.service';
+import { PdServiceService } from './pd-service.service';
 
-describe('SbDataFilterService', () => {
-  let service: SbDataFilterService;
+describe('PdServiceService', () => {
+  let service: PdServiceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SbDataFilterService);
+    service = TestBed.inject(PdServiceService);
   });
 
   it('should be created', () => {

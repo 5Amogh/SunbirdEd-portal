@@ -102,7 +102,8 @@ export class DatasetsComponent implements OnInit, OnDestroy {
   displayFilters:any = {};
   loadash = _;
   pdFilters:ConfigFilter[] = [];
-  configuredFilters:any = {}
+  configuredFilters:any = {};
+  appliedFilters:object = {}
   constructor(
     activatedRoute: ActivatedRoute,
     public layoutService: LayoutService,
@@ -263,7 +264,8 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.displayFilters['Program'] = [program[0].name]
     this.reportForm.controls.programName.setValue($event.value);
     this.newData = true;
-    this.globalDistrict = this.globalOrg = undefined;
+    // this.globalDistrict = this.globalOrg = undefined;
+    this.appliedFilters = {}
   }
 
   public selectSolution($event) {
@@ -272,7 +274,8 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.districts = []
     this.organisations = [];
     this.resetConfigFilters();
-    this.globalDistrict = this.globalOrg = undefined;
+    // this.globalDistrict = this.globalOrg = undefined;
+    this.appliedFilters = {}
     if (this.programSelected && this.reportForm.value && this.reportForm.value['solution']) {
       const solution = this.solutions.filter(data => {
         if (data._id == $event.value) {
@@ -526,7 +529,8 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.onDemandReportData = [];
     this.goToPrevLocation = false;
     this.showPopUpModal = true;
-    this.globalDistrict = this.globalOrg = undefined;
+    // this.globalDistrict = this.globalOrg = undefined;
+    this.appliedFilters = {}
     this.timeRangeInit();
     this.resetConfigFilters();
   }
@@ -543,7 +547,8 @@ export class DatasetsComponent implements OnInit, OnDestroy {
   }
 
   districtSelection($event) {
-    this.globalDistrict = $event.value;
+    // this.globalDistrict = $event.value;
+    this.appliedFilters = {...this.appliedFilters, district_externalId: $event.value}
     this.reportForm.controls.districtName.setValue($event.value);
     this.displayFilters['District'] = [$event?.source?.triggerValue]
     this.tag =  _.get(this.reportForm, 'controls.solution.value')+ '_' + this.userId+'_'+ _.toLower(_.trim([$event?.source?.triggerValue]," "));
@@ -551,7 +556,8 @@ export class DatasetsComponent implements OnInit, OnDestroy {
   }
 
   organisationSelection($event) {
-    this.globalOrg = $event.value
+    // this.globalOrg = $event.value;
+    this.appliedFilters= {...this.appliedFilters, organisation_id:$event.value}
     this.reportForm.controls.organisationName.setValue($event.value);
     this.displayFilters['Organisation'] = [$event?.source?.triggerValue]
   }
@@ -768,9 +774,11 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     }
   }
 
-  blockChanged(){
-    console.log('blocks:', this.reportForm.value.block)
+  blockChanged($event){
+    this.appliedFilters = {...this.appliedFilters, blockId:$event.value}
+    this.displayFilters['Block'] = [$event?.source?.triggerValue]
   }
+
   closeDashboard(){
     this.location.back()
   }
