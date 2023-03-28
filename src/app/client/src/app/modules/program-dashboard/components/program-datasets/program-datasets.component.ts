@@ -274,6 +274,28 @@ export class DatasetsComponent implements OnInit, OnDestroy {
       this.loadReports();
     }
     this.newData = !this.userAccess;
+    this.districts = [
+      {
+          "locationId": "2f76dcf5-e43b-4f71-a3f2-c8f19e1fce03",
+          "name": "ANANTAPUR"
+      },
+      {
+          "locationId": "b5c35cfc-6c1e-4266-94ef-a425c43c7f4e",
+          "name": "CHITTOOR"
+      },
+      {
+          "locationId": "aecac7ab-15e4-45c9-ac7b-d716444cd652",
+          "name": "EAST GODAVARI"
+      },
+      {
+          "locationId": "87422ed0-d2dd-4672-9d6b-10a4b565dfe3",
+          "name": "GUNTUR"
+      },
+      {
+          "locationId": "9346a6ba-0b31-4893-babc-a5be417e8e09",
+          "name": "NELLORE"
+      }
+  ]
   }
 
   public selectSolution($event) {
@@ -616,14 +638,15 @@ export class DatasetsComponent implements OnInit, OnDestroy {
       }
     })
     const filterKeysObj = {
-      program_id: _.get(this.reportForm, 'controls.programName.value') || undefined,
-      solution_id: _.get(this.reportForm, 'controls.solution.value') || undefined,
-      programId: _.get(this.reportForm, 'controls.programName.value') || undefined,
-      solutionId: _.get(this.reportForm, 'controls.solution.value') || undefined,
-      district_externalId: _.get(this.reportForm, 'controls.districtName.value') || undefined,
-      district_id:_.get(this.reportForm, 'controls.districtName.value') || undefined,
-      organisation_id: _.get(this.reportForm, 'controls.organisationName.value') || undefined,
-      object_id:_.get(this.reportForm, 'controls.programName.value') || undefined,
+      "program_id": _.get(this.reportForm, 'controls.programName.value') || undefined,
+      "solution_id": _.get(this.reportForm, 'controls.solution.value') || undefined,
+      "programId": _.get(this.reportForm, 'controls.programName.value') || undefined,
+      "solutionId": _.get(this.reportForm, 'controls.solution.value') || undefined,
+      "district_externalId": _.get(this.reportForm, 'controls.districtName.value') || undefined,
+      "district_id":_.get(this.reportForm, 'controls.districtName.value') || undefined,
+      "organisation_id": _.get(this.reportForm, 'controls.organisationName.value') || undefined,
+      "object_id":_.get(this.reportForm, 'controls.programName.value') || undefined,
+      "user_locations['district_id']":_.get(this.reportForm, 'controls.districtName.value') || undefined,
       '>=':_.get(this.reportForm,'controls.startDate.value') || undefined,
       '<=':_.get(this.reportForm,'controls.endDate.value') || undefined,
       ...this.configuredFilters
@@ -744,13 +767,13 @@ export class DatasetsComponent implements OnInit, OnDestroy {
                       "operator": "=",
                       "value": "602512d8e6aefa27d9629bc3"
                     },
+                    // {
+                    //   "name": "user_locations['state_id']",
+                    //   "operator": "=",
+                    //   "value": "6d884bb0-307f-4f83-abfe-fc21bbd36abb"
+                    // },
                     {
-                      "name": "state_id",
-                      "operator": "=",
-                      "value": "6d884bb0-307f-4f83-abfe-fc21bbd36abb"
-                    },
-                    {
-                      "name": "district_id",
+                      "name": "user_locations['district_id']",
                       "operator": "=",
                       "value": "ed9e0963-0707-443a-99c4-5994fcac7a5f"
                     },
