@@ -73,7 +73,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     organisationName: new FormControl(),
     startDate: new FormControl(),
     endDate: new FormControl(),
-    block:new FormControl()
+    blockName:new FormControl()
   });
 
   passwordForm = new FormGroup({
@@ -103,7 +103,30 @@ export class DatasetsComponent implements OnInit, OnDestroy {
   loadash = _;
   pdFilters:ConfigFilter[] = [];
   configuredFilters:any = {};
-  appliedFilters:object = {}
+  appliedFilters:object = {};
+  blocks:object[] = [
+    {
+        "block_name": "ANANTAPUR",
+        "block_externalId": "d2f2f4db-246b-44e1-b877-05449ca16aec",
+    },
+    {
+        "block_name": "AGALI",
+        "block_externalId": "966c3be4-c125-467d-aaff-1eb1cd525923",
+    },
+    {
+        "block_name": "AMADAGUR",
+        "block_externalId": "8df55ad6-7b21-41d0-a93a-efda45d34857",
+    },
+    {
+        "block_name": "BOMMANAHAL",
+        "block_externalId": "317d7fe1-6285-4c1d-8cdd-225153bde70c",
+    },
+    {
+        "block_name": "B.KOTHAKOTA",
+        "block_externalId": "57e3db3c-e61f-4e6d-b416-6213ca92048e"
+    }
+  ];
+  errorMessage = this.resourceService?.frmelmnts?.lbl?.resourceSelect;
   constructor(
     activatedRoute: ActivatedRoute,
     public layoutService: LayoutService,
@@ -265,16 +288,18 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.reportForm.controls.programName.setValue($event.value);
     this.newData = true;
     // this.globalDistrict = this.globalOrg = undefined;
-    this.appliedFilters = {}
+    this.appliedFilters = {};
+    this.districts = this.organisations = [];
+    this.errorMessage = this.resourceService?.frmelmnts?.lbl?.resourceSelect;
   }
 
   public selectSolution($event) {
     this.newData = false;
     this.noResult = false;
-    this.districts = []
-    this.organisations = [];
+    this.districts = this.organisations = []
     this.resetConfigFilters();
     // this.globalDistrict = this.globalOrg = undefined;
+    this.errorMessage = this.resourceService?.frmelmnts?.lbl?.resourceSelect;
     this.appliedFilters = {}
     if (this.programSelected && this.reportForm.value && this.reportForm.value['solution']) {
       const solution = this.solutions.filter(data => {
@@ -345,7 +370,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
       })
     );
   }
-
+ 
   renderReport(reportId): Observable<any> {
     return this.fetchConfig(reportId).pipe(switchMap(
       (report => {
@@ -366,6 +391,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
           result['lastUpdatedOn'] = this.reportService.getFormattedDate(this.reportService.getLatestLastModifiedOnDate(data));
           this.lastUpdatedOn = moment(_.get(result, 'lastUpdatedOn')).format('DD-MMMM-YYYY');
           this.chartsReportData = JSON.parse(JSON.stringify(result));
+          console.log('result',result);
           return result;
         }))
       })
@@ -548,10 +574,13 @@ export class DatasetsComponent implements OnInit, OnDestroy {
 
   districtSelection($event) {
     // this.globalDistrict = $event.value;
+    this.newData = false;
     this.appliedFilters = {...this.appliedFilters, district_externalId: $event.value}
     this.reportForm.controls.districtName.setValue($event.value);
+    this.errorMessage = this.resourceService?.frmelmnts?.lbl?.resourceSelect;
     this.displayFilters['District'] = [$event?.source?.triggerValue]
-    this.tag =  _.get(this.reportForm, 'controls.solution.value')+ '_' + this.userId+'_'+ _.toLower(_.trim([$event?.source?.triggerValue]," "));
+    const tagId =  _.get(this.reportForm, 'controls.solution.value')+ '_' + this.userId+'_'+ _.toLower(_.trim([$event?.source?.triggerValue]," "));
+    this.tag = tagId.length > 79 ? tagId.substring(0,79) : tagId
     this.loadReports();
   }
 
@@ -560,8 +589,26 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     this.appliedFilters= {...this.appliedFilters, organisation_id:$event.value}
     this.reportForm.controls.organisationName.setValue($event.value);
     this.displayFilters['Organisation'] = [$event?.source?.triggerValue]
+    this.newData = false;
+    this.errorMessage = this.resourceService?.frmelmnts?.lbl?.resourceSelect;
   }
 
+  blockChanged($event){
+    this.reportForm.controls.blockName.setValue($event.value)
+    if($event.value.length){
+      this.appliedFilters = {...this.appliedFilters, block_externalId:$event.value};
+      this.displayFilters['Block'] = [$event?.source?.triggerValue]
+    }else{
+      delete this.appliedFilters['block_externalId']
+      this.appliedFilters = { ...this.appliedFilters }
+    }
+  }
+  dependentFilterMsg(){
+    if(!this.reportForm.controls.districtName.value){
+      this.newData = true;
+      this.errorMessage = this.resourceService?.frmelmnts?.lbl?.blockWithoutDistrict
+    }
+  }
   reportChanged(selectedReportData) {
     this.resetConfigFilters();
     this.selectedReport = selectedReportData;
@@ -774,10 +821,7 @@ export class DatasetsComponent implements OnInit, OnDestroy {
     }
   }
 
-  blockChanged($event){
-    this.appliedFilters = {...this.appliedFilters, blockId:$event.value}
-    this.displayFilters['Block'] = [$event?.source?.triggerValue]
-  }
+ 
 
   closeDashboard(){
     this.location.back()
