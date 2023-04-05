@@ -23,7 +23,9 @@ export class SbBignumberComponent implements OnInit, OnChanges {
   constructor(
     public resourceService: ResourceService,
     public dialog: MatDialog,
-    public filterService:PdServiceService
+    public filterService:PdServiceService = {
+      getFilteredData: jest.fn() as any
+    }
   ) { }
 
   ngOnInit(){
