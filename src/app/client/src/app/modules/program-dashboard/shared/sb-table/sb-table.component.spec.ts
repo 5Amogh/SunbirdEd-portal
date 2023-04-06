@@ -21,7 +21,7 @@ describe("SbTableComponent", () => {
     jest.clearAllMocks();
   });
 
-  it("should create bignumber component", () => {
+  it("should create table component", () => {
     expect(component).toBeTruthy();
   });
 

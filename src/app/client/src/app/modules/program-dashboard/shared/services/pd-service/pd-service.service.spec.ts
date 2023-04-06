@@ -1,10 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { mockBigData } from '../../../pipes/bigData/big-dat.pipe.spec.data';
+import  * as _ from 'lodash-es';
+import { mockBigChart } from '../../sb-bignumber/sb-bignumber.component.spec.data';
 
 import { PdServiceService } from './pd-service.service';
 
 describe('PdServiceService', () => {
   let service: PdServiceService;
+  const appliedFilters =  {
+    district_externalId:'2f76dcf5-e43b-4f71-a3f2-c8f19e1fce03',
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
@@ -16,12 +20,19 @@ describe('PdServiceService', () => {
   });
 
   it('should call getFilteredData', () => {
-    const appliedFilters =  {
-      district_externalId:'2f76dcf5-e43b-4f71-a3f2-c8f19e1fce03',
-      organisation_id:'0126796199493140480'
-    };
+    appliedFilters['organisation_id'] = '0126796199493140480'
     jest.spyOn(service,'getFilteredData');
-    service.getFilteredData(mockBigData, appliedFilters);
-    expect(service.getFilteredData).toBeCalledWith(mockBigData,appliedFilters);
+    service.getFilteredData(mockBigChart.chart.chartData, appliedFilters);
+    expect(service.getFilteredData).toBeCalledWith(mockBigChart.chart.chartData,appliedFilters);
   })
+
+  it('should call getFilteredData with an array type property value', () => {
+    appliedFilters['organisation_id'] = ['0126796199493140480']
+    jest.spyOn(service,'getFilteredData');
+    const filteredData = service.getFilteredData(mockBigChart.chart.chartData, appliedFilters);
+    expect(service.getFilteredData).toBeCalledWith(mockBigChart.chart.chartData,appliedFilters);
+    expect(filteredData.length).toBe(1);
+    expect(_.find(filteredData, mockBigChart.chart.chartData[2])).toBeTruthy();
+  })
+
 });
