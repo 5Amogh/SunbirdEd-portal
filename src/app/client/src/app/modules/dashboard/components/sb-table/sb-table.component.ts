@@ -10,8 +10,8 @@ import { ResourceService } from '@sunbird/shared';
 export class SbTableComponent implements AfterViewInit  {
   @Input() rowsData: Array<Object>;
   data = {};
-  @Input() config: Object;
-
+  @Input() config;
+  currentFilters: Array<{}>;
   constructor(private cdRef: ChangeDetectorRef, private resourceService: ResourceService) { }
   @ViewChild('lib', { static: false }) lib: any;
 
@@ -32,5 +32,22 @@ export class SbTableComponent implements AfterViewInit  {
   reset() {
     this.lib.instance.reset();
     this.loadTable();
+  }
+
+  getChartData() {
+    return [{ id: this.config.id , data: this.rowsData , selectedFilters: this.currentFilters }];
+  }
+
+  public filterChanged(data: any): void {
+    console.log('data',data)
+    this.currentFilters = data.filters;
+    if (data.filters) {
+      this.rowsData['selectedFilters'] = data.filters;
+    } else {
+      this.rowsData['selectedFilters'] = {};
+    }
+   delete data.chartData[0].data['selectedFilters']
+   this.lib.instance.update({data:data.chartData[0].data})
+   console.log('rows data',this.rowsData);
   }
 }
