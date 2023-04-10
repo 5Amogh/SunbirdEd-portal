@@ -12,11 +12,12 @@ export class SbTableComponent implements AfterViewInit  {
   data = {};
   @Input() config;
   currentFilters: Array<{}>;
+  // customFilters: any;
   constructor(private cdRef: ChangeDetectorRef, private resourceService: ResourceService) { }
   @ViewChild('lib', { static: false }) lib: any;
 
   loadTable() {
-
+    // this.customFilters = this.config.filters.includes(fil => fil.dependency)
     this.data = {
       values: this.rowsData
     };
@@ -34,20 +35,16 @@ export class SbTableComponent implements AfterViewInit  {
     this.loadTable();
   }
 
-  getChartData() {
+  getTableData() {
     return [{ id: this.config.id , data: this.rowsData , selectedFilters: this.currentFilters }];
   }
 
   public filterChanged(data: any): void {
     console.log('data',data)
     this.currentFilters = data.filters;
-    if (data.filters) {
-      this.rowsData['selectedFilters'] = data.filters;
-    } else {
-      this.rowsData['selectedFilters'] = {};
-    }
-   delete data.chartData[0].data['selectedFilters']
-   this.lib.instance.update({data:data.chartData[0].data})
-   console.log('rows data',this.rowsData);
+    this.rowsData['selectedFilters'] = data.filters ? data.filters : {}
+    delete data.chartData[0].data['selectedFilters']
+    this.lib.instance.update({data:data.chartData[0].data})
+    console.log('rows data',this.rowsData);
   }
 }

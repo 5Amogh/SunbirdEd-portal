@@ -51,6 +51,8 @@ export class MaterialAutoCompleteComponent implements OnChanges {
 
   @Output() selectionChanged: EventEmitter<any> = new EventEmitter<any>();
 
+  @Output() errorOutput: EventEmitter<any> = new EventEmitter<any>();
+
   displayDropdown = false;
   private _placeholder: string;
 
@@ -108,8 +110,9 @@ export class MaterialAutoCompleteComponent implements OnChanges {
       setTimeout(() => {
           this.searchField.nativeElement.focus();
       }, 100);
+      this.errorOutput.emit(null)
     }else{
-      this.toasterService.error(`Please select a ${this.dependency.displayName} first from the ${this.dependency.displayName} filter`);
+      this.errorOutput.emit({displayName: this.dependency.displayName})   
     }
   }
   isChecked(item) {
