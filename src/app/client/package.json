@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "ng": "ng",
-    "start": "ng build --deploy-url dist/ && mv ../dist/index.html ../dist/index.ejs",
+    "start": "ng build --configuration production --deploy-url dist/ && mv ../dist/index.html ../dist/index.ejs",
     "start-desktop": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --output-path=../../desktop/public/portal --watch=true --configuration=desktop-staging && mv ../../desktop/public/portal/index.html ../../desktop/public/portal/index.ejs",
     "prod-desktop": "node --max_old_space_size=8096 ./node_modules/@angular/cli/bin/ng build --configuration production --output-path=../../desktop/public/portal --configuration=desktop-production && mv ../../desktop/public/portal/index.html ../../desktop/public/portal/index.ejs",
     "proxy": "ng serve --proxy-config proxy.config.js",
@@ -130,6 +130,7 @@
     "ngx-device-detector": "4.0.1",
     "ngx-filesize": "3.0.1",
     "ngx-infinite-scroll": "^8.0.2",
+    "questionnaire-webcomponent": "^1.0.0",
     "rxjs": "^6.5.5",
     "sass": "^1.56.1",
     "sb-svg2pdf-v13": "1.0.0",

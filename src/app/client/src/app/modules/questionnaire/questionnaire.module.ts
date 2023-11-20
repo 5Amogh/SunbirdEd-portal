@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { QuestionnaireComponent } from './questionnaire/questionnaire.component';
 import { QuestionnaireRoutingModule } from './questionnaire-routing.module';
@@ -27,5 +27,6 @@ import {
       useClass: ResourceService,
     },
   ],
+  schemas:[CUSTOM_ELEMENTS_SCHEMA]
 })
 export class QuestionnaireModule {}

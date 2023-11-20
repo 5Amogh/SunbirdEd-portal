@@ -17,3 +17,16 @@
 // @import '~@swimlane/ngx-datatable/src/themes/material';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
 @import url( 'https://fonts.googleapis.com/css?family=Material+Icons');
+
+:root{
+    --btn-outline:var(--primary-color);
+    --error-color:rgb(150, 4, 4);
+    --question-tip:gray;
+    --general-btn-text-color:white;
+    --general-btn-hover-bg:white;
+    --secondary-btn-bg:white;
+    --secondary-btn-hover-bg:whitesmoke;
+    --card-bg:white;
+    --disabled-btn-bg:gainsboro;
+    --disabled-btn-text:gray;  
+}

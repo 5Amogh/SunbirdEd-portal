@@ -7,11 +7,12 @@ import {
 } from '@sunbird/shared';
 import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { ObservationService, ObservationUtilService } from '@sunbird/core';
+import { ObservationService, ObservationUtilService, KendraService, CloudService } from '@sunbird/core';
 import { Location } from '@angular/common';
 import { ComponentDeactivate } from '../guard/can-deactivate.guard';
 import { AssessmentInfo, Evidence, IAssessmentDetails, Section, SlQuestionnaireService } from '@shikshalokam/sl-questionnaire';
 import { QuestionnaireService } from '../questionnaire.service';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-questionnaire',
@@ -32,6 +33,7 @@ export class QuestionnaireComponent
   queryParams: any;
   assessmentInfo: AssessmentInfo;
   canLeave = false;
+  fileUploadResponse;
   constructor(
     public layoutService: LayoutService,
     public fb: UntypedFormBuilder,
@@ -42,6 +44,8 @@ export class QuestionnaireComponent
     private location: Location,
     private observationUtilService: ObservationUtilService,
     private slQService: SlQuestionnaireService,
+    private cloudServ: CloudService,
+    private kendraService:KendraService,
     private questionnaireService: QuestionnaireService
   ) {
     super();
@@ -58,6 +62,7 @@ export class QuestionnaireComponent
   }
 
   ngOnInit() {
+    window.addEventListener('message', this.receiveMessage.bind(this), false);
     this.initConfiguration();
     this.activatedRoute.queryParams.subscribe((params) => {
       this.queryParams = params;
@@ -69,6 +74,78 @@ export class QuestionnaireComponent
       left: 0,
       behavior: 'smooth',
     });
+  }
+
+  receiveMessage(event) {
+    console.log('Received message:', event);
+    if (event.data.question_id) {
+      const formData = new FormData();
+      formData.append('file', event.data.file);
+      let payload = {};
+      payload['ref'] = 'survey';
+      payload['request'] = {};
+      const submissionId = event.data.submissionId;
+      payload['request'][submissionId] = {
+        files: [event.data.name],
+      };
+      const paramOptions = {
+        url: this.config.urlConFig.URLS.KENDRA.PRESIGNED_URLS,
+        data: payload,
+      }
+      this.kendraService.post(paramOptions)
+        .pipe(
+          catchError((err) => {
+            this.fileUploadResponse = {status:400, data:null, question_id:event.data.question_id};
+            throw new Error('Unable to upload the file. Please try again');
+          })
+        )
+        .subscribe((response) => {
+          console.log(response);
+          const presignedUrlData = response['result'][submissionId].files[0];
+          formData.append('url', presignedUrlData.url);
+          console.log(formData);
+          const paramOptions = {
+            url: 'upload',
+            data: formData,
+          }
+          this.cloudServ.put(paramOptions)
+            .pipe(
+              catchError((err) => {
+                this.fileUploadResponse = {status:400, data:null, question_id:event.data.question_id};
+                throw new Error(
+                  'Unable to upload the file. Please try again'
+                );
+              })
+            )
+            .subscribe((cloudResponse: any) => {
+              if (cloudResponse?.status == 200) {
+                const obj = {
+                  name: event.data.name,
+                  url: presignedUrlData.url.split('?')[0],
+                };
+                for (const key of Object.keys(presignedUrlData.payload)) {
+                  obj[key] = presignedUrlData['payload'][key];
+                }
+                this.fileUploadResponse = {status:200, data:obj, question_id:event.data.question_id};
+              }
+            });
+        });
+    }
+  }
+
+ async submitOrSaveEvent(event) {
+    console.log('Event emitted inside the app', event.detail);
+    const msg =  'save';
+  const userConfirm = await this.openAlert(msg, true);
+  if (!userConfirm) {
+    return;
+  }
+  const profile: Object = await this.observationUtilService.getProfileDataList();
+  if (!profile) {
+    return;
+  }
+  const payload = {...profile, evidence: {...event.detail.data, status:event.detail.status} };
+  this.submitEvidence(payload);
   }
 
   getQuestionnare() {
