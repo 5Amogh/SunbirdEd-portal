@@ -11244,10 +11244,10 @@ querystringify@^2.1.1:
   resolved "https://registry.npmjs.org/querystringify/-/querystringify-2.2.0.tgz#3345941b4153cb9d082d8eee4cda2016a9aef7f6"
   integrity sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==
 
-questionnaire-webcomponent@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/questionnaire-webcomponent/-/questionnaire-webcomponent-1.0.0.tgz#e565a5c3a7c12f8a626b2d68083644d1ad66cd1a"
-  integrity sha512-V7hc+JbKTxVRur6XrWFFKnZ6W6rIEE3Ns69v2O7h63UIjDepSZ0N7gkhmVjYsMFs7QnkYjIilA4cdtioWM3rYw==
+questionnaire-webcomponent@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/questionnaire-webcomponent/-/questionnaire-webcomponent-1.1.0.tgz#18470ca12f6990aa87c7c4716e06837ab271c5ea"
+  integrity sha512-zexih8LrGbSp7IO2o7X5CWfrQw+5O5X5vDINHREwPJ61DZu0vbapH0015AxwXTt5e1y8A01b5UA6Pp/+V9hmtA==
 
 queue-microtask@^1.2.2:
   version "1.2.3"

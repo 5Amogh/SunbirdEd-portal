@@ -51,11 +51,11 @@
       </div>
       <div style="position: relative">
         <div class="overlay" *ngIf="evidence?.isSubmitted"></div>
-        <div
+        <!-- <div
           *ngFor="let section of sections"
           [id]="section.code"
           [ngClass]="{ 'evidence-completed': evidence?.isSubmitted }"
-        >
+        > -->
           <div
             *ngIf="
               assessmentInfo?.solution?.criteriaLevelReport &&
@@ -63,7 +63,7 @@
             "
             class="sbt-page-content-area my-20"
           >
-            <h4 class="sb-color-primary">{{ section.name }}</h4>
+            <!-- <h4 class="sb-color-primary">{{ section.name }}</h4> -->
           </div>
           <div
             [ngClass]="
@@ -79,7 +79,7 @@
           (submitOrSaveEvent)="submitOrSaveEvent($event)"
         ></questionnaire-player-main>
           </div>
-        </div>
+        <!-- </div> -->
       </div>
 
       <!-- <div
