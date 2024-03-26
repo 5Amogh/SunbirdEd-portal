@@ -5,7 +5,7 @@ import { SharedModule } from '@sunbird/shared';
 import { ProfileRoutingModule } from './profile-routing.module';
 import {
   ProfilePageComponent, ProfileBadgeComponent, UpdateContactDetailsComponent,
-  AccountRecoveryInfoComponent, CreateUserComponent, ChooseUserComponent, SubmitTeacherDetailsComponent
+  AccountRecoveryInfoComponent, CreateUserComponent,DeleteUserComponent,DeleteAccountComponent, ChooseUserComponent, SubmitTeacherDetailsComponent
 } from './components';
 import { SuiSelectModule, SuiModalModule, SuiAccordionModule, SuiPopupModule, SuiDropdownModule,
   SuiProgressModule, SuiRatingModule, SuiCollapseModule } from 'ng2-semantic-ui-v9';
@@ -15,7 +15,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TelemetryModule } from '@sunbird/telemetry';
 import { ContentSearchModule } from '@sunbird/content-search';
 import {CommonConsumptionModule} from '@project-sunbird/common-consumption';
-import { CertificateDirectivesModule } from 'sb-svg2pdf-v13';
+import { CertificateDirectivesModule } from '@project-sunbird/sb-svg2pdf';
 import { CsModule } from '@project-sunbird/client-services';
 import { CsLibInitializerService } from '../../service/CsLibInitializer/cs-lib-initializer.service';
 import { CommonFormElementsModule } from '@project-sunbird/common-form-elements-full';
@@ -60,6 +60,8 @@ export const csCertificateServiceFactory = (csLibInitializerService: CsLibInitia
   declarations: [ProfilePageComponent, ProfileBadgeComponent, UpdateContactDetailsComponent,
    AccountRecoveryInfoComponent,
    CreateUserComponent,
+   DeleteUserComponent,
+   DeleteAccountComponent,
    ChooseUserComponent,
    SubmitTeacherDetailsComponent],
   providers: [

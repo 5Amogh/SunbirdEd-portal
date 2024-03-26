@@ -25,12 +25,12 @@
         }
       }
 
-      .mat-input-element.mat-form-field-autofill-control {
+      .mat-mdc-input-element.mat-form-field-autofill-control {
         padding: calculateRem(8px) calculateRem(24px);
         margin-top: calculateRem(8px);
         border-radius: calculateRem(24px);
       }
-
+      /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
       .mat-checkbox-checkmark-path {
         stroke: var(--sb-dropdown-menu-bg) !important;
       }
@@ -38,7 +38,7 @@
   }
 
   ::ng-deep {
-    .mat-form-field {
+    .mat-mdc-form-field {
       width: 100%;
       height: calculateRem(32px);
       padding: 0 calculateRem(20px);
@@ -47,23 +47,34 @@
       border-radius: calculateRem(4px);
 
       &.mat-form-field-appearance-legacy {
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
         .mat-form-field-wrapper {
           padding-bottom: 0;
         }
-
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
         .mat-form-field-wrapper,
         .mat-form-field-flex {
           height: 100%;
         }
-
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
         .mat-form-field-flex {
           align-items: center;
         }
-
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
         .mat-form-field-underline {
           height: 0;
         }
-
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
         .mat-form-field-infix {
           padding: 0;
           width: 100%;
@@ -72,7 +83,7 @@
       }
 
     }
-
+    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
     .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
     .mat-checkbox-checked.mat-accent .mat-checkbox-background {
       background-color: var(--primary-color);
@@ -81,9 +92,10 @@
 }
 
 ::ng-deep {
-  html[layout="joy"] .sb-autocomp-dropdown .mat-form-field, .sb-autocomp-dropdown__list {
+  html[layout="joy"] .sb-autocomp-dropdown .mat-mdc-form-field, .sb-autocomp-dropdown__list {
     border-radius: calculateRem(24px);
   }
+  /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
   html[data-mode="darkmode"] .sb-mat__checkbox.sb-mat__checkbox--primary .mat-checkbox-frame {
     border-color: var(--gray-100);
   }
@@ -93,7 +105,7 @@
   .sb-autocomp-dropdown__list ul {
     list-style: none !important
   }
-  .sb-autocomp-dropdown .mat-form-field {
+  .sb-autocomp-dropdown .mat-mdc-form-field {
     height: 2.5rem !important;
   }
 }
