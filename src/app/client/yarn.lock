@@ -129,14 +129,14 @@
     ora "5.4.1"
     rxjs "7.8.1"
 
-"@angular-slider/ngx-slider@^2.0.3":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@angular-slider/ngx-slider/-/ngx-slider-2.0.4.tgz#1827648eac8ec5e43e97c702eae08ef124907457"
-  integrity sha512-EccMcGlb2bJJWikXZBjRwdWgRiYYmWd3UCgf8l3KAlyqPAxPVgxI73wqipp4/nZwidq53a9s3OB+KC79enfM2A==
+"@angular-slider/ngx-slider@^16.0.1":
+  version "16.0.1"
+  resolved "https://registry.yarnpkg.com/@angular-slider/ngx-slider/-/ngx-slider-16.0.1.tgz#218789ce60f1a76b7133ba74f0cf9105453268e5"
+  integrity sha512-iUkVNB2XhTU/An2Wzbpb4qaa/T66VTwxfam1Ti7zEnfdk5aKE1XvBZqFQ6xahcgCkSoe7ED0pncZGpMhIxnfYQ==
   dependencies:
     detect-passive-events "^2.0.3"
-    rxjs "^6.5.2"
-    tslib "^1.9.0"
+    rxjs "~7.8.0"
+    tslib "^2.3.0"
 
 "@angular/animations@16.2.12":
   version "16.2.12"
@@ -3410,24 +3410,20 @@
     "@angular-devkit/schematics" "16.2.12"
     jsonc-parser "3.2.0"
 
-"@shikshalokam/sl-questionnaire@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@shikshalokam/sl-questionnaire/-/sl-questionnaire-2.3.1.tgz#d1dbaa5fc02afe1e573bc0f1b3fb9902f4548143"
-  integrity sha512-N/EBwIHWxFTSUApSweZ4ZC26l7AWknBDHmpynB+EjgW2wsw5VXSpXRnzptcwGwl3B0fv0/N/oYK2qk4ZoOaQSg==
+"@shikshalokam/sl-questionnaire@file:../../../../../queLibSl/sl-questionnaire-components/dist/sl-questionnaire/shikshalokam-sl-questionnaire-7.0.0.tgz":
+  version "7.0.0"
+  resolved "file:../../../../../queLibSl/sl-questionnaire-components/dist/sl-questionnaire/shikshalokam-sl-questionnaire-7.0.0.tgz#71de72bdaaa754fa10ef70e0dade2b9631a4a3cb"
   dependencies:
-    "@angular-slider/ngx-slider" "^2.0.3"
+    "@angular-slider/ngx-slider" "^16.0.1"
     tslib "^2.0.0"
 
-"@shikshalokam/sl-reports-library@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@shikshalokam/sl-reports-library/-/sl-reports-library-3.0.1.tgz#d135128acb8d6b0e141a38a734f8243b57789bbc"
-  integrity sha512-cNmIw82Y1f47b1zwxlZlxzttCfCAt1JyLT0+VJTOjUnLHSedvl6ebjasY65ooBiA3SEIwrtWoHZMVW8uqBeJdQ==
+"@shikshalokam/sl-reports-library@/home/navadhiti/slReportsLib/sl-reports-library/dist/sl-reports-library/shikshalokam-sl-reports-library-4.0.16.tgz":
+  version "4.0.16"
+  resolved "/home/navadhiti/slReportsLib/sl-reports-library/dist/sl-reports-library/shikshalokam-sl-reports-library-4.0.16.tgz#3a0d8d0f919288d5a9dafd2eb93ff8c051afe34b"
   dependencies:
-    chart.js "^2.9.4"
-    chartjs-plugin-datalabels "^0.7.0"
-    chartjs-plugin-stacked100 "^0.7.1"
-    ng2-charts "^2.4.2"
-    tslib "^2.0.0"
+    chart.js "^4.4.0"
+    ng2-charts "^5.0.4"
+    tslib "^2.3.0"
 
 "@sideway/address@^4.1.0":
   version "4.1.5"
@@ -3591,13 +3587,6 @@
   integrity sha512-z9fJ5Im06zvUL548KvYNecEVlA7cVDkGUi6kZusb04mpyEFKCIZJvloCcmpmLaIahDpOQGHaHmG6imtPMmPXGQ==
   dependencies:
     "@types/node" "*"
-
-"@types/chart.js@^2.9.24":
-  version "2.9.41"
-  resolved "https://registry.yarnpkg.com/@types/chart.js/-/chart.js-2.9.41.tgz#4148cdc87d4f98fad44b2883271cd0fa57f05e0d"
-  integrity sha512-3dvkDvueckY83UyUXtJMalYoH6faOLkWQoaTlJgB4Djde3oORmNP0Jw85HtzTuXyliUHcdp704s0mZFQKio/KQ==
-  dependencies:
-    moment "^2.10.2"
 
 "@types/connect-history-api-fallback@^1.3.5":
   version "1.5.4"
@@ -5411,13 +5400,20 @@ chart.js@4.1.1:
   dependencies:
     "@kurkle/color" "^0.3.0"
 
-chart.js@^2.4.0, chart.js@^2.9.4:
+chart.js@^2.4.0:
   version "2.9.4"
   resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.9.4.tgz#0827f9563faffb2dc5c06562f8eb10337d5b9684"
   integrity sha512-B07aAzxcrikjAPyV+01j7BmOpxtQETxTSlQ26BEYJ+3iUkbNKaOJ/nDbT6JjyqYxseM0ON12COHYdU2cTIjC7A==
   dependencies:
     chartjs-color "^2.1.0"
     moment "^2.10.2"
+
+chart.js@^4.4.0:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-4.4.2.tgz#95962fa6430828ed325a480cc2d5f2b4e385ac31"
+  integrity sha512-6GD7iKwFpP5kbSD4MeRRRlTnQvxfQREy36uEtm1hzHzcOqwWx0YEHuspuoNlslu+nciLIB7fjjsHkUv/FzFcOg==
+  dependencies:
+    "@kurkle/color" "^0.3.0"
 
 chartjs-color-string@^0.6.0:
   version "0.6.0"
@@ -5438,18 +5434,6 @@ chartjs-plugin-annotation@^0.5.7:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/chartjs-plugin-annotation/-/chartjs-plugin-annotation-0.5.7.tgz#1bf0e30199a6a9ff9889ce0f37a1e755a80d10bf"
   integrity sha512-tKN5KLc69unyZGTvSdhVQEyAOhVNnSkFCCgefZhO4UaqFfABZGFU/d9p6WM2KB0eXFs/rR3Jayh7dvyASC7K0A==
-  dependencies:
-    chart.js "^2.4.0"
-
-chartjs-plugin-datalabels@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/chartjs-plugin-datalabels/-/chartjs-plugin-datalabels-0.7.0.tgz#f72e44edb2db45ef68913e9320bcc50398a205e6"
-  integrity sha512-PKVUX14nYhH0wcdCpgOoC39Gbzvn6cZ7O9n+bwc02yKD9FTnJ7/TSrBcfebmolFZp1Rcicr9xbT0a5HUbigS7g==
-
-chartjs-plugin-stacked100@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/chartjs-plugin-stacked100/-/chartjs-plugin-stacked100-0.7.1.tgz#f89579fc15045f4203e4a16a1cac196d874817fc"
-  integrity sha512-3EoEXzKxJcRDrKe1dBYcPMbHpCppBgAsYApyEGiIXHaQS/SZRY+VEQsnyPTnIbewA792g19hTlkhpRLS1PVGzQ==
   dependencies:
     chart.js "^2.4.0"
 
@@ -11171,22 +11155,13 @@ ng2-charts@3.0.8:
     lodash-es "^4.17.15"
     tslib "^2.3.0"
 
-ng2-charts@5.0.4:
+ng2-charts@5.0.4, ng2-charts@^5.0.4:
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/ng2-charts/-/ng2-charts-5.0.4.tgz#306431e8b28532e22bcd877622b990c306516508"
   integrity sha512-AnOZ2KSRw7QjiMMNtXz9tdnO+XrIKP/2MX1TfqEEo2fwFU5c8LFJIYqmkMPkIzAEm/U9y/1psA5TDNmxxjEdgA==
   dependencies:
     lodash-es "^4.17.15"
     tslib "^2.3.0"
-
-ng2-charts@^2.4.2:
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/ng2-charts/-/ng2-charts-2.4.3.tgz#e1de6cb55fe04248a5f92d342cf6423507fa532d"
-  integrity sha512-tPrhHSS2DfVyipXQ0gykOPc8zFNnj2b7sAebUVty392vHnEGYCwsP6YbFfpr1iXu4yBSRm4Gt5lffR5w0uyYSw==
-  dependencies:
-    "@types/chart.js" "^2.9.24"
-    lodash-es "^4.17.15"
-    tslib "^2.0.0"
 
 ng2-material-dropdown@>=0.11.0:
   version "1.0.0"
@@ -12927,14 +12902,14 @@ rxjs@6.5.5:
   dependencies:
     tslib "^1.9.0"
 
-rxjs@7.8.1, rxjs@^7.5.5:
+rxjs@7.8.1, rxjs@^7.5.5, rxjs@~7.8.0:
   version "7.8.1"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
   integrity sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==
   dependencies:
     tslib "^2.1.0"
 
-rxjs@^6.5.2, rxjs@^6.5.3:
+rxjs@^6.5.3:
   version "6.6.7"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
   integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==

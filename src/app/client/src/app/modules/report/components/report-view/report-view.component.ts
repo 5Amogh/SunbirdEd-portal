@@ -164,14 +164,324 @@ export class ReportViewComponent implements OnInit {
         this.showLoader = false;
       },
       (err) => {
-        this.reportSections = [];
-        this.error = err;
-        if (!this.error.result) {
-          this.noResult = true;
-          this.showLoader = false;
-        }
+
       }
     );
+
+    this.reportSections = [];
+        const success = {
+          "result": true,
+          "entityType": "school",
+          "entityId": "c029bb5e-c840-431f-b357-1f9a08b7d0ca",
+          "entityName": "MPPS(URDU) AMADAGUR",
+          "solutionName": "Leadership Self Assessment for program 1",
+          "observationId": "65115fcbb257fb0008cd91c1",
+          "districtName": "Ananthapuram",
+          "programName": "Script testing for mandatory feilds",
+          "reportSections": [
+              {
+                  "order": "Q1_1689164013804-1689164019989",
+                  "question": "Enter the date of observation",
+                  "responseType": "date",
+                  "answers": [
+                      "1-12-2023 1:15:0 PM"
+                  ],
+                  "chart": {},
+                  "instanceQuestions": []
+              },
+              {
+                  "order": "Q2_1689164013804-1689164019990",
+                  "question": null,
+                  "responseType": "number",
+                  "answers": [
+                      "1"
+                  ],
+                  "chart": {},
+                  "instanceQuestions": []
+              },
+              {
+                  "order": "Q3_1689164013804-1689164019991",
+                  "question": "Are you currently living in the vicinity of the school?",
+                  "responseType": "radio",
+                  "answers": [
+                      "Yes"
+                  ],
+                  "chart": {
+                      "type": "pie",
+                      "data": {
+                          "labels": [
+                              "Yes"
+                          ],
+                          "datasets": [
+                              {
+                                  "backgroundColor": [
+                                      "#FFA971",
+                                      "#F6DB6C",
+                                      "#98CBED",
+                                      "#C9A0DA",
+                                      "#5DABDC",
+                                      "#88E5B0"
+                                  ],
+                                  "data": [
+                                      100
+                                  ]
+                              }
+                          ]
+                      },
+                      "options": {
+                          "responsive": true,
+                          "legend": {
+                              "position": "bottom",
+                              "align": "start"
+                          }
+                      }
+                  },
+                  "instanceQuestions": []
+              },
+              {
+                  "order": "Q5_1689164013804-1689164019993",
+                  "question": "What type of device is available at home?",
+                  "responseType": "multiselect",
+                  "answers": [
+                      [
+                          "Simple mobile phone without internet/data pack"
+                      ]
+                  ],
+                  "chart": {
+                      "type": "horizontalBar",
+                      "data": {
+                          "labels": [
+                              "Simple mobile phone without internet/data pack"
+                          ],
+                          "datasets": [
+                              {
+                                  "data": [
+                                      100
+                                  ],
+                                  "backgroundColor": "#de8657"
+                              }
+                          ]
+                      },
+                      "options": {
+                          "legend": false,
+                          "scales": {
+                              "xAxes": [
+                                  {
+                                      "ticks": {
+                                          "min": 0,
+                                          "max": 100
+                                      },
+                                      "scaleLabel": {
+                                          "display": true,
+                                          "labelString": "Responses in percentage"
+                                      }
+                                  }
+                              ],
+                              "yAxes": [
+                                  {
+                                      "scaleLabel": {
+                                          "display": true,
+                                          "labelString": "Responses"
+                                      }
+                                  }
+                              ]
+                          }
+                      }
+                  },
+                  "instanceQuestions": []
+              },
+              {
+                  "order": "Q6_1689164013804-1689164019993",
+                  "question": "Does the child have a quiet place to study?",
+                  "responseType": "radio",
+                  "answers": [
+                      "Yes"
+                  ],
+                  "chart": {
+                      "type": "pie",
+                      "data": {
+                          "labels": [
+                              "Yes"
+                          ],
+                          "datasets": [
+                              {
+                                  "backgroundColor": [
+                                      "#FFA971",
+                                      "#F6DB6C",
+                                      "#98CBED",
+                                      "#C9A0DA",
+                                      "#5DABDC",
+                                      "#88E5B0"
+                                  ],
+                                  "data": [
+                                      100
+                                  ]
+                              }
+                          ]
+                      },
+                      "options": {
+                          "responsive": true,
+                          "legend": {
+                              "position": "bottom",
+                              "align": "start"
+                          }
+                      }
+                  },
+                  "instanceQuestions": []
+              },
+              {
+                  "order": "Q7_1689164013804-1689164019994",
+                  "question": "Were you able to enrol your child in courses on DIKSHA?",
+                  "responseType": "radio",
+                  "answers": [
+                      "Yes"
+                  ],
+                  "chart": {
+                      "type": "pie",
+                      "data": {
+                          "labels": [
+                              "Yes"
+                          ],
+                          "datasets": [
+                              {
+                                  "backgroundColor": [
+                                      "#FFA971",
+                                      "#F6DB6C",
+                                      "#98CBED",
+                                      "#C9A0DA",
+                                      "#5DABDC",
+                                      "#88E5B0"
+                                  ],
+                                  "data": [
+                                      100
+                                  ]
+                              }
+                          ]
+                      },
+                      "options": {
+                          "responsive": true,
+                          "legend": {
+                              "position": "bottom",
+                              "align": "start"
+                          }
+                      }
+                  },
+                  "instanceQuestions": []
+              },
+              {
+                  "order": "Q9_1689164013804-1689164019995",
+                  "question": "On basis of the responses received above,  do you think this student is a potential drop out?",
+                  "responseType": "radio",
+                  "answers": [
+                      "Yes"
+                  ],
+                  "chart": {
+                      "type": "pie",
+                      "data": {
+                          "labels": [
+                              "Yes", "No", "May be","I don't know"
+                          ],
+                          "datasets": [
+                              {
+                                  "backgroundColor": [
+                                      "#FFA971",
+                                      "#F6DB6C",
+                                      "#98CBED",
+                                      "#C9A0DA",
+                                      "#5DABDC",
+                                      "#88E5B0"
+                                  ],
+                                  "data": [
+                                      30,30,30,10
+                                  ]
+                              }
+                          ]
+                      },
+                      "options": {
+                          "responsive": true,
+                          "legend": {
+                              "position": "bottom",
+                              "align": "start"
+                          }
+                      }
+                  },
+                  "instanceQuestions": []
+              }
+          ],
+          "completedDate": "2023-12-13T07:45:12.436Z",
+          "totalSubmissions": 1,
+          "filters": [
+              {
+                  "order": "",
+                  "filter": {
+                      "type": "segment",
+                      "title": "",
+                      "keyToSend": "criteriaWise",
+                      "data": [
+                          "questionWise",
+                          "criteriaWise"
+                      ]
+                  }
+              },
+              {
+                  "order": "",
+                  "filter": {
+                      "type": "modal",
+                      "title": "",
+                      "keyToSend": "questionId",
+                      "data": [
+                          {
+                              "name": null,
+                              "_id": "Q2_1689164013804-1689164019990"
+                          },
+                          {
+                              "name": "Are you currently living in the vicinity of the school?",
+                              "_id": "Q3_1689164013804-1689164019991"
+                          },
+                          {
+                              "name": "Does the child have a quiet place to study?",
+                              "_id": "Q6_1689164013804-1689164019993"
+                          },
+                          {
+                              "name": "Enter the date of observation",
+                              "_id": "Q1_1689164013804-1689164019989"
+                          },
+                          {
+                              "name": "On basis of the responses received above,  do you think this student is a potential drop out?",
+                              "_id": "Q9_1689164013804-1689164019995"
+                          },
+                          {
+                              "name": "Were you able to enrol your child in courses on DIKSHA?",
+                              "_id": "Q7_1689164013804-1689164019994"
+                          },
+                          {
+                              "name": "What type of device is available at home?",
+                              "_id": "Q5_1689164013804-1689164019993"
+                          }
+                      ]
+                  }
+              }
+          ],
+          "responseCode": "OK"
+      }
+        this.data = success;
+          this.reportSections = this.filterBySegment();
+
+          if (this.data.filters && !this.filters) {
+            this.filters = this.data.filters;
+          }
+
+          if (this.data.filters) {
+            const modalFilter = this.data.filters.filter(
+              (filter) => filter.filter.type == 'modal'
+            )[0];
+            this.filters = this.filters.map((filter) => {
+              if (filter.filter.type == 'modal') {
+                filter = modalFilter;
+              }
+              return filter;
+            });
+          }
   }
 
   gotoSolutionListPage() {
