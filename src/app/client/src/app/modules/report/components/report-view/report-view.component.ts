@@ -125,8 +125,190 @@ export class ReportViewComponent implements OnInit {
       url: this.config.urlConFig.URLS.DHITI.GENERIC_REPORTS,
       data: this.state,
     };
-    this.dhitiService.post(config).subscribe(
-      (success: any) => {
+    const success ={
+      "result": true,
+      "programName": "Regression 7.0 program",
+      "solutionName": "Observation with rubric (multiplesubmission) 7.0",
+      "solutionId": "6620f7a282411f0009059105",
+      "completedDate": "2024-04-19T10:08:10.356Z",
+      "entityName": "MPPS GYARAGONDANAHALLI",
+      "reportSections": [
+          {
+              "order": 1,
+              "domainLevelObject": {
+                  "Domain 1": {
+                      "2024-04-19T05:10:11.117Z": {
+                          "L1": 1
+                      },
+                      "2024-04-19T10:08:10.356Z": {
+                          "L1": 1
+                      }
+                  },
+                  "Domain 2": {
+                      "2024-04-19T05:10:11.117Z": {
+                          "No Level Matched": 1
+                      },
+                      "2024-04-19T10:08:10.356Z": {
+                          "No Level Matched": 1
+                      }
+                  }
+              },
+              "responseType": "horizontalBar",
+              "chart": {
+                  "type": "horizontalBar",
+                  "title": "",
+                  "submissionDateArray": [
+                      "19 April 2024",
+                      "19 April 2024",
+                      "19 April 2024",
+                      "19 April 2024"
+                  ],
+                  "data": {
+                      "labels": [
+                          "Domain 1",
+                          "",
+                          "Domain 2",
+                          ""
+                      ],
+                      "datasets": [
+                          {
+                              "label": "L1",
+                              "data": [
+                                  1,
+                                  1,
+                                  0,
+                                  0
+                              ],
+                              "backgroundColor": "rgb(255, 99, 132)"
+                          },
+                          {
+                              "label": "No Level Matched",
+                              "data": [
+                                  0,
+                                  0,
+                                  1,
+                                  1
+                              ],
+                              "backgroundColor": "rgb(54, 162, 235)"
+                          }
+                      ]
+                  },
+                  "options": {
+                      "indexAxis":"y",
+                      "scales": {
+                          "x": 
+                              {
+                                  "stacked": true,
+                                  "gridLines": {
+                                      "display": false
+                                  },
+                                  "title": {
+                                      "display": true,
+                                      "text": "Criteria"
+                                  }
+                              }
+                          ,
+                          "y": 
+                              {
+                                  "stacked": true
+                              }
+                      },
+                      "plugins":{
+                        "legend": {
+                          "display": true,
+                          "position": "top"
+                      }
+                      }
+                      
+                  }
+              }
+          },
+          {
+              "order": 2,
+              "responseType": "expansion-table",
+              "chart": {
+                  "type": "expansion-table",
+                  "title": "Descriptive view",
+                  "heading": [
+                      "Assess. 1",
+                      "Assess. 2"
+                  ],
+                  "domains": [
+                      {
+                          "domainName": "Domain 1",
+                          "criterias": [
+                              {
+                                  "name": "criteria 1",
+                                  "levels": [
+                                      "Level 1",
+                                      "Level 1"
+                                  ],
+                                  "levelsWithScores": [
+                                      {
+                                          "level": "Level 1",
+                                          "score": "40"
+                                      },
+                                      {
+                                          "level": "Level 1",
+                                          "score": "40"
+                                      }
+                                  ]
+                              }
+                          ]
+                      },
+                      {
+                          "domainName": "Domain 2",
+                          "criterias": [
+                              {
+                                  "name": "criteria 2",
+                                  "levels": [
+                                      "NA",
+                                      "NA"
+                                  ],
+                                  "levelsWithScores": [
+                                      {
+                                          "level": "NA",
+                                          "score": "0"
+                                      },
+                                      {
+                                          "level": "NA",
+                                          "score": "0"
+                                      }
+                                  ]
+                              }
+                          ]
+                      }
+                  ],
+                  "totalSubmissions": 2
+              }
+          }
+      ],
+      "filters": [
+          {
+              "order": "",
+              "filter": {
+                  "type": "dropdown",
+                  "title": "",
+                  "keyToSend": "submissionId",
+                  "data": [
+                      {
+                          "_id": "6621fc71bfe1b600080ef5df",
+                          "name": "Observation 1"
+                      },
+                      {
+                          "_id": "662242547a891c00082dfdcc",
+                          "name": "Observation 2"
+                      }
+                  ]
+              }
+          }
+      ],
+      "improvementProjectSuggestions": [],
+      "responseCode": "OK"
+  }
+
+    // this.dhitiService.post(config).subscribe(fselectedTabChange
+    //   (success: any) => {
         if (success.result === true && success.reportSections) {
           this.data = success;
           this.reportSections = this.filterBySegment();
@@ -162,326 +344,11 @@ export class ReportViewComponent implements OnInit {
           }
         });
         this.showLoader = false;
-      },
-      (err) => {
+    //   },
+    //   (err) => {
 
-      }
-    );
-
-    this.reportSections = [];
-        const success = {
-          "result": true,
-          "entityType": "school",
-          "entityId": "c029bb5e-c840-431f-b357-1f9a08b7d0ca",
-          "entityName": "MPPS(URDU) AMADAGUR",
-          "solutionName": "Leadership Self Assessment for program 1",
-          "observationId": "65115fcbb257fb0008cd91c1",
-          "districtName": "Ananthapuram",
-          "programName": "Script testing for mandatory feilds",
-          "reportSections": [
-              {
-                  "order": "Q1_1689164013804-1689164019989",
-                  "question": "Enter the date of observation",
-                  "responseType": "date",
-                  "answers": [
-                      "1-12-2023 1:15:0 PM"
-                  ],
-                  "chart": {},
-                  "instanceQuestions": []
-              },
-              {
-                  "order": "Q2_1689164013804-1689164019990",
-                  "question": null,
-                  "responseType": "number",
-                  "answers": [
-                      "1"
-                  ],
-                  "chart": {},
-                  "instanceQuestions": []
-              },
-              {
-                  "order": "Q3_1689164013804-1689164019991",
-                  "question": "Are you currently living in the vicinity of the school?",
-                  "responseType": "radio",
-                  "answers": [
-                      "Yes"
-                  ],
-                  "chart": {
-                      "type": "pie",
-                      "data": {
-                          "labels": [
-                              "Yes"
-                          ],
-                          "datasets": [
-                              {
-                                  "backgroundColor": [
-                                      "#FFA971",
-                                      "#F6DB6C",
-                                      "#98CBED",
-                                      "#C9A0DA",
-                                      "#5DABDC",
-                                      "#88E5B0"
-                                  ],
-                                  "data": [
-                                      100
-                                  ]
-                              }
-                          ]
-                      },
-                      "options": {
-                          "responsive": true,
-                          "legend": {
-                              "position": "bottom",
-                              "align": "start"
-                          }
-                      }
-                  },
-                  "instanceQuestions": []
-              },
-              {
-                  "order": "Q5_1689164013804-1689164019993",
-                  "question": "What type of device is available at home?",
-                  "responseType": "multiselect",
-                  "answers": [
-                      [
-                          "Simple mobile phone without internet/data pack"
-                      ]
-                  ],
-                  "chart": {
-                      "type": "horizontalBar",
-                      "data": {
-                          "labels": [
-                              "Simple mobile phone without internet/data pack"
-                          ],
-                          "datasets": [
-                              {
-                                  "data": [
-                                      100
-                                  ],
-                                  "backgroundColor": "#de8657"
-                              }
-                          ]
-                      },
-                      "options": {
-                          "legend": false,
-                          "scales": {
-                              "xAxes": [
-                                  {
-                                      "ticks": {
-                                          "min": 0,
-                                          "max": 100
-                                      },
-                                      "scaleLabel": {
-                                          "display": true,
-                                          "labelString": "Responses in percentage"
-                                      }
-                                  }
-                              ],
-                              "yAxes": [
-                                  {
-                                      "scaleLabel": {
-                                          "display": true,
-                                          "labelString": "Responses"
-                                      }
-                                  }
-                              ]
-                          }
-                      }
-                  },
-                  "instanceQuestions": []
-              },
-              {
-                  "order": "Q6_1689164013804-1689164019993",
-                  "question": "Does the child have a quiet place to study?",
-                  "responseType": "radio",
-                  "answers": [
-                      "Yes"
-                  ],
-                  "chart": {
-                      "type": "pie",
-                      "data": {
-                          "labels": [
-                              "Yes"
-                          ],
-                          "datasets": [
-                              {
-                                  "backgroundColor": [
-                                      "#FFA971",
-                                      "#F6DB6C",
-                                      "#98CBED",
-                                      "#C9A0DA",
-                                      "#5DABDC",
-                                      "#88E5B0"
-                                  ],
-                                  "data": [
-                                      100
-                                  ]
-                              }
-                          ]
-                      },
-                      "options": {
-                          "responsive": true,
-                          "legend": {
-                              "position": "bottom",
-                              "align": "start"
-                          }
-                      }
-                  },
-                  "instanceQuestions": []
-              },
-              {
-                  "order": "Q7_1689164013804-1689164019994",
-                  "question": "Were you able to enrol your child in courses on DIKSHA?",
-                  "responseType": "radio",
-                  "answers": [
-                      "Yes"
-                  ],
-                  "chart": {
-                      "type": "pie",
-                      "data": {
-                          "labels": [
-                              "Yes"
-                          ],
-                          "datasets": [
-                              {
-                                  "backgroundColor": [
-                                      "#FFA971",
-                                      "#F6DB6C",
-                                      "#98CBED",
-                                      "#C9A0DA",
-                                      "#5DABDC",
-                                      "#88E5B0"
-                                  ],
-                                  "data": [
-                                      100
-                                  ]
-                              }
-                          ]
-                      },
-                      "options": {
-                          "responsive": true,
-                          "legend": {
-                              "position": "bottom",
-                              "align": "start"
-                          }
-                      }
-                  },
-                  "instanceQuestions": []
-              },
-              {
-                  "order": "Q9_1689164013804-1689164019995",
-                  "question": "On basis of the responses received above,  do you think this student is a potential drop out?",
-                  "responseType": "radio",
-                  "answers": [
-                      "Yes"
-                  ],
-                  "chart": {
-                      "type": "pie",
-                      "data": {
-                          "labels": [
-                              "Yes", "No", "May be","I don't know"
-                          ],
-                          "datasets": [
-                              {
-                                  "backgroundColor": [
-                                      "#FFA971",
-                                      "#F6DB6C",
-                                      "#98CBED",
-                                      "#C9A0DA",
-                                      "#5DABDC",
-                                      "#88E5B0"
-                                  ],
-                                  "data": [
-                                      30,30,30,10
-                                  ]
-                              }
-                          ]
-                      },
-                      "options": {
-                          "responsive": true,
-                          "legend": {
-                              "position": "bottom",
-                              "align": "start"
-                          }
-                      }
-                  },
-                  "instanceQuestions": []
-              }
-          ],
-          "completedDate": "2023-12-13T07:45:12.436Z",
-          "totalSubmissions": 1,
-          "filters": [
-              {
-                  "order": "",
-                  "filter": {
-                      "type": "segment",
-                      "title": "",
-                      "keyToSend": "criteriaWise",
-                      "data": [
-                          "questionWise",
-                          "criteriaWise"
-                      ]
-                  }
-              },
-              {
-                  "order": "",
-                  "filter": {
-                      "type": "modal",
-                      "title": "",
-                      "keyToSend": "questionId",
-                      "data": [
-                          {
-                              "name": null,
-                              "_id": "Q2_1689164013804-1689164019990"
-                          },
-                          {
-                              "name": "Are you currently living in the vicinity of the school?",
-                              "_id": "Q3_1689164013804-1689164019991"
-                          },
-                          {
-                              "name": "Does the child have a quiet place to study?",
-                              "_id": "Q6_1689164013804-1689164019993"
-                          },
-                          {
-                              "name": "Enter the date of observation",
-                              "_id": "Q1_1689164013804-1689164019989"
-                          },
-                          {
-                              "name": "On basis of the responses received above,  do you think this student is a potential drop out?",
-                              "_id": "Q9_1689164013804-1689164019995"
-                          },
-                          {
-                              "name": "Were you able to enrol your child in courses on DIKSHA?",
-                              "_id": "Q7_1689164013804-1689164019994"
-                          },
-                          {
-                              "name": "What type of device is available at home?",
-                              "_id": "Q5_1689164013804-1689164019993"
-                          }
-                      ]
-                  }
-              }
-          ],
-          "responseCode": "OK"
-      }
-        this.data = success;
-          this.reportSections = this.filterBySegment();
-
-          if (this.data.filters && !this.filters) {
-            this.filters = this.data.filters;
-          }
-
-          if (this.data.filters) {
-            const modalFilter = this.data.filters.filter(
-              (filter) => filter.filter.type == 'modal'
-            )[0];
-            this.filters = this.filters.map((filter) => {
-              if (filter.filter.type == 'modal') {
-                filter = modalFilter;
-              }
-              return filter;
-            });
-          }
+    //   }
+    // );
   }
 
   gotoSolutionListPage() {
@@ -619,6 +486,7 @@ export class ReportViewComponent implements OnInit {
   }
 
   selectedTabChange(event) {
+    console.log('event from the selectedTabChange',event)
     const { tabHeader } = _.get(event, 'tab.textLabel');
     tabHeader && this.segmentChanged(tabHeader);
   }
